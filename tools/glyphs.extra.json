@@ -1,94 +1,78 @@
 {
-  "_note": "Kaynak SVG'de olmayan, elle tasarlanmış glifler. ASCII olarak yazılır, tools/build-glyphs.mjs hücrelere çevirir. 'proposed' olanlar onay bekliyor.",
-  "_convention": "Bu sistemde aksan, gövdenin sağına taşan bir kol: ü = u + üstte sağa kol, ç/ş = altta sağa kol. ö ve ğ aynı kuralla türetildi.",
+  "_note": "Kaynak SVG'de olmayan, elle tasarlanmış glifler. ASCII olarak yazılır, tools/build-glyphs.mjs hücrelere çevirip değişmezlere karşı doğrular.",
+
+  "_convention": {
+    "umlaut": "sources/hakbir normal.png 'gönül' kelimesinden doğrulandı: gövdenin üstünde ayrı iki nokta, araya bir boşluk satırı. Nokta 1 + boşluk 1 + gövde 7 = 9. 'i' ile aynı mantık.",
+    "sedilla": "ç'den doğrulandı: gövde 7 + boyun 1 + bar 1 = 9. Boyun gövdenin alt ucuna kenardan bağlanır.",
+    "breve": "ÖNERİ — kaynakta ğ yok. Umlaut'un yerine düz bar; iki nokta ile karışmasın diye."
+  },
 
   "ascii": [
     {
       "char": "ö",
-      "source": "extra:ö.wide",
-      "note": "o + ü'deki üst kol",
-      "art": [
-        "#####",
-        "#.#..",
-        "#.#..",
-        "#.#..",
-        "#.#..",
-        "#.#..",
-        "#.#..",
-        "#.#..",
-        "###.."
-      ]
+      "source": "extra:ö.tall",
+      "note": "o (7 satıra sıkışmış) + umlaut",
+      "art": ["#.#", "...", "###", "#.#", "#.#", "#.#", "#.#", "#.#", "###"]
     },
     {
       "char": "ö",
       "source": "extra:ö.short",
-      "note": "kısa o + ü.0'daki tek hücrelik kol",
-      "art": [
-        "####",
-        "#.#.",
-        "#.#.",
-        "###."
-      ]
+      "note": "kısa o + umlaut",
+      "art": ["#.#", "...", "###", "#.#", "#.#", "###"]
+    },
+    {
+      "char": "ü",
+      "source": "extra:ü.tall",
+      "note": "u (7 satıra sıkışmış) + umlaut",
+      "art": ["#.#", "...", "#.#", "#.#", "#.#", "#.#", "#.#", "#.#", "###"]
+    },
+    {
+      "char": "ü",
+      "source": "extra:ü.short",
+      "note": "kısa u + umlaut",
+      "art": ["#.#", "...", "#.#", "#.#", "#.#", "###"]
+    },
+    {
+      "char": "ş",
+      "source": "extra:ş.tall",
+      "proposed": true,
+      "note": "ÖNERİ — s (7 satıra sıkışmış) + ç'nin sedilla mantığı: boyun + bar",
+      "art": ["###", "#.#", "#.#", "#..", "###", "..#", "..#", "..#", "###"]
+    },
+    {
+      "char": "ş",
+      "source": "extra:ş.short",
+      "proposed": true,
+      "note": "ÖNERİ — kısa s + sedilla",
+      "art": ["###", "#..", "###", "..#", "..#", "###"]
     },
     {
       "char": "ğ",
-      "source": "extra:ğ.wide",
-      "note": "g.1 + üst kol",
-      "art": [
-        "#####",
-        "#.#..",
-        "#.#..",
-        "###..",
-        "..#..",
-        "#.#..",
-        "#.#..",
-        "#.#..",
-        "###.."
-      ]
+      "source": "extra:ğ.tall",
+      "proposed": true,
+      "note": "ÖNERİ — g (7 satıra sıkışmış) + düz bar şapka",
+      "art": ["###", "...", "###", "#.#", "###", "..#", "#.#", "#.#", "###"]
     },
     {
       "char": "ğ",
       "source": "extra:ğ.short",
-      "note": "g.0 + tek hücrelik kol",
-      "art": [
-        "####",
-        "#.#.",
-        "###.",
-        "..#.",
-        "#.#.",
-        "###."
-      ]
+      "proposed": true,
+      "note": "ÖNERİ — kısa g + şapka",
+      "art": ["###", "...", "###", "#.#", "###", "..#", "###"]
     },
     {
       "char": "v",
       "source": "extra:v.tall",
       "proposed": true,
       "note": "ÖNERİ — kaynakta v yok. u'nun sol gövdesi kısaltılarak V'nin inişi ima edildi.",
-      "art": [
-        "..#",
-        "..#",
-        "..#",
-        "#.#",
-        "#.#",
-        "#.#",
-        "#.#",
-        "#.#",
-        "###"
-      ]
+      "art": ["..#", "..#", "..#", "#.#", "#.#", "#.#", "#.#", "#.#", "###"]
     },
     {
       "char": "v",
       "source": "extra:v.short",
       "proposed": true,
       "note": "ÖNERİ — kısa v",
-      "art": [
-        "..#",
-        "..#",
-        "#.#",
-        "#.#",
-        "#.#",
-        "###"
-      ]
+      "art": ["..#", "..#", "#.#", "#.#", "#.#", "###"]
     }
   ]
 }

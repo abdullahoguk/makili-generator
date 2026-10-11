@@ -9,10 +9,13 @@
 // eksene yeni bir değer eklemek demek.
 
 import { outline } from './outline.js'
+import { thicken, weightToAmount } from './weight.js'
 import { bbox } from '../grid.js'
 
 export const PRESETS = {
   normal: { paint: 'fill', corner: 'none' },
+  bold: { paint: 'fill', corner: 'none', weight: 2 },
+  'bold+fillet': { paint: 'fill', corner: 'fillet', cornerSize: 0.5, weight: 2 },
   stroke: { paint: 'outline', corner: 'none' },
   'stroke+fill': { paint: 'both', corner: 'none' },
   line: { paint: 'skeleton', corner: 'none' },
@@ -24,6 +27,8 @@ export const DEFAULTS = {
   paint: 'fill',
   corner: 'none',
   cornerSize: 0.5,
+  weightScale: 8, // ağırlık için alt-hücre çözünürlüğü
+  resolution: 1, // gelen hücrelerin alt-hücre çözünürlüğü (bkz. thickenStack)
   cell: 10, // bir hücrenin px karşılığı
   padding: 2, // hücre cinsinden kenar boşluğu
   ink: '#111111',
@@ -39,22 +44,26 @@ export const DEFAULTS = {
  */
 export function renderSvg(cells, style = {}) {
   const s = { ...DEFAULTS, ...style }
+  const res = s.resolution
+  const unit = s.cell / res
   const b = bbox(cells)
-  const pad = s.padding
-  const W = (b.w + pad * 2) * s.cell
-  const H = (b.h + pad * 2) * s.cell
+  const pad = s.padding * res
+  const W = (b.w + pad * 2) * unit
+  const H = (b.h + pad * 2) * unit
 
   // Çizimi sol-üste normalize edip kenar boşluğu kadar ötele.
   const local = cells.map(([x, y]) => [x - b.x, y - b.y])
-  const rings = outline(local)
-  const d = pathData(rings, s)
+  const geom = { ...s, cell: unit }
 
-  const body = paintBody(d, local, s)
+  const rings = outline(local)
+  const d = pathData(rings, geom)
+
+  const body = paintBody(d, local, geom)
 
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`,
     s.transparent ? '' : `<rect width="100%" height="100%" fill="${s.paper}"/>`,
-    `<g transform="translate(${pad * s.cell} ${pad * s.cell})">`,
+    `<g transform="translate(${pad * unit} ${pad * unit})">`,
     body,
     '</g>',
     '</svg>'

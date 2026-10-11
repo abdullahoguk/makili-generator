@@ -5,6 +5,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { composeNatural } from '../src/engine/layout.js'
+import { compose } from '../src/engine/justify.js'
 import { renderSvg, PRESETS } from '../src/engine/render/svg.js'
 import { unsupported } from '../src/engine/glyphs.js'
 
@@ -25,11 +26,18 @@ if (!PRESETS[preset]) {
 const bad = unsupported(text)
 if (bad.length) console.warn(`uyarı — kütüphanede yok: ${bad.join(' ')}`)
 
-const composed = composeNatural(text)
-const svg = renderSvg(composed.cells, { ...PRESETS[preset], cell: 12 })
+const style = { ...PRESETS[preset], cell: 12 }
+const justified = process.env.NO_JUSTIFY ? null : compose(text, { weight: style.weight ?? 1 })
+if (justified && !justified.ok) {
+  console.warn('hizalama başarısız:')
+  for (const w of justified.warnings) console.warn('  ' + w)
+}
+const composed = justified?.ok ? justified : composeNatural(text)
+const svg = renderSvg(composed.cells, { ...style, resolution: composed.resolution ?? 1 })
 writeFileSync(out, svg)
 
 console.log(`"${text.replace(/\n/g, ' / ')}"`)
 console.log(`preset ${preset}  grid ${composed.width}x${composed.height}  satır ${composed.lines.length}`)
 console.log(`satır genişlikleri: ${composed.lines.map((l) => l.line.width).join(', ')}`)
+if (justified?.ok) console.log(`hedef ${justified.target}  seçenekler: ${justified.candidates.slice(0, 14).join(', ')}${justified.candidates.length > 14 ? ' …' : ''}`)
 console.log(`yazıldı: ${out}`)
