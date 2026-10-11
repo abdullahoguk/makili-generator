@@ -115,3 +115,37 @@ describe('justify', () => {
     }
   })
 })
+
+describe('pins — elle sabitlenen harf genişlikleri', () => {
+  it('sabitlenen harf o genişlikte kalır', () => {
+    const r = justify('bana\nolur', { pinsByLine: { 0: { 0: 6 } } })
+    expect(r.ok).toBe(true)
+    expect(r.lines[0].items[0].variant.w).toBe(6)
+  })
+
+  it('sabitleme ulaşılabilir genişlikleri daraltır', () => {
+    const wide = justify('bana\nolur')
+    const pinned = justify('bana\nolur', { pinsByLine: { 0: { 0: 6 } } })
+    expect(pinned.candidates.length).toBeLessThan(wide.candidates.length)
+  })
+
+  it('sabitleme sonrası kalan harfler hedefi tutturur', () => {
+    const r = justify('bana\nolur', { pinsByLine: { 0: { 0: 5 } } })
+    expect(r.ok).toBe(true)
+    expect(new Set(r.lines.map((l) => l.width)).size).toBe(1)
+  })
+})
+
+describe('justify: false — hizalama kapalı', () => {
+  it('satırları doğal genişliğinde bırakır', () => {
+    const r = justify('bana\nolur bana', { justify: false })
+    expect(r.ok).toBe(true)
+    expect(r.lines[0].width).toBe(naturalWidth(tokenize('bana')))
+    expect(r.lines[1].width).toBe(naturalWidth(tokenize('olur bana')))
+  })
+
+  it('kapalıyken bile sabitlemeye uyar', () => {
+    const r = justify('bana', { justify: false, pinsByLine: { 0: { 0: 6 } } })
+    expect(r.lines[0].items[0].variant.w).toBe(6)
+  })
+})

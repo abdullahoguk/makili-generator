@@ -1,0 +1,93 @@
+/* Swiss / International Style belirteçleri.
+   Palet Müller-Brockmann disiplininde: kağıt, mürekkep, tek sinyal rengi.
+   Yuvarlatma yok, gölge yok, degrade yok. Hiyerarşi tipografi ve kuralla. */
+
+:root {
+  /* yüzeyler */
+  --paper: #f2f1ec;
+  --paper-pure: #ffffff;
+  --ink: #111110;
+  --ink-mute: #6b6a64;
+  --ink-faint: #a8a69d;
+  --rule: #111110;
+  --rule-hair: #d6d4cb;
+  --signal: #e5241c;
+
+  /* tipografi */
+  --sans: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Swiss grid: tek bir temel birim, her ölçü katı */
+  --u: 8px;
+  --gutter: calc(var(--u) * 3);
+  --rail: 340px;
+
+  /* etiket stili — her yerde aynı */
+  --label-size: 10px;
+  --label-track: 0.16em;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Swiss'te her şey sola dayalı, hiçbir şey yuvarlak değil. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  border-radius: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--paper-pure);
+}
+
+/* Tekrar eden küçük etiket — rail boyunca ritmi kuran öğe. */
+.label {
+  font-size: var(--label-size);
+  font-weight: 700;
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

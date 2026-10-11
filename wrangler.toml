@@ -1,0 +1,11 @@
+# Cloudflare Pages — doğrudan dağıtım için:
+#   npm run build && npx wrangler pages deploy dist
+#
+# Git'ten otomatik dağıtımda bu dosya gerekmez; Pages panelinde
+#   build komutu : npm run build
+#   çıktı dizini : dist
+# yeterli.
+
+name = "latin-makili"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-12"

@@ -11,7 +11,13 @@ export const LETTER_GAP = 1
 export const WORD_GAP = 3
 export const LINE_GAP = 1
 
-/** Metni harf dizisine böler; boşluklar kelime sınırı olarak işaretlenir. */
+/**
+ * Metni harf dizisine böler; boşluklar kelime sınırı olarak işaretlenir.
+ *
+ * Kütüphanede karşılığı olmayan karakterler ATILIR — dizgi yalnız çizilebilen
+ * şeylerden oluşur. Atılanları kullanıcıya bildirmek çağıranın işi;
+ * glyphs.unsupported() hangi karakterlerin düştüğünü söyler.
+ */
 export function tokenize(line) {
   const out = []
   for (const ch of line.toLowerCase()) {
@@ -19,8 +25,6 @@ export function tokenize(line) {
       if (out.length && out[out.length - 1].type !== 'space') out.push({ type: 'space' })
     } else if (has(ch)) {
       out.push({ type: 'glyph', char: ch })
-    } else {
-      out.push({ type: 'unknown', char: ch })
     }
   }
   while (out.length && out[out.length - 1].type === 'space') out.pop()
@@ -50,7 +54,7 @@ export function lineWidth(tokens, widths) {
 
 /** Satırın varsayılan varyantlarla doğal genişliği. */
 export function naturalWidth(tokens) {
-  const widths = tokens.filter((t) => t.type !== 'space').map((t) => defaultVariant(t.char).w)
+  const widths = tokens.filter((t) => t.type === 'glyph').map((t) => defaultVariant(t.char).w)
   return lineWidth(tokens, widths)
 }
 
@@ -122,7 +126,7 @@ export function stack(lines, { align = 'left', lineGap = LINE_GAP } = {}) {
 export function composeNatural(text, opts) {
   const lines = text.split('\n').map((raw) => {
     const tokens = tokenize(raw)
-    const chosen = tokens.filter((t) => t.type !== 'space').map((t) => defaultVariant(t.char))
+    const chosen = tokens.filter((t) => t.type === 'glyph').map((t) => defaultVariant(t.char))
     return layoutLine(tokens, chosen)
   })
   return stack(lines, opts)

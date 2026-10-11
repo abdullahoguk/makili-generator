@@ -60,13 +60,25 @@ function gapTotal(tokens) {
 
 const glyphsOf = (tokens) => tokens.filter((t) => t.type === 'glyph')
 
+/**
+ * Bir harfin seçilebilir genişlikleri. `pin` verilmişse o harf o genişliğe
+ * sabitlenmiştir — kullanıcı elle seçtiğinde çözücü ona dokunmaz.
+ */
+function optionsFor(char, index, opts) {
+  const map = widthsFor(char, opts)
+  const pin = opts.pins?.[index]
+  if (pin == null) return map
+  const g = map.get(pin)
+  return g ? new Map([[pin, g]]) : map
+}
+
 /** Satırın ulaşabildiği toplam genişlikler. */
 export function reachableWidths(tokens, options = {}) {
   const opts = { ...DEFAULTS, ...options }
   const chars = glyphsOf(tokens)
   let sums = new Set([0])
-  for (const t of chars) {
-    const widths = [...widthsFor(t.char, opts).keys()]
+  for (const [i, t] of chars.entries()) {
+    const widths = [...optionsFor(t.char, i, opts).keys()]
     const next = new Set()
     for (const s of sums) for (const w of widths) next.add(s + w)
     sums = next
@@ -78,7 +90,9 @@ export function reachableWidths(tokens, options = {}) {
 /** Tüm satırların ortaklaşa ulaşabildiği genişlikler, küçükten büyüğe. */
 export function commonWidths(lines, options = {}) {
   if (!lines.length) return []
-  const sets = lines.map((t) => reachableWidths(t, options))
+  const sets = lines.map((t, i) =>
+    reachableWidths(t, { ...options, pins: options.pinsByLine?.[i] })
+  )
   const [first, ...rest] = sets
   return [...first].filter((w) => rest.every((s) => s.has(w))).sort((a, b) => a - b)
 }
@@ -94,7 +108,7 @@ export function solveLine(tokens, target, options = {}) {
   if (goal < 0) return null
   if (!chars.length) return goal === 0 ? [] : null
 
-  const maps = chars.map((t) => widthsFor(t.char, opts))
+  const maps = chars.map((t, i) => optionsFor(t.char, i, opts))
   const bases = maps.map((m) => Math.min(...m.keys()))
 
   // dp[i] : i. harften sonra ulaşılan genişlik -> { cost, w, prev }
@@ -160,16 +174,41 @@ export function justify(text, options = {}) {
     return { ok: false, target: 0, lines: [], candidates: [], warnings: ['metin boş'] }
   }
 
+  // Hizalama kapalı: her satır doğal genişliğinde, sabitlenenler hariç.
+  if (opts.justify === false) {
+    const lines = content.map((tokens, li) => {
+      const pins = opts.pinsByLine?.[li]
+      const chosen = glyphsOf(tokens).map((t, i) => {
+        const pin = pins?.[i]
+        const g = pin != null ? optionsFor(t.char, i, { ...opts, pins }).get(pin) : null
+        return g ?? defaultVariant(t.char)
+      })
+      return { ...layoutLine(tokens, chosen), tokens }
+    })
+    return {
+      ok: true,
+      target: Math.max(...lines.map((l) => l.width)),
+      lines,
+      candidates: [],
+      warnings
+    }
+  }
+
   // Tek satır hizalanacak bir şey değil; doğal genişliğinde kalır.
   if (content.length === 1 && opts.target == null) {
     const tokens = content[0]
-    const chosen = glyphsOf(tokens).map((t) => defaultVariant(t.char))
+    const pins = opts.pinsByLine?.[0]
+    const chosen = glyphsOf(tokens).map((t, i) => {
+      const pin = pins?.[i]
+      const g = pin != null ? optionsFor(t.char, i, { ...opts, pins }).get(pin) : null
+      return g ?? defaultVariant(t.char)
+    })
     const line = layoutLine(tokens, chosen)
     return {
       ok: true,
       target: line.width,
       lines: [{ ...line, tokens }],
-      candidates: [...reachableWidths(tokens, opts)].sort((a, b) => a - b),
+      candidates: [...reachableWidths(tokens, { ...opts, pins })].sort((a, b) => a - b),
       warnings
     }
   }
@@ -180,7 +219,7 @@ export function justify(text, options = {}) {
     const naturals = content.map(naturalWidth)
     const widest = Math.max(...naturals)
     content.forEach((tokens, i) => {
-      const reach = reachableWidths(tokens, opts)
+        const reach = reachableWidths(tokens, { ...opts, pins: opts.pinsByLine?.[i] })
       const max = Math.max(...reach)
       if (max < widest) {
         warnings.push(
@@ -213,8 +252,8 @@ export function justify(text, options = {}) {
   }
 
   const lines = []
-  for (const tokens of content) {
-    const chosen = solveLine(tokens, target, opts)
+  for (const [li, tokens] of content.entries()) {
+    const chosen = solveLine(tokens, target, { ...opts, pins: opts.pinsByLine?.[li] })
     if (!chosen) {
       return {
         ok: false,

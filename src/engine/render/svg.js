@@ -33,7 +33,10 @@ export const DEFAULTS = {
   padding: 2, // hücre cinsinden kenar boşluğu
   ink: '#111111',
   paper: '#ffffff',
-  strokeWidth: 1, // px, outline ve skeleton için
+  // Çizgi kalınlığı: null = hücre boyutuyla orantılı. Sabit px vermek,
+  // hücre büyüdükçe çizgiyi görünmez inceltiyordu.
+  strokeWidth: null,
+  strokeRatio: 0.1, // hücre kenarının oranı
   transparent: false
 }
 
@@ -54,6 +57,8 @@ export function renderSvg(cells, style = {}) {
   // Çizimi sol-üste normalize edip kenar boşluğu kadar ötele.
   const local = cells.map(([x, y]) => [x - b.x, y - b.y])
   const geom = { ...s, cell: unit }
+
+  geom.strokeWidth = s.strokeWidth ?? Math.max(1, s.cell * s.strokeRatio)
 
   const rings = outline(local)
   const d = pathData(rings, geom)
