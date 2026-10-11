@@ -1,0 +1,94 @@
+{
+  "_note": "Kaynak SVG'de olmayan, elle tasarlanmış glifler. ASCII olarak yazılır, tools/build-glyphs.mjs hücrelere çevirir. 'proposed' olanlar onay bekliyor.",
+  "_convention": "Bu sistemde aksan, gövdenin sağına taşan bir kol: ü = u + üstte sağa kol, ç/ş = altta sağa kol. ö ve ğ aynı kuralla türetildi.",
+
+  "ascii": [
+    {
+      "char": "ö",
+      "source": "extra:ö.wide",
+      "note": "o + ü'deki üst kol",
+      "art": [
+        "#####",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "###.."
+      ]
+    },
+    {
+      "char": "ö",
+      "source": "extra:ö.short",
+      "note": "kısa o + ü.0'daki tek hücrelik kol",
+      "art": [
+        "####",
+        "#.#.",
+        "#.#.",
+        "###."
+      ]
+    },
+    {
+      "char": "ğ",
+      "source": "extra:ğ.wide",
+      "note": "g.1 + üst kol",
+      "art": [
+        "#####",
+        "#.#..",
+        "#.#..",
+        "###..",
+        "..#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "###.."
+      ]
+    },
+    {
+      "char": "ğ",
+      "source": "extra:ğ.short",
+      "note": "g.0 + tek hücrelik kol",
+      "art": [
+        "####",
+        "#.#.",
+        "###.",
+        "..#.",
+        "#.#.",
+        "###."
+      ]
+    },
+    {
+      "char": "v",
+      "source": "extra:v.tall",
+      "proposed": true,
+      "note": "ÖNERİ — kaynakta v yok. u'nun sol gövdesi kısaltılarak V'nin inişi ima edildi.",
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "extra:v.short",
+      "proposed": true,
+      "note": "ÖNERİ — kısa v",
+      "art": [
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    }
+  ]
+}

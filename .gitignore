@@ -8,3 +8,4 @@ build/
 # Çalışma notları — depoya girmez
 ROADMAP.md
 NOTES.md
+package-lock.json

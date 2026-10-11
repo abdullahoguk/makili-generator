@@ -6,6 +6,7 @@
 // Çıktı : src/data/glyphs.json
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { fromAscii, bbox, validate } from '../src/engine/grid.js'
 
 const RAW = 'build/glyphs.raw.json'
 const LABELS = 'tools/labels.json'
@@ -45,17 +46,27 @@ for (const row of raw.letters.rows) {
 }
 
 // Elle tasarlanmış ekler (kaynakta olmayan harfler ve varyantlar).
-for (const g of extra.glyphs ?? []) {
+// ASCII olarak yazılır; burada hücrelere çevrilip değişmezlere karşı doğrulanır.
+for (const g of extra.ascii ?? []) {
   if (!byChar.has(g.char)) {
-    skipped.push({ key: `extra:${g.char}`, reason: 'karakter seti dışı' })
+    skipped.push({ key: g.source, reason: `karakter seti dışı: ${g.char}` })
     continue
   }
+  const cells = fromAscii(g.art.join('\n'))
+  const check = validate(cells, { requireConnected: false })
+  if (!check.ok) {
+    skipped.push({ key: g.source, reason: `geçersiz: ${check.errors.join('; ')}` })
+    continue
+  }
+  const b = bbox(cells)
   byChar.get(g.char).push({
-    source: g.source ?? `extra:${g.char}`,
-    w: g.w,
-    h: g.h,
-    baseline: g.baseline,
-    cells: g.cells
+    source: g.source,
+    proposed: g.proposed || undefined,
+    note: g.note,
+    w: b.w,
+    h: b.h,
+    baseline: b.h,
+    cells
   })
 }
 
