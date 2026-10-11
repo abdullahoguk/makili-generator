@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+.DS_Store
+*.local
+.vite/
+
+# Çalışma notları — depoya girmez
+ROADMAP.md
+NOTES.md

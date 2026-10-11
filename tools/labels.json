@@ -1,0 +1,26 @@
+{
+  "_note": "Belirsiz satırların elle çözümü. Anahtar: <set>.<row>.<variant>. Belirsiz olmayan satırlar extract tarafından otomatik etiketlenir.",
+  "_undecided": {
+    "letters.6": "g/ğ satırı — hiçbir varyantta ğ şapkası görünmüyor, beşi de g kabul edildi. Onay bekliyor."
+  },
+
+  "letters.2.0": "c",
+  "letters.2.1": "c",
+  "letters.2.2": "ç",
+
+  "letters.6.0": "g",
+  "letters.6.1": "g",
+  "letters.6.2": "g",
+  "letters.6.3": "g",
+  "letters.6.4": "g",
+
+  "letters.8.0": "ı",
+  "letters.8.1": "i",
+
+  "letters.17.0": "s",
+  "letters.17.1": "s",
+  "letters.17.2": "s",
+  "letters.17.3": "ş",
+  "letters.17.4": "ş",
+  "letters.17.5": "ş"
+}
