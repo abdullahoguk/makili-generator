@@ -87,6 +87,32 @@ npm run glyphs       # extract + build
 `tools/glyphs.extra.json` içinde ASCII olarak tanımlanır; derleme sırasında
 hücrelere çevrilip biçim değişmezlerine karşı doğrulanırlar.
 
+## Geliştirme önizlemesi — Cloudflare Tunnel
+
+Yerel dev sunucusu `makili-test.abdullahog.uk` üzerinden yayınlanıyor.
+`alaturka-test` tunnel'ı iki hostname sunuyor:
+
+```yaml
+# ~/.cloudflared/config.yml
+ingress:
+  - hostname: test.alaturkavakitler.com
+    service: http://localhost:5173
+  - hostname: makili-test.abdullahog.uk
+    service: http://localhost:5174
+  - service: http_status:404
+```
+
+`vite.config.js` içindeki `server.allowedHosts` tunnel'dan gelen Host
+başlığına izin verir; yoksa Vite isteği 400 ile reddeder.
+
+Hostname tek seviye olmak zorunda: Cloudflare'in ücretsiz Universal SSL
+sertifikası `abdullahog.uk` ve `*.abdullahog.uk` kapsıyor, joker karakter
+tek etiket karşıladığı için `makili.test.abdullahog.uk` gibi iki seviye
+derin adlar TLS el sıkışmasında kopar.
+
+**Config değişince tunnel'ın yeniden başlatılması gerekir.** cloudflared
+SIGHUP'ı yakalamaz; sinyal süreci öldürür.
+
 ## Dağıtım — Cloudflare Pages
 
 Git'ten otomatik dağıtım için Pages panelinde:
