@@ -9,6 +9,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import GridArt from './GridArt.vue'
 import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
+import { layoutWord } from '../engine/sequence.js'
 import { CHARSET, variantsOf } from '../engine/glyphs.js'
 import { fromAscii } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
@@ -27,7 +28,13 @@ const s = reactive({
   strict: true,
   maxInterlock: 3,
   onlyUndecided: false,
-  word: 'hakbir'
+  word: 'hakbir',
+  // Çift kuyruğu bu metinden çıkar: 841 çifti tek tek gezmek yerine
+  // gerçekten geçen çiftlere, sıklık sırasına göre bakılır.
+  corpus: `hak bir gönül verdi bana
+ha demeyen hayran olur
+bir dem gelir şad olur
+bir dem gelir giryan olur`
 })
 
 const decisions = reactive(load())
@@ -48,6 +55,47 @@ watch(decisions, (d) => {
 }, { deep: true })
 
 const pairKey = computed(() => `${s.left}${s.right}`)
+
+// ---- çift kuyruğu -------------------------------------------------------
+
+/** Metinde fiilen geçen harf çiftleri, sıklığa göre. */
+const queue = computed(() => {
+  const counts = new Map()
+  for (const line of s.corpus.toLowerCase().split('\n')) {
+    const chars = [...line].filter((c) => CHARSET.includes(c))
+    for (let i = 0; i < chars.length - 1; i++) {
+      const k = chars[i] + chars[i + 1]
+      counts.set(k, (counts.get(k) ?? 0) + 1)
+    }
+  }
+  return [...counts]
+    .map(([k, n]) => ({
+      key: k,
+      left: [...k][0],
+      right: [...k][1],
+      n,
+      decided: Boolean(decisions[k] && Object.keys(decisions[k]).length),
+      preferred: Object.values(decisions[k] ?? {}).some((v) => v.verdict === 'prefer')
+    }))
+    .sort((a, b) => b.n - a.n || a.key.localeCompare(b.key))
+})
+
+const queueStats = computed(() => ({
+  total: queue.value.length,
+  decided: queue.value.filter((q) => q.decided).length
+}))
+
+function goto(q) {
+  s.left = q.left
+  s.right = q.right
+}
+
+function nextUndecided() {
+  const i = queue.value.findIndex((q) => q.key === pairKey.value)
+  const rest = [...queue.value.slice(i + 1), ...queue.value.slice(0, i + 1)]
+  const target = rest.find((q) => !q.decided)
+  if (target) goto(target)
+}
 
 /** Yerleşimin kimliği — hücre kümesinden türetilir, sıralama değişse de sabit. */
 const sigOf = (p) => p.cells.map(([x, y]) => `${x},${y}`).sort().join(' ')
@@ -210,37 +258,20 @@ function exportLabels() {
 // ---- kelime denemesi ----------------------------------------------------
 
 /**
- * Bir kelimeyi harf harf dizer: her adımda, önceki harfle en iyi puanlı
- * yerleşimi seçer. Tercih işaretlenmiş bir karar varsa o kazanır.
+ * Kelimeyi BÜTÜN olarak dizer (sequence.js).
+ *
+ * Çift çift bakmak yetmiyordu: bir yerleşim tek başına kötü görünse de
+ * sonraki harfin uzantısı boşluğu doldurabiliyor. Dizi çözücü her yeni harfi
+ * birikmiş bütün mürekkebe karşı sınar ve asıl puanı sonda keser.
  */
-const wordRun = computed(() => {
-  const chars = [...s.word.toLowerCase()].filter((c) => CHARSET.includes(c))
-  if (!chars.length) return null
-
-  const steps = []
-  for (let i = 0; i < chars.length - 1; i++) {
-    const a = chars[i]
-    const b = chars[i + 1]
-    const list = pairPlacements(a, b, {
-      bandHeight: s.bandHeight,
-      allowInterlock: s.allowInterlock,
-      allowNesting: s.allowNesting,
-      allowContact: s.allowContact,
-      strict: s.strict,
-      maxInterlock: s.maxInterlock,
-      limit: 40
-    })
-    const key = `${a}${b}`
-    const pref = Object.entries(decisions[key] ?? {}).find(([, v]) => v.verdict === 'prefer')
-    let chosen = list[0] ?? null
-    if (pref) {
-      const match = list.find((p) => sigOf(p) === pref[0])
-      if (match) chosen = match
-    }
-    steps.push({ a, b, chosen, count: list.length, hasPref: Boolean(pref) })
-  }
-  return { chars, steps }
-})
+const wordRun = computed(() =>
+  layoutWord(s.word, {
+    bandHeight: s.bandHeight,
+    allowNesting: s.allowNesting,
+    allowContact: s.allowContact,
+    maxInterlock: s.maxInterlock
+  })
+)
 
 const letters = CHARSET
 const variantCount = (c) => (variantsOf(c) ?? []).length
@@ -341,6 +372,32 @@ function clearAll() {
         </div>
       </section>
 
+      <section class="panel queue-panel">
+        <h2>
+          <span>Kuyruk</span>
+          <span class="dim mono">{{ queueStats.decided }}/{{ queueStats.total }}</span>
+        </h2>
+        <p class="note">
+          Bütün harf çiftlerini gezmene gerek yok — aşağıdaki metinde fiilen
+          geçen çiftler, sıklık sırasına göre. Metni değiştirince kuyruk da
+          değişir.
+        </p>
+        <textarea v-model="s.corpus" class="corpus mono" rows="4" spellcheck="false" />
+        <button class="solid wide" @click="nextUndecided">sonraki karar verilmemiş →</button>
+        <div class="chips">
+          <button
+            v-for="q in queue"
+            :key="q.key"
+            class="chip mono"
+            :class="{ on: q.key === pairKey, done: q.decided, star: q.preferred }"
+            :title="`${q.n} kez geçiyor`"
+            @click="goto(q)"
+          >
+            {{ q.key }}<em>{{ q.n }}</em>
+          </button>
+        </div>
+      </section>
+
       <section class="results">
         <h2>
           <span>{{ s.left }} + {{ s.right }}</span>
@@ -390,16 +447,27 @@ function clearAll() {
       <section class="panel wide">
         <h2>Kelime denemesi</h2>
         <input v-model="s.word" class="word" spellcheck="false" placeholder="hakbir" />
-        <div v-if="wordRun" class="steps">
-          <div v-for="(st, i) in wordRun.steps" :key="i" class="step" :class="{ pref: st.hasPref }">
-            <div class="who mono">{{ st.a }}+{{ st.b }} <em>{{ st.count }}</em></div>
-            <GridArt v-if="st.chosen" :cells="st.chosen.cells" :band-height="s.bandHeight" :cell="9" />
-            <div v-else class="none mono">yerleşim yok</div>
-          </div>
+        <div v-if="wordRun.ok" class="wordout">
+          <GridArt :cells="wordRun.cells" :band-height="s.bandHeight" :cell="14" />
+          <dl class="meta mono">
+            <div><dt>g</dt><dd>{{ wordRun.width }}</dd></div>
+            <div><dt>puan</dt><dd>{{ wordRun.score }}</dd></div>
+            <div><dt>doldurulamaz</dt><dd>{{ wordRun.report.openVertical }}</dd></div>
+            <div><dt>sağa açık</dt><dd>{{ wordRun.report.openRight }}</dd></div>
+            <div><dt>aday</dt><dd>{{ wordRun.alternatives }}</dd></div>
+          </dl>
+          <p v-if="!wordRun.bandOk" class="warnline">
+            Bant dolmuyor — kütüphanede {{ s.bandHeight }} birime yetişen glif yok.
+          </p>
         </div>
+        <p v-else class="warnline">
+          {{ wordRun.reason ?? `${wordRun.failedChar ?? ''} harfinde tıkandı (${wordRun.failedAt}. sıra)` }}
+        </p>
         <p class="note">
-          Her çift için en iyi puanlı yerleşim gösteriliyor; ★ ile tercih
-          işaretlediğin çiftlerde senin seçimin kullanılır (yeşil çerçeve).
+          Kelime harf harf değil <b>bütün olarak</b> çözülüyor: her yeni harf
+          o ana kadar birikmiş bütün mürekkebe göre sınanıyor, böylece bir
+          harfin uzantısı iki harf geriye uzanabiliyor. Sağa açık boşluk ara
+          adımlarda cezalandırılmıyor — sonraki harf doldurabilir.
         </p>
       </section>
 
@@ -631,9 +699,11 @@ select:focus,
   color: var(--ink-mute);
   font-size: 13px;
 }
+/* Bloklar 1-12 hücre arası genişlikte; sabit sütun yerine akış kullanılıyor
+   ki geniş kartlar da yan yana sığsın. */
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1px;
   background: var(--rule-hair);
   border: 1px solid var(--rule-hair);
@@ -646,6 +716,7 @@ select:focus,
   gap: 6px;
   align-items: flex-start;
   border-left: 3px solid transparent;
+  min-width: 118px;
 }
 .card.prefer {
   border-left-color: var(--signal);
@@ -718,6 +789,74 @@ select:focus,
   color: var(--paper);
 }
 
+.queue-panel {
+  grid-column: 1 / -1;
+  border-right: 0;
+  border-top: 1px solid var(--rule-hair);
+}
+.corpus {
+  width: 100%;
+  padding: var(--u);
+  border: 1px solid var(--rule);
+  background: var(--paper-pure);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-bottom: var(--u);
+}
+.solid.wide {
+  width: 100%;
+  margin-bottom: var(--u);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.chip {
+  border: 1px solid var(--rule-hair);
+  background: var(--paper-pure);
+  padding: 3px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+}
+.chip em {
+  font-style: normal;
+  font-size: 9px;
+  color: var(--ink-faint);
+}
+.chip:hover {
+  border-color: var(--signal);
+}
+.chip.done {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.chip.star {
+  border-color: var(--signal);
+  border-width: 2px;
+}
+.chip.on {
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+}
+.wordout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: calc(var(--u) * 3);
+  margin-top: var(--u);
+}
+.warnline {
+  margin: var(--u) 0 0;
+  padding-left: calc(var(--u) * 1.5);
+  border-left: 2px solid var(--signal);
+  font-size: 12px;
+  color: var(--ink);
+}
 .steps {
   display: flex;
   flex-wrap: wrap;

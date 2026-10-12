@@ -114,4 +114,56 @@ export function widthMap(variants, maxWidth) {
   return out
 }
 
-const cost = (g) => (g.derived ? g.derived.widenBy : 0)
+const cost = (g) => (g.derived ? g.derived.widenBy ?? g.derived.heightenBy ?? 0 : 0)
+
+// ---------------------------------------------------------------- yükseklik
+//
+// Genişlik türetmesinin dikey ikizi. Gerekçesi de aynı: ustanın afişinde aynı
+// harf farklı yüksekliklerde kullanılıyor ('li' kaynaşmasındaki i 1x7, tek
+// başına duran i ise 1x9) ve aradaki basamaklar kütüphanede yok.
+//
+// Uygulama devrik üzerinden: satırları sütun gibi görüp aynı kuralı işletmek,
+// mantığı iki kez yazmaktan iyi.
+
+const transpose = (glyph) => ({
+  ...glyph,
+  w: glyph.h,
+  h: glyph.w,
+  cells: glyph.cells.map(([x, y]) => [y, x])
+})
+
+/** Çoğaltılabilir satırlar — kendi başına yatay çubuk oluşturmayanlar. */
+export function duplicableRows(glyph) {
+  return duplicableColumns(transpose(glyph))
+}
+
+/**
+ * Glifi `n` birim uzatır. Satır kopyaları uygun satırlara dağıtılır.
+ * @returns yeni glif, ya da uzatılamıyorsa null
+ */
+export function heighten(glyph, n) {
+  if (n <= 0) return glyph
+  const t = widen(transpose(glyph), n)
+  if (!t) return null
+  const back = transpose(t)
+  return {
+    ...glyph,
+    derivedFrom: glyph.id ?? glyph.source,
+    derived: { heightenBy: n },
+    id: glyph.id ? `${glyph.id}^${n}` : undefined,
+    w: back.w,
+    h: back.h,
+    cells: back.cells.sort((a, b) => a[1] - b[1] || a[0] - b[0])
+  }
+}
+
+/** Glifin kendi yüksekliğinden `maxHeight`e kadar ulaşabildiği her yükseklik. */
+export function heightLadder(glyph, maxHeight) {
+  const out = new Map([[glyph.h ?? bbox(glyph.cells).h, glyph]])
+  const base = glyph.h ?? bbox(glyph.cells).h
+  for (let h = base + 1; h <= maxHeight; h++) {
+    const g = heighten(glyph, h - base)
+    if (g) out.set(h, g)
+  }
+  return out
+}

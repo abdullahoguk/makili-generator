@@ -58,6 +58,8 @@ src/engine/   grid → glyphs → derive → justify → render
 | `render/outline.js` | birleşik sınırın kapalı halkalara çıkarımı |
 | `render/weight.js` | alt-hücre çözünürlüğünde glif başına kalınlaştırma |
 | `fit.js` | bant/boşluk denetimi, iki harfin yerleşimi, kenetlenme ve yuvalanma arama |
+| `sequence.js` | kelimeyi bütün olarak dizen demet araması |
+| `align.js` | ustanın bloklarını satır metniyle hizalayan DP |
 | `render/svg.js` | paint / corner / weight eksenleri, presetler |
 | `export.js` | SVG indirme, canvas üzerinden PNG |
 
@@ -95,8 +97,31 @@ puanlar. Hangisinin doğru olduğu insan kararıdır; lab o kararı kaydeder.
 Kararlar `localStorage`'da birikir, JSON olarak dışa aktarılıp
 `tools/pair-decisions.json` olarak kaydedilir ve çözücüyü besler.
 
+**Kuyruk.** 29 harfin 841 çiftini gezmeye gerek yok: kuyruk, verilen metinde
+fiilen geçen çiftleri sıklık sırasına göre listeler (örnek şiirde 44 çift) ve
+"sonraki karar verilmemiş" ile aralarında gezinir.
+
+**Kelime denemesi** artık `sequence.js` kullanıyor — kelime harf harf değil
+bütün olarak çözülüyor. Gerekçesi: bir yerleşim tek başına "olmaz" görünse de
+sonraki harfin uzantısı boşluğu doldurabilir. Çözücü her yeni harfi o ana
+kadar birikmiş bütün mürekkebe karşı sınar, sağa açık boşluğu ara adımlarda
+cezalandırmaz (sonraki harf doldurabilir) ve asıl puanı dizi bitince keser.
+
 Sayfada ayrıca ustanın afişinden çıkarılmış gerçek bloklar var — geniş olanlar
 kaynaşmış çiftler, asıl öğrenilecek örnekler.
+
+### Kütüphanenin doğruluk kaynağı
+
+`tools/block-labels.json` — ustanın afişindeki 27 benzersiz bloğun elle
+etiketlenmiş hali. 20'si tek harf (o harfin gerçek biçimi), 7'si kaynaşma
+(`rd lu ad lv ed rg li` — motorun üretebilmesi gereken hedefler).
+
+Harf çiziminden (`letters.svg`) çıkan biçimler bir öneri, afişte fiilen
+kullanılan biçim ise kanıttır; `tools/build-glyphs.mjs` çakışmada afişi
+yeğler ve varsayılan varyantı oradan seçer.
+
+`node tools/verify-fusions.mjs` motorun bu 7 kaynaşmayı üretip üretemediğini
+sınar — kütüphanedeki eksiğin ölçüsü budur.
 
 ### Blok etiketleme — kütüphanenin gerçeği
 

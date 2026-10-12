@@ -245,3 +245,30 @@ describe('pairPlacements: açıklık', () => {
     }
   })
 })
+
+describe('scoreBlock: boşluğun yönü', () => {
+  it('sağa açık boşluğu ayrı sayar — sonraki harf doldurabilir', () => {
+    // Sağ kenarı açık bir cep, üst ve alt kapalı.
+    const g = G('###', '#..', '###')
+    const s = scoreBlock(g, 3)
+    expect(s.openRight).toBe(2)
+    expect(s.openVertical).toBe(0)
+  })
+
+  it('sola açık boşluğu ayrı sayar', () => {
+    const s = scoreBlock(G('###', '..#', '###'), 3)
+    expect(s.openLeft).toBe(2)
+  })
+
+  it('üste açık boşluğu doldurulamaz sayar', () => {
+    const s = scoreBlock(G('#.#', '###'), 2)
+    expect(s.openVertical).toBe(1)
+    expect(s.openRight).toBe(0)
+  })
+
+  it('kapalı sayacı hiçbir yöne saymaz', () => {
+    const s = scoreBlock(G('###', '#.#', '###'), 3)
+    expect(s.openRight + s.openLeft + s.openVertical).toBe(0)
+    expect(s.enclosedArea).toBe(1)
+  })
+})

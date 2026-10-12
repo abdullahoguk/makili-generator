@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { fromAscii, toAscii, validate } from './grid.js'
-import { columnsOf, duplicableColumns, widen, widthLadder } from './derive.js'
+import {
+  columnsOf,
+  duplicableColumns,
+  widen,
+  widthLadder,
+  heighten,
+  heightLadder
+} from './derive.js'
 
 const g = (...rows) => ({ cells: fromAscii(rows.join('\n')), w: rows[0].length, h: rows.length })
 const art = (cells) => toAscii(cells).split('\n')
@@ -83,5 +90,45 @@ describe('widthLadder', () => {
   it('genişletilemeyen biçim için yalnız kendi genişliğini verir', () => {
     const i = g('#', '#', '#')
     expect([...widthLadder(i, 5).keys()]).toEqual([1])
+  })
+})
+
+describe('heighten / heightLadder', () => {
+  it("'i' gövdesini uzatır, noktayı çoğaltmaz", () => {
+    const i = g('#', '.', '#', '#', '#', '#')
+    const taller = heighten(i, 1)
+    expect(art(taller.cells)).toEqual(['#', '.', '#', '#', '#', '#', '#'])
+  })
+
+  it('ustanın li kaynaşmasındaki 1x7 i biçimine ulaşır', () => {
+    const i = g('#', '.', '#', '#', '#', '#')
+    expect(art(heightLadder(i, 7).get(7).cells)).toEqual(
+      ['#', '.', '#', '#', '#', '#', '#']
+    )
+  })
+
+  it("'o' biçimini dikeyde büyütür", () => {
+    const o = g('###', '#.#', '###')
+    expect(art(heighten(o, 2).cells)).toEqual(['###', '#.#', '#.#', '#.#', '###'])
+  })
+
+  it('tek başına yatay çubuk olan satırı çoğaltmaz', () => {
+    expect(heighten(g('...', '###', '...'), 1)).toBeNull()
+  })
+
+  it('sonuç değişmezleri korur', () => {
+    const letters = [
+      g('###', '#.#', '#.#', '###', '#..', '###', '#.#', '#.#', '###'),
+      g('#.#', '#.#', '#.#', '#.#', '###', '#.#', '#.#', '#.#', '#.#')
+    ]
+    for (const l of letters) {
+      for (let n = 1; n <= 3; n++) {
+        const t = heighten(l, n)
+        if (!t) continue
+        expect(validate(t.cells, { requireConnected: false }).ok).toBe(true)
+        expect(t.h).toBe(l.h + n)
+        expect(t.w).toBe(l.w)
+      }
+    }
   })
 })

@@ -20,6 +20,7 @@
 
 import { toSet, key, bbox, cornerTouches, components } from './grid.js'
 import { variantsOf, defaultVariant } from './glyphs.js'
+import { heightLadder } from './derive.js'
 
 /** Harfler arası nominal boşluk. Değişmez. */
 export const NORMAL_GAP = 1
@@ -133,15 +134,26 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
 
   // Kenara açık cepler yazının dokusunda delik bırakır; kapalı sayaçlar
   // harfin kendi parçasıdır, ceza almaz.
+  //
+  // Ama hangi yöne açık olduğu önemli: SAĞA açık bir boşluğu sonraki harfin
+  // uzantısı doldurabilir, SOLA açığı önceki harf doldurmuş olabilir. Üste
+  // ya da alta açık boşluğu ise kimse dolduramaz — bant sınırına bakar.
   const ps = pockets(cells)
   const open = ps.filter((p) => !p.enclosed)
   const openArea = open.reduce((n, p) => n + p.area, 0)
+
+  const side = (pred) => open.filter(pred).reduce((n, p) => n + p.area, 0)
 
   return {
     ok: errors.length === 0,
     errors,
     topGap: fill.topGap,
     openArea,
+    // Yatay komşunun doldurabileceği boşluklar
+    openRight: side((p) => p.openRight && !p.openTop && !p.openBottom),
+    openLeft: side((p) => p.openLeft && !p.openTop && !p.openBottom),
+    // Kimsenin dolduramayacağı boşluklar — bant sınırına açılıyor
+    openVertical: side((p) => p.openTop || p.openBottom),
     worstOpen: open.reduce((m, p) => Math.max(m, p.area), 0),
     enclosedArea: ps.filter((p) => p.enclosed).reduce((n, p) => n + p.area, 0),
     parts: components(cells).length
@@ -327,15 +339,39 @@ export function place(leftCells, rightCells, advance, opts = {}) {
 }
 
 /**
- * Harfin banda sığan bütün varyantları — kısalar dahil.
+ * Harfin banda sığan bütün varyantları — kısalar ve yükseklik türetmesiyle
+ * elde edilenler dahil.
+ *
+ * Yükseklik merdiveni şart: ustanın 'li' kaynaşmasındaki i 1x7, tek başına
+ * duran i ise 1x9. Aradaki basamak kütüphanede yok, satır çoğaltmayla
+ * türetiliyor.
  *
  * Kısa varyantlar tek başına bandı doldurmaz ama komşusunun boşluğuna
  * yuvalanabilir; eleme tek glif düzeyinde değil, blok düzeyinde yapılır.
+ *
+ * Hiçbiri sığmıyorsa BOŞ döner — eksikliği gizlemek yerine çağıran hata versin.
  */
+const bandCache = new Map()
+
 export function bandVariants(char, bandHeight = BAND_HEIGHT) {
-  const all = variantsOf(char) ?? []
-  const fitting = all.filter((v) => bbox(v.cells).h <= bandHeight)
-  return fitting.length ? fitting : [defaultVariant(char)].filter(Boolean)
+  const k = `${char}|${bandHeight}`
+  const hit = bandCache.get(k)
+  if (hit) return hit
+
+  const out = []
+  const seen = new Set()
+  for (const v of variantsOf(char) ?? []) {
+    const base = bbox(v.cells).h
+    if (base > bandHeight) continue
+    for (const [, g] of heightLadder(v, bandHeight)) {
+      const sig = g.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
+      if (seen.has(sig)) continue
+      seen.add(sig)
+      out.push({ ...g, id: g.id ?? v.id })
+    }
+  }
+  bandCache.set(k, out)
+  return out
 }
 
 /**
@@ -406,6 +442,9 @@ export function pairPlacements(a, b, o = {}) {
               right: { char: b, id: rv.id, w: bbox(rv.cells).w, h: rh, top: rightTop },
               bandOk: s.topGap === 0,
               openArea: s.openArea,
+              openRight: s.openRight,
+              openLeft: s.openLeft,
+              openVertical: s.openVertical,
               worstOpen: s.worstOpen,
               parts: s.parts,
               score: cost(p, s)
@@ -435,12 +474,22 @@ const range = (a, b) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) =>
  * Genişlik en hafif terim — hizalama zaten genişliği ayrı bir eksen olarak
  * kullanıyor, burada dar olanı körü körüne yeğlemek okunurluğu bozuyor.
  */
+/**
+ * Yerleşim maliyeti — küçük daha iyi.
+ *
+ * Boşluklar yönlerine göre ayrı ağırlıkta: sağa açık bir boşluğu sonraki
+ * harfin uzantısı doldurabilir, o yüzden hafif cezalandırılır. Üste ya da
+ * alta açık boşluğu kimse dolduramaz, ağır cezalandırılır. Çift tek başına
+ * bakıldığında "olmaz" görünen bir yerleşim, dizide kabul edilebilir olabilir
+ * — karar sırayı gördükten sonra verilir (bkz. sequence.js).
+ */
 function cost(placement, s) {
   return (
     s.topGap * 100 +
-    // Karşılıklı kenarda 1'den büyük her boşluk dokuda delik demek.
     Math.max(0, (placement.facingWorst ?? 1) - 1) * 20 +
-    s.openArea * 3 +
+    s.openVertical * 4 +
+    s.openRight * 1 +
+    s.openLeft * 3 +
     s.worstOpen * 2 +
     placement.width
   )

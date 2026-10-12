@@ -11,6 +11,7 @@ import { fromAscii, bbox, validate } from '../src/engine/grid.js'
 const RAW = 'build/glyphs.raw.json'
 const LABELS = 'tools/labels.json'
 const EXTRA = 'tools/glyphs.extra.json'
+const BLOCKS = 'tools/block-labels.json'
 const OUT = 'src/data/glyphs.json'
 
 // v1 karakter seti. Bu listede olmayan hiçbir şey kütüphaneye girmez.
@@ -19,6 +20,7 @@ const CHARSET = 'abcçdefgğhıijklmnoöprsştuüvyz'.split('')
 const raw = JSON.parse(readFileSync(RAW, 'utf8'))
 const labels = existsSync(LABELS) ? JSON.parse(readFileSync(LABELS, 'utf8')) : {}
 const extra = existsSync(EXTRA) ? JSON.parse(readFileSync(EXTRA, 'utf8')) : { glyphs: [] }
+const blocks = existsSync(BLOCKS) ? JSON.parse(readFileSync(BLOCKS, 'utf8')) : { labels: [] }
 
 const byChar = new Map(CHARSET.map((c) => [c, []]))
 const skipped = []
@@ -70,11 +72,52 @@ for (const g of extra.ascii ?? []) {
   })
 }
 
+// Ustanın afişinden elle etiketlenmiş biçimler. Doğruluk kaynağı bunlar:
+// harf çiziminden (letters.svg) çıkanlar bir öneri, afişte fiilen kullanılan
+// biçim ise kanıt. Çakışırsa afiş kazanır.
+let fromMaster = 0
+for (const l of blocks.labels ?? []) {
+  if (l.chars.length !== 1) continue // çok harfli = kaynaşma, glif değil
+  const char = l.chars
+  if (!byChar.has(char)) {
+    skipped.push({ key: `afiş:${char}`, reason: 'karakter seti dışı' })
+    continue
+  }
+  const cells = fromAscii(l.art.join('\n'))
+  const check = validate(cells, { requireConnected: false })
+  if (!check.ok) {
+    skipped.push({ key: `afiş:${char}`, reason: `geçersiz: ${check.errors.join('; ')}` })
+    continue
+  }
+  const b = bbox(cells)
+  byChar.get(char).push({
+    source: `afiş:${char}`,
+    master: true,
+    w: b.w,
+    h: b.h,
+    baseline: b.h,
+    cells
+  })
+  fromMaster++
+}
+
+// Aynı biçim birden çok kaynaktan gelmiş olabilir; afişten geleni tut.
+for (const [char, variants] of byChar) {
+  const seen = new Map()
+  for (const v of variants) {
+    const art = v.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
+    const prev = seen.get(art)
+    if (!prev || (v.master && !prev.master)) seen.set(art, v)
+  }
+  byChar.set(char, [...seen.values()])
+}
+
 // Her harfin varyantları genişliğe göre sıralı; ilk varyant varsayılan.
 const glyphs = {}
 for (const [char, variants] of byChar) {
   if (!variants.length) continue
-  variants.sort((a, b) => a.w - b.w || a.h - b.h)
+  // Afişten doğrulanmış biçimler önce — varsayılan varyant oradan seçilsin.
+  variants.sort((a, b) => Number(Boolean(b.master)) - Number(Boolean(a.master)) || a.w - b.w || a.h - b.h)
   glyphs[char] = variants.map((v, i) => ({ id: `${char}.${i}`, ...v }))
 }
 
@@ -95,6 +138,7 @@ writeFileSync(
 )
 
 const counts = Object.entries(glyphs).map(([c, v]) => `${c}:${v.length}`)
+console.log(`afişten   : ${fromMaster} biçim (doğruluk kaynağı)`)
 console.log(`harf      : ${Object.keys(glyphs).length}/${CHARSET.length}`)
 console.log(`varyant   : ${Object.values(glyphs).reduce((n, v) => n + v.length, 0)}`)
 console.log(`eksik     : ${missing.length ? missing.join(' ') : '—'}`)
