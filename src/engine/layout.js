@@ -8,7 +8,12 @@
 import { defaultVariant, variantsOf, variantById, has } from './glyphs.js'
 
 export const LETTER_GAP = 1
-export const WORD_GAP = 3
+
+// Kelime arası diye bir şey yok. Ustanın afişi ölçüldü
+// (tools/extract-reference.py): dört satırdaki boş sütun koşularının hepsi
+// 1 hücre. Kelimeler kesintisiz akıyor; okuma, harflerin biçiminden çıkıyor.
+export const WORD_GAP = 1
+
 export const LINE_GAP = 1
 
 /**

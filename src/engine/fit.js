@@ -1,0 +1,317 @@
+// Uyum motoru — iki harfin yan yana nasıl durduğuna karar vermek için.
+//
+// Kurallar tahminle değil ölçümle kondu: ustanın afişi (sources/hakbir
+// normal.png) hücre grid'ine çevrildi (tools/extract-reference.py) ve 67 blok
+// tek tek incelendi. Çıkanlar:
+//
+//   1. Harf arası TAM 1 hücre. Kelime arası diye bir şey yok — dört satırdaki
+//      boş sütun koşularının hepsi 1 genişliğinde.
+//   2. Her BLOK hem üst hem alt çizgiye değiyor. 67/67. Kural harfe değil
+//      bloğa ait: kısa bir glif, komşusunun iç boşluğuna yuvalanarak
+//      kullanılabilir — birlikte oluşturdukları blok bandı doldurduğu sürece.
+//   3. Köşeden birleşme yok. 27 benzersiz blokta 0 ihlal.
+//   4. 4 satırda 11 kez iki harf kaynaşıyor: biri ötekinin sütununa giriyor,
+//      aradaki boşluk yerel olarak korunurken blok tek parça oluyor.
+//
+// Bu modül 1-3'ü denetler, 4'ü arar.
+
+import { toSet, key, bbox, cornerTouches, components } from './grid.js'
+import { variantsOf, defaultVariant } from './glyphs.js'
+
+/** Harfler arası nominal boşluk. Değişmez. */
+export const NORMAL_GAP = 1
+
+/** Standart bant yüksekliği — ustanın bütün satırları 9 hücre. */
+export const BAND_HEIGHT = 9
+
+/**
+ * Glif bandı dolduruyor mu?
+ *
+ * Her glif tabana oturur — ustanın bütün harfleri taban çizgisinde. Dolayısıyla
+ * boşluk yalnız üstte kalabilir ve `topGap` tek ölçüdür.
+ */
+export function bandFill(cells, bandHeight = BAND_HEIGHT) {
+  const b = bbox(cells)
+  return {
+    ok: b.h === bandHeight,
+    topGap: Math.max(0, bandHeight - b.h),
+    height: b.h
+  }
+}
+
+/**
+ * Glifin kendi kutusu içindeki boş cepler.
+ * `enclosed`: hiçbir kenara açılmayan, tamamen çevrili cep (harfin sayacı).
+ */
+export function pockets(cells) {
+  const b = bbox(cells)
+  const filled = toSet(cells.map(([x, y]) => [x - b.x, y - b.y]))
+  const seen = new Set()
+  const out = []
+
+  for (let y = 0; y < b.h; y++) {
+    for (let x = 0; x < b.w; x++) {
+      const k = key(x, y)
+      if (filled.has(k) || seen.has(k)) continue
+      const stack = [[x, y]]
+      seen.add(k)
+      const comp = []
+      while (stack.length) {
+        const [cx, cy] = stack.pop()
+        comp.push([cx, cy])
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = cx + dx
+          const ny = cy + dy
+          if (nx < 0 || ny < 0 || nx >= b.w || ny >= b.h) continue
+          const nk = key(nx, ny)
+          if (filled.has(nk) || seen.has(nk)) continue
+          seen.add(nk)
+          stack.push([nx, ny])
+        }
+      }
+      const xs = comp.map((p) => p[0])
+      const ys = comp.map((p) => p[1])
+      const minX = Math.min(...xs)
+      const maxX = Math.max(...xs)
+      const minY = Math.min(...ys)
+      const maxY = Math.max(...ys)
+      const openLeft = minX === 0
+      const openRight = maxX === b.w - 1
+      const openTop = minY === 0
+      const openBottom = maxY === b.h - 1
+      out.push({
+        area: comp.length,
+        x: minX,
+        y: minY,
+        w: maxX - minX + 1,
+        h: maxY - minY + 1,
+        openLeft,
+        openRight,
+        openTop,
+        openBottom,
+        enclosed: !openLeft && !openRight && !openTop && !openBottom
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * Bir bloğun kurallara uygunluğu ve boşluk ölçüleri.
+ * @returns {{ ok, errors[], topGap, bottomGap, openArea, worstOpen, enclosedArea }}
+ */
+export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
+  const errors = []
+
+  const corners = cornerTouches(cells)
+  if (corners.length) errors.push(`köşeden birleşen ${corners.length} çift`)
+
+  const fill = bandFill(cells, bandHeight)
+  if (fill.topGap > 0) errors.push(`üstte ${fill.topGap} hücre boşluk`)
+
+  // Kenara açık cepler yazının dokusunda delik bırakır; kapalı sayaçlar
+  // harfin kendi parçasıdır, ceza almaz.
+  const ps = pockets(cells)
+  const open = ps.filter((p) => !p.enclosed)
+  const openArea = open.reduce((n, p) => n + p.area, 0)
+
+  return {
+    ok: errors.length === 0,
+    errors,
+    topGap: fill.topGap,
+    openArea,
+    worstOpen: open.reduce((m, p) => Math.max(m, p.area), 0),
+    enclosedArea: ps.filter((p) => p.enclosed).reduce((n, p) => n + p.area, 0),
+    parts: components(cells).length
+  }
+}
+
+/**
+ * İki glifi verilen ilerleme ve dikey kaymayla yan yana koyar.
+ *
+ * `advance` = sol glifin kökeninden sağ glifin kökenine yatay mesafe.
+ *   Normal yerleşim `sol.w + NORMAL_GAP`. Daha küçüğü kenetlenmedir: sağ glif
+ *   sol glifin sütunlarına girer.
+ * `rightTop` = sağ glifin bant içindeki üst satırı. Varsayılan tabana oturtur.
+ *   Daha küçük bir glif komşusunun iç boşluğuna yuvalanırken buradan kayar.
+ *
+ * Çakışma ya da köşe teması varsa yerleşim reddedilir.
+ */
+export function place(leftCells, rightCells, advance, opts = {}) {
+  const {
+    bandHeight = BAND_HEIGHT,
+    rightTop = null,
+    leftTop = null,
+    allowContact = false
+  } = opts
+  const lb = bbox(leftCells)
+  const rb = bbox(rightCells)
+
+  const lDy = leftTop ?? bandHeight - lb.h
+  const rDy = rightTop ?? bandHeight - rb.h
+
+  const L = leftCells.map(([x, y]) => [x - lb.x, y - lb.y + lDy])
+  const R = rightCells.map(([x, y]) => [x - rb.x + advance, y - rb.y + rDy])
+
+  const set = toSet(L)
+  for (const [x, y] of R) {
+    if (set.has(key(x, y))) {
+      return { ok: false, reason: 'çakışma', cells: [], width: 0 }
+    }
+  }
+
+  // İki harfin mürekkebi birbirine değiyor mu? Değişmez kural aralarında
+  // 1 birim boşluk olması; kaynaşma yalnız açıkça izin verilirse geçerli.
+  let contact = 0
+  for (const [x, y] of R) {
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      if (set.has(key(x + dx, y + dy))) contact++
+    }
+  }
+  if (contact && !allowContact) {
+    return { ok: false, reason: 'harfler birbirine değiyor', cells: [], width: 0 }
+  }
+
+  const cells = [...L, ...R]
+  const corners = cornerTouches(cells)
+  if (corners.length) {
+    return { ok: false, reason: `köşeden birleşme (${corners.length})`, cells, width: 0 }
+  }
+
+  const b = bbox(cells)
+  const normal = lb.w + NORMAL_GAP
+
+  // Sağ glif sol glifin sütunlarına giriyor mu
+  const interlocked = advance < normal
+  // Sağ glif tabandan yukarı kalkmış mı — komşusunun boşluğuna yuvalanma
+  const nested = rDy !== bandHeight - rb.h || lDy !== bandHeight - lb.h
+
+  const occupied = new Set(cells.map(([x]) => x))
+  const cleanGap = !interlocked && !occupied.has(lb.w)
+
+  return {
+    ok: true,
+    cells,
+    // cells = [...sol, ...sağ]; sağ glifin nerede başladığı, gösterimde
+    // iki harfi ayırt edebilmek için.
+    leftCount: L.length,
+    width: b.w,
+    height: b.h,
+    advance,
+    normalAdvance: normal,
+    rightTop: rDy,
+    interlocked,
+    nested,
+    fused: contact > 0,
+    cleanGap,
+    saved: normal - advance
+  }
+}
+
+/**
+ * Harfin banda sığan bütün varyantları — kısalar dahil.
+ *
+ * Kısa varyantlar tek başına bandı doldurmaz ama komşusunun boşluğuna
+ * yuvalanabilir; eleme tek glif düzeyinde değil, blok düzeyinde yapılır.
+ */
+export function bandVariants(char, bandHeight = BAND_HEIGHT) {
+  const all = variantsOf(char) ?? []
+  const fitting = all.filter((v) => bbox(v.cells).h <= bandHeight)
+  return fitting.length ? fitting : [defaultVariant(char)].filter(Boolean)
+}
+
+/**
+ * İki harfin bütün geçerli yerleşimleri, iyiden kötüye sıralı.
+ *
+ * @param {string} a sol harf
+ * @param {string} b sağ harf
+ * @param {object} o
+ *   bandHeight      bant yüksekliği
+ *   allowInterlock  kenetlenmiş (dar) yerleşimler de denensin mi
+ *   maxInterlock    en fazla kaç hücre kenetlensin
+ */
+export function pairPlacements(a, b, o = {}) {
+  const {
+    bandHeight = BAND_HEIGHT,
+    allowInterlock = true,
+    maxInterlock = 3,
+    allowNesting = true,
+    requireBandFill = true,
+    allowContact = false,
+    limit = 200
+  } = o
+
+  const left = bandVariants(a, bandHeight)
+  const right = bandVariants(b, bandHeight)
+  const out = []
+  const seen = new Set()
+
+  for (const lv of left) {
+    const lh = bbox(lv.cells).h
+    const lw = bbox(lv.cells).w
+    const lTops = allowNesting ? range(0, bandHeight - lh) : [bandHeight - lh]
+
+    for (const rv of right) {
+      const rh = bbox(rv.cells).h
+      const rTops = allowNesting ? range(0, bandHeight - rh) : [bandHeight - rh]
+      const normal = lw + NORMAL_GAP
+      const lo = allowInterlock ? Math.max(1, normal - maxInterlock) : normal
+
+      for (const leftTop of lTops) {
+        for (const rightTop of rTops) {
+          for (let adv = normal; adv >= lo; adv--) {
+            const p = place(lv.cells, rv.cells, adv, {
+              bandHeight,
+              leftTop,
+              rightTop,
+              allowContact
+            })
+            if (!p.ok) continue
+
+            const s = scoreBlock(p.cells, bandHeight)
+            // Blok bandı doldurmalı — kural harfe değil bloğa ait.
+            if (requireBandFill && s.topGap > 0) continue
+
+            // Aynı hücre kümesine farklı yoldan varılabiliyor; bir kez göster.
+            const sig = p.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
+            if (seen.has(sig)) continue
+            seen.add(sig)
+
+            out.push({
+              ...p,
+              left: { char: a, id: lv.id, w: lw, h: lh, top: leftTop },
+              right: { char: b, id: rv.id, w: bbox(rv.cells).w, h: rh, top: rightTop },
+              bandOk: s.topGap === 0,
+              openArea: s.openArea,
+              worstOpen: s.worstOpen,
+              parts: s.parts,
+              score: cost(p, s)
+            })
+          }
+        }
+      }
+    }
+  }
+  return out.sort((x, y) => x.score - y.score).slice(0, limit)
+}
+
+const range = (a, b) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) => a + i)
+
+/**
+ * Yerleşim maliyeti — küçük daha iyi.
+ *
+ * Ağırlıklar ustanın işinden okundu: bandı doldurmak pazarlık konusu değil
+ * (67/67), açık boşluk dokuyu deler, kenetlenme ise tercih edilen bir çözüm
+ * (11 kez kullanılmış) ama zorunlu değil.
+ */
+/**
+ * Yerleşim maliyeti — küçük daha iyi.
+ *
+ * Bandı doldurmamak pazarlık konusu değil (ustanın işinde 67/67). Ondan sonra
+ * dokudaki delikler gelir: açık cep ne kadar az ve küçükse o kadar iyi.
+ * Genişlik en hafif terim — hizalama zaten genişliği ayrı bir eksen olarak
+ * kullanıyor, burada dar olanı körü körüne yeğlemek okunurluğu bozuyor.
+ */
+function cost(placement, s) {
+  return s.topGap * 100 + s.openArea * 3 + s.worstOpen * 2 + placement.width
+}

@@ -7,16 +7,26 @@ Sunucu yok; her şey tarayıcıda çalışır.
 
 ## Biçim kuralları
 
-Latin Makili, pixel art'a benzer ama iki katı sıkı kuralı var:
+Kurallar tahminle değil ölçümle kondu. `sources/hakbir normal.png` hücre
+grid'ine çevrildi (`tools/extract-reference.py`) ve 67 blok tek tek incelendi:
 
-- **Köşeden birleşme yasak.** İki dolu kare yalnızca köşeden komşu olamaz;
-  her kare bir kenarı paylaşarak birleşir.
-- **Harf arası tam 1 birim.** Kelime arası tam 3 birim. İkisi de değişmez.
+| Kural | Kanıt |
+|---|---|
+| **Köşeden birleşme yasak** — iki dolu kare yalnızca köşeden komşu olamaz | 27 benzersiz blokta 0 ihlal |
+| **Harf arası tam 1 birim**, kelime arası diye bir şey yok | 4 satırdaki boş sütun koşularının hepsi 1 genişliğinde |
+| **Her blok hem üst hem alt çizgiye değer** | 67/67 |
+| **Satır arası 1 birim**, bütün satırlar aynı genişlikte | 4 satır da tam 71 hücre |
+| Harfler bazen kaynaşır: biri ötekinin sütununa girer | 4 satırda 11 kez |
+
+Bant kuralı **harfe değil bloğa** aittir: kısa bir glif komşusunun iç
+boşluğuna yuvalanarak kullanılabilir — birlikte oluşturdukları blok bandı
+doldurduğu sürece. `l` + `i` bunun tipik örneği.
 
 Boşluklar sabit olduğu için satırları aynı genişliğe getirmenin tek yolu harf
 genişliklerini değiştirmektir — projenin asıl problemi bu.
 
-Kanonik glif hücresi **3 × 9**. Aksanlar gövdenin üstünde ayrı duran işaretler
+Kanonik glif hücresi **3 × 9**, ama bant yüksekliği tasarım genelinde
+değiştirilebilir. Aksanlar gövdenin üstünde ayrı duran işaretler
 (`ö`, `ü`, `i`) ya da altında boyun + bar (`ç`); ikisi de 2 satır yer kaplar,
 gövde 7 satıra sıkışır.
 
@@ -46,6 +56,7 @@ src/engine/   grid → glyphs → derive → justify → render
 | `justify.js` | ulaşılabilir genişlik DP'si + ortak hedef + varyant ataması |
 | `render/outline.js` | birleşik sınırın kapalı halkalara çıkarımı |
 | `render/weight.js` | alt-hücre çözünürlüğünde glif başına kalınlaştırma |
+| `fit.js` | bant/boşluk denetimi, iki harfin yerleşimi, kenetlenme ve yuvalanma arama |
 | `render/svg.js` | paint / corner / weight eksenleri, presetler |
 | `export.js` | SVG indirme, canvas üzerinden PNG |
 
@@ -66,11 +77,37 @@ sütunlu gövdeler, `ç` sedillası nedeniyle sabit genişlikte.
 (keskin / yuvarlak / pah) × `weight`. Adlandırılmış presetler bu eksenlerin
 kombinasyonu; yeni stil eklemek bir eksene yeni değer eklemek demek.
 
+## Çift laboratuvarı — `/lab.html`
+
+İki harf yan yana geldiğinde ne olacağına birlikte karar vermek için.
+`pairPlacements(a, b)` kurallara uyan bütün yerleşimleri üretir — sol ve sağ
+varyantların her kombinasyonu, her yatay ilerleme, her dikey kayma — ve
+puanlar. Hangisinin doğru olduğu insan kararıdır; lab o kararı kaydeder.
+
+Üç eksen açılıp kapanabilir:
+
+- **kenetlenme** — sağ harf solun sütunlarına girer, blok daralır
+- **yuvalanma** — kısa harf tabandan kalkıp komşusunun boşluğuna oturur
+- **kaynaşma** — harfler birbirine değer; 1 birim kuralını deldiği için
+  varsayılan kapalı, istisna olarak açılır
+
+Kararlar `localStorage`'da birikir, JSON olarak dışa aktarılıp
+`tools/pair-decisions.json` olarak kaydedilir ve çözücüyü besler.
+
+Sayfada ayrıca ustanın afişinden çıkarılmış gerçek bloklar var — geniş olanlar
+kaynaşmış çiftler, asıl öğrenilecek örnekler.
+
+### Referansı yeniden ölçmek
+
+```bash
+python3 tools/extract-reference.py   # -> src/data/reference.json
+```
+
 ## Geliştirme
 
 ```bash
 npm install
-npm run dev          # http://localhost:5174
+npm run dev          # http://localhost:5174  (lab: /lab.html)
 npm test             # motor testleri (vitest)
 npm run smoke        # tarayıcıda uçtan uca duman testi (playwright + chromium)
 npm run build        # dist/

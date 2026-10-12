@@ -1,78 +1,195 @@
 {
   "_note": "Kaynak SVG'de olmayan, elle tasarlanmış glifler. ASCII olarak yazılır, tools/build-glyphs.mjs hücrelere çevirip değişmezlere karşı doğrular.",
-
   "_convention": {
     "umlaut": "sources/hakbir normal.png 'gönül' kelimesinden doğrulandı: gövdenin üstünde ayrı iki nokta, araya bir boşluk satırı. Nokta 1 + boşluk 1 + gövde 7 = 9. 'i' ile aynı mantık.",
     "sedilla": "ç'den doğrulandı: gövde 7 + boyun 1 + bar 1 = 9. Boyun gövdenin alt ucuna kenardan bağlanır.",
-    "breve": "ÖNERİ — kaynakta ğ yok. Umlaut'un yerine düz bar; iki nokta ile karışmasın diye."
+    "breve": "ÖNERİ — kaynakta ğ yok. Umlaut'un yerine düz bar; iki nokta ile karışmasın diye.",
+    "bant": "Ustanın 67 bloğunun 67'si hem üst hem alt çizgiye değiyor. Bandı doldurmayan varyant tek başına kullanılmaz; ancak komşusunun boşluğuna yuvalanarak kullanılabilir."
   },
-
   "ascii": [
     {
       "char": "ö",
       "source": "extra:ö.tall",
       "note": "o (7 satıra sıkışmış) + umlaut",
-      "art": ["#.#", "...", "###", "#.#", "#.#", "#.#", "#.#", "#.#", "###"]
+      "art": [
+        "#.#",
+        "...",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     },
     {
       "char": "ö",
       "source": "extra:ö.short",
       "note": "kısa o + umlaut",
-      "art": ["#.#", "...", "###", "#.#", "#.#", "###"]
+      "art": [
+        "#.#",
+        "...",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     },
     {
       "char": "ü",
       "source": "extra:ü.tall",
       "note": "u (7 satıra sıkışmış) + umlaut",
-      "art": ["#.#", "...", "#.#", "#.#", "#.#", "#.#", "#.#", "#.#", "###"]
+      "art": [
+        "#.#",
+        "...",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     },
     {
       "char": "ü",
       "source": "extra:ü.short",
       "note": "kısa u + umlaut",
-      "art": ["#.#", "...", "#.#", "#.#", "#.#", "###"]
+      "art": [
+        "#.#",
+        "...",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     },
     {
       "char": "ş",
       "source": "extra:ş.tall",
       "proposed": true,
       "note": "ÖNERİ — s (7 satıra sıkışmış) + ç'nin sedilla mantığı: boyun + bar",
-      "art": ["###", "#.#", "#.#", "#..", "###", "..#", "..#", "..#", "###"]
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "..#",
+        "..#",
+        "###"
+      ]
     },
     {
       "char": "ş",
       "source": "extra:ş.short",
       "proposed": true,
       "note": "ÖNERİ — kısa s + sedilla",
-      "art": ["###", "#..", "###", "..#", "..#", "###"]
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "..#",
+        "###"
+      ]
     },
     {
       "char": "ğ",
       "source": "extra:ğ.tall",
       "proposed": true,
       "note": "ÖNERİ — g (7 satıra sıkışmış) + düz bar şapka",
-      "art": ["###", "...", "###", "#.#", "###", "..#", "#.#", "#.#", "###"]
+      "art": [
+        "###",
+        "...",
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     },
     {
       "char": "ğ",
       "source": "extra:ğ.short",
       "proposed": true,
       "note": "ÖNERİ — kısa g + şapka",
-      "art": ["###", "...", "###", "#.#", "###", "..#", "###"]
+      "art": [
+        "###",
+        "...",
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
     },
     {
       "char": "v",
       "source": "extra:v.tall",
       "proposed": true,
       "note": "ÖNERİ — kaynakta v yok. u'nun sol gövdesi kısaltılarak V'nin inişi ima edildi.",
-      "art": ["..#", "..#", "..#", "#.#", "#.#", "#.#", "#.#", "#.#", "###"]
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     },
     {
       "char": "v",
       "source": "extra:v.short",
       "proposed": true,
       "note": "ÖNERİ — kısa v",
-      "art": ["..#", "..#", "#.#", "#.#", "#.#", "###"]
+      "art": [
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "i",
+      "source": "extra:i.tall",
+      "note": "Ustanın afişinde kullandığı biçim: nokta + boşluk + 7 satır gövde. Kısa i bandı doldurmadığı için tek başına üstte boşluk bırakıyordu.",
+      "art": [
+        "#",
+        ".",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "extra:h.full",
+      "note": "Ustanın afişindeki tam boy H. Kısa kollu h sağ üstte boşluk bırakıyor.",
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
     }
   ]
 }

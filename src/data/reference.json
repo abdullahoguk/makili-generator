@@ -1,0 +1,2794 @@
+{
+ "source": "sources/hakbir normal.png",
+ "note": "Üretilmiş dosya — tools/extract-reference.py",
+ "metrics": {
+  "cellPx": 25.31,
+  "bandHeight": 9,
+  "lineGapCells": 1,
+  "lineWidthCells": 71,
+  "letterGapCells": [
+   1
+  ]
+ },
+ "lines": [
+  {
+   "text": "hakbirgönülverdibana",
+   "rows": [
+    "#.#.###.#.#.###.#.###.###.#.#.###.#.#.###.#.###.###.#.#.###.###.###.###",
+    "#.#.#.#.#.#.#.#...#.#.#.#.....#.#.......#.#.#.#.#.#.#...#.#.#.#.#.#.#.#",
+    "#.#.#.#.###.#.#.#.#.#.#.#.###.#.#.#.#.#.#.#.###.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#...#.#...###.#.###.###.#.#.#.#.#.#.#.#.#.#...#...#.#.###...#.#.#...#",
+    "###.###.###.#...#.#.....#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#...###.#.#.###",
+    "#.#.#.#.#.#.###.#.###.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#.#.#.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.....#.#.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.###.#.#.###.#.#.#.###.###.#.#.###.#####.###.#.###.#.###.###.#.#.###"
+   ],
+   "letters": 20,
+   "blocks": [
+    {
+     "x": 0,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 4,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 8,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 12,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 16,
+     "w": 1,
+     "art": [
+      "#",
+      ".",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 18,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 22,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "..#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 5,
+       "w": 2,
+       "h": 4,
+       "x": 0,
+       "y": 4,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 26,
+     "w": 3,
+     "art": [
+      "#.#",
+      "...",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 3,
+       "h": 2,
+       "x": 0,
+       "y": 0,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 5,
+       "w": 1,
+       "h": 5,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 30,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 34,
+     "w": 3,
+     "art": [
+      "#.#",
+      "...",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 10,
+       "w": 3,
+       "h": 8,
+       "x": 0,
+       "y": 0,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 38,
+     "w": 5,
+     "art": [
+      "###.#",
+      "..#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###",
+      "#....",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 6,
+       "w": 1,
+       "h": 6,
+       "x": 3,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 11,
+       "w": 5,
+       "h": 7,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 44,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 6,
+       "w": 2,
+       "h": 5,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 48,
+     "w": 5,
+     "art": [
+      "###.#",
+      "#.#.#",
+      "#.#.#",
+      "#...#",
+      "#.###",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###"
+     ],
+     "pockets": [
+      {
+       "area": 13,
+       "w": 3,
+       "h": 9,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": true
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 3,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 54,
+     "w": 1,
+     "art": [
+      "#",
+      ".",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 56,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 60,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 64,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 68,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    }
+   ],
+   "emptyColumns": [
+    3,
+    7,
+    11,
+    15,
+    17,
+    21,
+    25,
+    29,
+    33,
+    37,
+    43,
+    47,
+    53,
+    55,
+    59,
+    63,
+    67
+   ],
+   "fusions": 2
+  },
+  {
+   "text": "hademeyenhayranolur",
+   "rows": [
+    "#.#.###.#.###.#####.###.#.###.###.#.#.###.#.#.###.###.###.###.#.#.#.###",
+    "#.#...#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.###.#.###.#.#.#.###.#.###.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###",
+    "#.#.#.#.#.#...#.#.#.#...#.#...#.#.#.#...#.###.###...#.#.#.#.#.#.#.#.#..",
+    "###.###.#.#.#.#.#.#.###.#.#.#.#.#.###.###...#.#...###.#.#.#.#.#.#.#.###",
+    "#.#.....#.#.#.#.#.#.....#.#.#.#.#.#.#.#.#.#.#.###.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.#####.#.#.#.#.#.#####.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#",
+    "#.#.#...#.#.#.#.#.#.#...#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.....#.#",
+    "#.#.#####.###.#.#.#.#####.###.#.#.#.#.###.###.#.#.###.#.#.###.#####.#.#"
+   ],
+   "letters": 19,
+   "blocks": [
+    {
+     "x": 0,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 4,
+     "w": 5,
+     "art": [
+      "###.#",
+      "..#.#",
+      "###.#",
+      "#.#.#",
+      "###.#",
+      "....#",
+      "#####",
+      "#...#",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 9,
+       "w": 4,
+       "h": 6,
+       "x": 0,
+       "y": 0,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 3,
+       "h": 1,
+       "x": 1,
+       "y": 7,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 10,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 6,
+       "w": 2,
+       "h": 5,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 14,
+     "w": 5,
+     "art": [
+      "#####",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      },
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 3,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 20,
+     "w": 5,
+     "art": [
+      "###.#",
+      "#.#.#",
+      "###.#",
+      "#...#",
+      "###.#",
+      "....#",
+      "#####",
+      "#...#",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 11,
+       "w": 4,
+       "h": 6,
+       "x": 0,
+       "y": 0,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 3,
+       "h": 1,
+       "x": 1,
+       "y": 7,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 26,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 6,
+       "w": 2,
+       "h": 5,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 30,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 34,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 38,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 42,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "..#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 5,
+       "w": 2,
+       "h": 4,
+       "x": 0,
+       "y": 4,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 46,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 50,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 54,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 58,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 7,
+       "w": 1,
+       "h": 7,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 62,
+     "w": 5,
+     "art": [
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###",
+      "#....",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 11,
+       "w": 4,
+       "h": 8,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 6,
+       "w": 1,
+       "h": 6,
+       "x": 3,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 68,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    }
+   ],
+   "emptyColumns": [
+    3,
+    9,
+    13,
+    19,
+    25,
+    29,
+    33,
+    37,
+    41,
+    45,
+    49,
+    53,
+    57,
+    61,
+    67
+   ],
+   "fusions": 3
+  },
+  {
+   "text": "birdemgelirşadolur",
+   "rows": [
+    "###.#.###.#.###.#####.###.###.#.#.###.###.###.#.###.###.#.###.#.#.#.###",
+    "#.#...#.#.#.#.#.#.#.#.#.#.#.#.#...#.#.#.#...#.#.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#...###.#.#.#.#.#.#.#.#.#.#.#.###",
+    "###.#.#...#.#.#.#.#.#.#.#.#.#.#.#.#...###.#.#.#...#.#.#.#.#.#.#.#.#.#..",
+    "#...#.#.###.###.#.#.#.###.###.#.#.###...#.###.#.###.#.#.#.#.#.#.#.#.###",
+    "###.#.#.#.#.#...#.#.#...#.#...#.#.#.#.#.#.....#.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#####.#.#.#.#.#.#.#.#.###.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#...#.#.....#...#.#.#.#.#.#.#.#.#.....#.#",
+    "###.#.#.###.###.#.#.#.###.###.###.#.#.###.#####.###.#.###.###.#####.#.#"
+   ],
+   "letters": 18,
+   "blocks": [
+    {
+     "x": 0,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 4,
+     "w": 1,
+     "art": [
+      "#",
+      ".",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "w": 5,
+     "art": [
+      "###.#",
+      "#.#.#",
+      "#.#.#",
+      "#...#",
+      "#.###",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###"
+     ],
+     "pockets": [
+      {
+       "area": 13,
+       "w": 3,
+       "h": 9,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": true
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 3,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 12,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 16,
+     "w": 5,
+     "art": [
+      "#####",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      },
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 3,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 22,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "..#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 5,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 26,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 30,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#..",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#..",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 10,
+       "w": 2,
+       "h": 8,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 34,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 38,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#..",
+      "###",
+      "..#",
+      "#.#",
+      "###",
+      "...",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 2,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 2,
+       "h": 2,
+       "x": 0,
+       "y": 4,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 3,
+       "h": 1,
+       "x": 0,
+       "y": 7,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 42,
+     "w": 5,
+     "art": [
+      "###.#",
+      "..#.#",
+      "###.#",
+      "#.#.#",
+      "###.#",
+      "....#",
+      "#####",
+      "#...#",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 9,
+       "w": 4,
+       "h": 6,
+       "x": 0,
+       "y": 0,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 3,
+       "h": 1,
+       "x": 1,
+       "y": 7,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 48,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 52,
+     "w": 5,
+     "art": [
+      "###.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 3,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 58,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 7,
+       "w": 1,
+       "h": 7,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 62,
+     "w": 5,
+     "art": [
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###",
+      "#....",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 11,
+       "w": 4,
+       "h": 8,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 6,
+       "w": 1,
+       "h": 6,
+       "x": 3,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 68,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    }
+   ],
+   "emptyColumns": [
+    3,
+    5,
+    11,
+    15,
+    21,
+    25,
+    29,
+    33,
+    37,
+    41,
+    47,
+    51,
+    57,
+    61,
+    67
+   ],
+   "fusions": 2
+  },
+  {
+   "text": "birdemgelirgiryanolur",
+   "rows": [
+    "###.#.###.#.###.#####.###.###.#.#.#####.#.###.#.#.###.###.###.#.#.#.###",
+    "#.#...#.#.#.#.#.#.#.#.#.#.#.#.#...#.......#.#.#.#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###",
+    "###.#.#...#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#...#.#.#.#.#.#.#.#.#..",
+    "#...#.#.###.###.#.#.#.###.###.#.#.#.#.#.#.#...###.###.#.#.#.#.#.#.#.###",
+    "###.#.#.#.#.#...#.#.#...#.#...#.#.#.###.#.###...#.#.#.#.#.#.#.#.#.#.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#...#.#.#.#.#.#.#.#.#.#.#.#.#.###.#.#",
+    "#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#...#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.....#.#",
+    "###.#.#.###.###.#.#.#.###.###.###.#.###.#.#.#.###.###.#.#.###.#####.#.#"
+   ],
+   "letters": 21,
+   "blocks": [
+    {
+     "x": 0,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 4,
+     "w": 1,
+     "art": [
+      "#",
+      ".",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "w": 5,
+     "art": [
+      "###.#",
+      "#.#.#",
+      "#.#.#",
+      "#...#",
+      "#.###",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###"
+     ],
+     "pockets": [
+      {
+       "area": 13,
+       "w": 3,
+       "h": 9,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": true
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 3,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 12,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 16,
+     "w": 5,
+     "art": [
+      "#####",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      },
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 3,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 22,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "..#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 5,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 26,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 30,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#..",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#..",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 10,
+       "w": 2,
+       "h": 8,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 34,
+     "w": 5,
+     "art": [
+      "#####",
+      "#....",
+      "#.###",
+      "#.#.#",
+      "#.#.#",
+      "#.###",
+      "#...#",
+      "#.#.#",
+      "#.###"
+     ],
+     "pockets": [
+      {
+       "area": 14,
+       "w": 4,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": true
+      },
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 3,
+       "y": 3,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 40,
+     "w": 1,
+     "art": [
+      "#",
+      ".",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 42,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 2,
+       "w": 1,
+       "h": 2,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 4,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 6,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 46,
+     "w": 3,
+     "art": [
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###",
+      "..#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 5,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 50,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "..#",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 4,
+       "w": 2,
+       "h": 3,
+       "x": 0,
+       "y": 1,
+       "openLeft": true,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 3,
+       "w": 1,
+       "h": 3,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 54,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 8,
+       "w": 1,
+       "h": 8,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    },
+    {
+     "x": 58,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#",
+      "###"
+     ],
+     "pockets": [
+      {
+       "area": 7,
+       "w": 1,
+       "h": 7,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 62,
+     "w": 5,
+     "art": [
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.#.#",
+      "#.###",
+      "#....",
+      "#####"
+     ],
+     "pockets": [
+      {
+       "area": 11,
+       "w": 4,
+       "h": 8,
+       "x": 1,
+       "y": 0,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": true,
+       "openBottom": false
+      },
+      {
+       "area": 6,
+       "w": 1,
+       "h": 6,
+       "x": 3,
+       "y": 0,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": true,
+       "openBottom": false
+      }
+     ]
+    },
+    {
+     "x": 68,
+     "w": 3,
+     "art": [
+      "###",
+      "#.#",
+      "###",
+      "#..",
+      "###",
+      "#.#",
+      "#.#",
+      "#.#",
+      "#.#"
+     ],
+     "pockets": [
+      {
+       "area": 1,
+       "w": 1,
+       "h": 1,
+       "x": 1,
+       "y": 1,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 2,
+       "w": 2,
+       "h": 1,
+       "x": 1,
+       "y": 3,
+       "openLeft": false,
+       "openRight": true,
+       "openTop": false,
+       "openBottom": false
+      },
+      {
+       "area": 4,
+       "w": 1,
+       "h": 4,
+       "x": 1,
+       "y": 5,
+       "openLeft": false,
+       "openRight": false,
+       "openTop": false,
+       "openBottom": true
+      }
+     ]
+    }
+   ],
+   "emptyColumns": [
+    3,
+    5,
+    11,
+    15,
+    21,
+    25,
+    29,
+    33,
+    39,
+    41,
+    45,
+    49,
+    53,
+    57,
+    61,
+    67
+   ],
+   "fusions": 4
+  }
+ ],
+ "fusionsTotal": 11
+}

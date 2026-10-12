@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { resolve } from 'node:path'
 
 export default defineConfig({
   plugins: [vue()],
@@ -13,5 +14,14 @@ export default defineConfig({
     allowedHosts: ['.abdullahog.uk']
   },
   preview: { port: 5174, strictPort: true },
-  build: { outDir: 'dist' }
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: resolve(import.meta.dirname, 'index.html'),
+        // Çift laboratuvarı — /lab.html
+        lab: resolve(import.meta.dirname, 'lab.html')
+      }
+    }
+  }
 })
