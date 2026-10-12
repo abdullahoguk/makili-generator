@@ -70,7 +70,7 @@ kombinasyonu; yeni stil eklemek bir eksene yeni değer eklemek demek.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
+npm run dev          # http://localhost:5174
 npm test             # motor testleri (vitest)
 npm run smoke        # tarayıcıda uçtan uca duman testi (playwright + chromium)
 npm run build        # dist/
