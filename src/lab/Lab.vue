@@ -11,9 +11,11 @@ import GridArt from './GridArt.vue'
 import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
 import { CHARSET, variantsOf } from '../engine/glyphs.js'
 import { fromAscii } from '../engine/grid.js'
+import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
 import reference from '../data/reference.json'
 
 const STORE = 'makili.pair-decisions.v1'
+const STORE_LABELS = 'makili.block-labels.v1'
 
 const s = reactive({
   left: 'l',
@@ -22,6 +24,7 @@ const s = reactive({
   allowInterlock: true,
   allowNesting: true,
   allowContact: false,
+  strict: true,
   maxInterlock: 3,
   onlyUndecided: false,
   word: 'hakbir'
@@ -55,6 +58,7 @@ const placements = computed(() =>
     allowInterlock: s.allowInterlock,
     allowNesting: s.allowNesting,
     allowContact: s.allowContact,
+    strict: s.strict,
     maxInterlock: s.maxInterlock,
     limit: 120
   })
@@ -109,24 +113,99 @@ const totalDecided = computed(() =>
   Object.values(decisions).reduce((n, d) => n + Object.keys(d).length, 0)
 )
 
-// ---- ustanın blokları: öğrenecek asıl örnekler --------------------------
+// ---- ustanın blokları: etiketleme ---------------------------------------
+//
+// Kütüphane ustanın gerçekte kullandığı biçimlerden ayrışıyor: tek harflik
+// blokların çoğunu bile tutturamıyor, bu yüzden kaynaşmaları da üretemiyor.
+// Hizalama algoritması bir ilk tahmin veriyor ama kesin değil — aynı biçimi
+// iki ayrı harfe düşürebiliyor. Doğrusunu insan söyler, burada.
 
-const masterBlocks = computed(() => {
-  const out = []
-  const seen = new Set()
-  for (const line of reference.lines) {
-    for (const b of line.blocks) {
-      const art = b.art.join('\n')
-      if (seen.has(art)) continue
-      seen.add(art)
-      out.push({ art, w: b.w, cells: fromAscii(art), line: line.text })
-    }
+const labels = reactive(loadLabels())
+function loadLabels() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_LABELS) ?? '{}')
+  } catch {
+    return {}
   }
-  // Geniş bloklar kaynaşmış çiftler — asıl ilgi çekenler önce gelsin.
-  return out.sort((a, b) => b.w - a.w)
+}
+watch(labels, (l) => {
+  try {
+    localStorage.setItem(STORE_LABELS, JSON.stringify(l))
+  } catch {
+    /* yok sayılır */
+  }
+}, { deep: true })
+
+const alignments = computed(() => reference.lines.map((l) => alignLine(l)))
+
+const formConflicts = computed(() => {
+  const list = conflicts(alignments.value)
+  return new Set(list.map((c) => c.art))
 })
 
-const wideMaster = computed(() => masterBlocks.value.filter((b) => b.w >= 4))
+/** Benzersiz blok biçimleri + hizalamanın onlara verdiği harf tahmini. */
+const masterBlocks = computed(() => {
+  const byArt = new Map()
+  for (const [li, a] of alignments.value.entries()) {
+    if (!a) continue
+    for (const st of a.steps) {
+      const art = st.block.art
+      if (!byArt.has(art)) {
+        byArt.set(art, {
+          art,
+          w: st.block.w,
+          cells: fromAscii(art),
+          guesses: new Set(),
+          count: 0,
+          fused: false,
+          lines: new Set()
+        })
+      }
+      const rec = byArt.get(art)
+      rec.guesses.add(st.chars)
+      rec.count++
+      rec.fused = rec.fused || st.fused
+      rec.lines.add(li + 1)
+    }
+  }
+  return [...byArt.values()]
+    .map((r) => ({
+      ...r,
+      guess: [...r.guesses].join('/'),
+      conflict: formConflicts.value.has(r.art),
+      known: r.guesses.size === 1 && isKnownForm([...r.guesses][0], r.art)
+    }))
+    .sort((a, b) => Number(b.conflict) - Number(a.conflict) || b.w - a.w || b.count - a.count)
+})
+
+const labelOf = (b) => labels[b.art] ?? ''
+const setLabel = (b, v) => {
+  const t = v.trim()
+  if (t) labels[b.art] = t
+  else delete labels[b.art]
+}
+
+const labelStats = computed(() => ({
+  total: masterBlocks.value.length,
+  labelled: masterBlocks.value.filter((b) => labelOf(b)).length,
+  conflicts: masterBlocks.value.filter((b) => b.conflict).length,
+  known: masterBlocks.value.filter((b) => b.known).length
+}))
+
+function exportLabels() {
+  exported.value = JSON.stringify(
+    {
+      note: 'Ustanın blok etiketleri — tools/block-labels.json olarak kaydet',
+      source: reference.source,
+      labels: masterBlocks.value
+        .filter((b) => labelOf(b))
+        .map((b) => ({ chars: labelOf(b), art: b.art.split('\n') }))
+    },
+    null,
+    2
+  )
+  navigator.clipboard?.writeText(exported.value).catch(() => {})
+}
 
 // ---- kelime denemesi ----------------------------------------------------
 
@@ -147,6 +226,7 @@ const wordRun = computed(() => {
       allowInterlock: s.allowInterlock,
       allowNesting: s.allowNesting,
       allowContact: s.allowContact,
+      strict: s.strict,
       maxInterlock: s.maxInterlock,
       limit: 40
     })
@@ -240,6 +320,10 @@ function clearAll() {
             <span>yuvalanma — kısa harf komşusunun boşluğuna otursun</span>
           </label>
           <label class="chk">
+            <input v-model="s.strict" type="checkbox" />
+            <span>katı açıklık — karşılaşan <em>her</em> kenar tam 1 birim</span>
+          </label>
+          <label class="chk">
             <input v-model="s.allowContact" type="checkbox" />
             <span>kaynaşma — harfler birbirine değebilsin <em>(1 birim kuralını deler)</em></span>
           </label>
@@ -291,6 +375,7 @@ function clearAll() {
               <span v-if="p.nested" title="harf tabandan kalkıp komşusuna yuvalandı">yuvalı</span>
               <span v-if="p.fused" class="warn" title="harfler birbirine değiyor">kaynak</span>
               <span v-if="p.cleanGap" class="dim" title="arada tam bir birim boş sütun">temiz</span>
+              <span v-if="p.facingWorst > 1" class="warn" :title="`karşılıklı kenarda ${p.facingWorst} birim boşluk`">boşluk {{ p.facingWorst }}</span>
             </p>
             <p class="ids mono dim">{{ p.left.id }} · {{ p.right.id }}</p>
             <div class="verdict">
@@ -319,15 +404,39 @@ function clearAll() {
       </section>
 
       <section class="panel wide">
-        <h2>Ustanın blokları <span class="dim mono">{{ wideMaster.length }} geniş blok</span></h2>
+        <h2>
+          <span>Ustanın blokları — etiketle</span>
+          <span class="dim mono">
+            {{ labelStats.labelled }}/{{ labelStats.total }} etiketli ·
+            {{ labelStats.known }} kütüphanede var ·
+            <b v-if="labelStats.conflicts" class="bad">{{ labelStats.conflicts }} çatışma</b>
+          </span>
+        </h2>
         <p class="note">
-          Afişten ölçülen gerçek bloklar, geniş olanlar önce. 4 hücreden geniş
-          olanlar büyük ihtimalle kaynaşmış çiftler — asıl öğrenilecek örnekler.
+          Kütüphane, ustanın gerçekte kullandığı biçimlerden ayrışıyor — tek
+          harflik blokların çoğunu bile tutturamıyor, bu yüzden kaynaşmaları da
+          üretemiyor. Altındaki harf hizalama algoritmasının <em>tahmini</em>;
+          kesin değil. <b class="bad">Kırmızı</b> olanlarda aynı biçim iki ayrı
+          harfe düşmüş, yani kesin yanlış. Doğrusunu kutuya yaz — iki harfse
+          bitişik yaz (<code>li</code>). Bunlar kütüphanenin gerçeği olacak.
         </p>
         <div class="master">
-          <figure v-for="(b, i) in wideMaster" :key="i">
+          <figure
+            v-for="(b, i) in masterBlocks"
+            :key="i"
+            :class="{ bad: b.conflict, done: labelOf(b), fine: b.known }"
+          >
             <GridArt :cells="b.cells" :band-height="9" :cell="11" />
-            <figcaption class="mono dim">{{ b.w }}</figcaption>
+            <figcaption class="mono">
+              <span :class="{ bad: b.conflict }">{{ b.guess }}</span>
+              <span class="dim">{{ b.w }}×9 ·{{ b.count }}</span>
+            </figcaption>
+            <input
+              class="lbl mono"
+              :value="labelOf(b)"
+              :placeholder="b.guess"
+              @input="setLabel(b, $event.target.value)"
+            />
           </figure>
         </div>
       </section>
@@ -335,8 +444,9 @@ function clearAll() {
       <section class="panel wide">
         <h2>Kararları dışa aktar</h2>
         <div class="export">
-          <button class="solid" @click="exportJson">JSON üret ve kopyala</button>
-          <button class="ghost" @click="clearAll">hepsini sil</button>
+          <button class="solid" @click="exportJson">çift kararları</button>
+          <button class="solid" @click="exportLabels">blok etiketleri</button>
+          <button class="ghost" @click="clearAll">çift kararlarını sil</button>
         </div>
         <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
         <p class="note">
@@ -650,9 +760,43 @@ select:focus,
   flex-direction: column;
   gap: 4px;
   align-items: center;
+  padding: 6px;
+  border: 1px solid var(--rule-hair);
+  width: 92px;
+}
+.master figure.bad {
+  border-color: var(--signal);
+  background: #fff6f5;
+}
+.master figure.done {
+  border-color: var(--ink);
+}
+.master figure.fine {
+  opacity: 0.55;
 }
 figcaption {
   font-size: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.bad {
+  color: var(--signal);
+}
+.lbl {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  text-align: center;
+  font-size: 13px;
+  padding: 1px 0;
+}
+.lbl:focus {
+  outline: 0;
+  border-color: var(--signal);
+  background: #fffbe6;
 }
 
 .note {

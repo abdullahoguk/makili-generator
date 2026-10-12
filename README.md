@@ -13,6 +13,7 @@ grid'ine çevrildi (`tools/extract-reference.py`) ve 67 blok tek tek incelendi:
 | Kural | Kanıt |
 |---|---|
 | **Köşeden birleşme yasak** — iki dolu kare yalnızca köşeden komşu olamaz | 27 benzersiz blokta 0 ihlal |
+| **Açıklık tam 1 birim** — karşılaşan iki kenar arasında ne sıfır ne iki | `l`+`i` çiftinde tek geçerli yerleşim bırakıyor, o da ustanınki |
 | **Harf arası tam 1 birim**, kelime arası diye bir şey yok | 4 satırdaki boş sütun koşularının hepsi 1 genişliğinde |
 | **Her blok hem üst hem alt çizgiye değer** | 67/67 |
 | **Satır arası 1 birim**, bütün satırlar aynı genişlikte | 4 satır da tam 71 hücre |
@@ -97,10 +98,22 @@ Kararlar `localStorage`'da birikir, JSON olarak dışa aktarılıp
 Sayfada ayrıca ustanın afişinden çıkarılmış gerçek bloklar var — geniş olanlar
 kaynaşmış çiftler, asıl öğrenilecek örnekler.
 
+### Blok etiketleme — kütüphanenin gerçeği
+
+Kütüphane, ustanın afişte kullandığı biçimlerden ayrışıyor: 27 benzersiz
+bloğun yalnız 12'sini tutturabiliyor, bu yüzden 11 kaynaşmanın hiçbirini
+üretemiyor. `src/engine/align.js` dinamik programlamayla her bloğa bir harf
+tahmini atar (kaynaşma sayıları çıkarıcının saydığıyla birebir tutuyor) ama
+tahmin kesin değil — aynı biçim iki harfe düşebiliyor, lab bunu kırmızı
+gösterir. Doğrusu elle etiketlenir ve kütüphanenin kaynağı olur.
+
 ### Referansı yeniden ölçmek
 
 ```bash
-python3 tools/extract-reference.py   # -> src/data/reference.json
+python3 tools/extract-reference.py    # -> src/data/reference.json
+node tools/learn-from-reference.mjs   # hizalama raporu, eksik biçimler
+node tools/verify-fusions.mjs         # motor ustanın bloklarını üretebiliyor mu
+node tools/decompose.mjs              # blokları harf çiftlerine ayırmayı dene
 ```
 
 ## Geliştirme

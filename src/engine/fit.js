@@ -12,14 +12,36 @@
 //   3. Köşeden birleşme yok. 27 benzersiz blokta 0 ihlal.
 //   4. 4 satırda 11 kez iki harf kaynaşıyor: biri ötekinin sütununa giriyor,
 //      aradaki boşluk yerel olarak korunurken blok tek parça oluyor.
+//   5. Açıklık TAM 1 birim: iki kenar arasında ne sıfır (değme) ne iki
+//      bırakılır. Harf komşusuna ya da çerçevesine tam bir hücre uzaklıkta
+//      durur.
 //
-// Bu modül 1-3'ü denetler, 4'ü arar.
+// Bu modül 1-3 ve 5'i denetler, 4'ü arar.
 
 import { toSet, key, bbox, cornerTouches, components } from './grid.js'
 import { variantsOf, defaultVariant } from './glyphs.js'
 
 /** Harfler arası nominal boşluk. Değişmez. */
 export const NORMAL_GAP = 1
+
+/**
+ * İki hücre kümesi arasındaki en yakın açıklık, hücre cinsinden.
+ *
+ * 0 = değiyorlar (kenardan ya da köşeden), 1 = aralarında tam bir hücre,
+ * 2+ = uzaklar. Chebyshev uzaklığı kullanılır: köşe teması da 0 sayılır,
+ * çünkü köşeden birleşme zaten yasak.
+ */
+export function clearance(aCells, bCells) {
+  let best = Infinity
+  for (const [ax, ay] of aCells) {
+    for (const [bx, by] of bCells) {
+      const d = Math.max(Math.abs(ax - bx), Math.abs(ay - by))
+      if (d < best) best = d
+      if (best <= 1) return best - 1
+    }
+  }
+  return best - 1
+}
 
 /** Standart bant yüksekliği — ustanın bütün satırları 9 hücre. */
 export const BAND_HEIGHT = 9
@@ -127,6 +149,73 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
 }
 
 /**
+ * İki glifin KARŞILIKLI kenarları arasındaki açıklıklar.
+ *
+ * Her satır için: o satırda ikisinin de mürekkebi varsa, aradaki boşluk kaç
+ * hücre? Her sütun için aynısı dikeyde. Kural "iki kenar arasında sadece bir
+ * birim boşluk" bu ölçüye bakar — en yakın noktaya değil, karşılaşan her
+ * kenara.
+ *
+ * Harfin kendi açık ağzı (örneğin 'c'nin sağ tarafı) bu ölçüye girmez,
+ * çünkü orada karşı tarafta öteki glifin mürekkebi yoktur.
+ */
+export function facingGaps(aCells, bCells) {
+  const byRow = (cells) => {
+    const m = new Map()
+    for (const [x, y] of cells) {
+      const cur = m.get(y)
+      if (!cur) m.set(y, [x, x])
+      else {
+        if (x < cur[0]) cur[0] = x
+        if (x > cur[1]) cur[1] = x
+      }
+    }
+    return m
+  }
+  const byCol = (cells) => {
+    const m = new Map()
+    for (const [x, y] of cells) {
+      const cur = m.get(x)
+      if (!cur) m.set(x, [y, y])
+      else {
+        if (y < cur[0]) cur[0] = y
+        if (y > cur[1]) cur[1] = y
+      }
+    }
+    return m
+  }
+
+  const rows = []
+  const ar = byRow(aCells)
+  const br = byRow(bCells)
+  for (const [y, a] of ar) {
+    const b = br.get(y)
+    if (!b) continue
+    // hangisi solda
+    const gap = a[1] < b[0] ? b[0] - a[1] - 1 : a[0] > b[1] ? a[0] - b[1] - 1 : -1
+    rows.push(gap)
+  }
+
+  const cols = []
+  const ac = byCol(aCells)
+  const bc = byCol(bCells)
+  for (const [x, a] of ac) {
+    const b = bc.get(x)
+    if (!b) continue
+    const gap = a[1] < b[0] ? b[0] - a[1] - 1 : a[0] > b[1] ? a[0] - b[1] - 1 : -1
+    cols.push(gap)
+  }
+
+  const all = [...rows, ...cols]
+  return {
+    rows,
+    cols,
+    worst: all.length ? Math.max(...all) : 0,
+    overlapping: all.some((g) => g < 0)
+  }
+}
+
+/**
  * İki glifi verilen ilerleme ve dikey kaymayla yan yana koyar.
  *
  * `advance` = sol glifin kökeninden sağ glifin kökenine yatay mesafe.
@@ -142,7 +231,12 @@ export function place(leftCells, rightCells, advance, opts = {}) {
     bandHeight = BAND_HEIGHT,
     rightTop = null,
     leftTop = null,
-    allowContact = false
+    allowContact = false,
+    // En yakın açıklık tam bu kadar olmalı. null = denetleme.
+    requiredClearance = 1,
+    // Katı kip: karşılaşan HER kenar çifti tam 1 birim olmalı, yalnız en
+    // yakını değil. Ustanın kuralının tam okunuşu bu.
+    strict = false
   } = opts
   const lb = bbox(leftCells)
   const rb = bbox(rightCells)
@@ -172,10 +266,32 @@ export function place(leftCells, rightCells, advance, opts = {}) {
     return { ok: false, reason: 'harfler birbirine değiyor', cells: [], width: 0 }
   }
 
+  // Açıklık tam 1 birim olmalı — ne değsin ne uzakta dursun. Uzak duran
+  // harfler arada 2+ hücrelik delik bırakır, dokuyu deler.
+  const gap = clearance(L, R)
+  if (requiredClearance != null && !contact && gap !== requiredClearance) {
+    return {
+      ok: false,
+      reason: gap > requiredClearance ? `açıklık ${gap} birim, 1 olmalı` : 'harfler çakışıyor',
+      cells: [],
+      width: 0
+    }
+  }
+
   const cells = [...L, ...R]
   const corners = cornerTouches(cells)
   if (corners.length) {
     return { ok: false, reason: `köşeden birleşme (${corners.length})`, cells, width: 0 }
+  }
+
+  const facing = facingGaps(L, R)
+  if (strict && facing.worst > 1) {
+    return {
+      ok: false,
+      reason: `karşılıklı kenarda ${facing.worst} birim boşluk`,
+      cells: [],
+      width: 0
+    }
   }
 
   const b = bbox(cells)
@@ -202,6 +318,8 @@ export function place(leftCells, rightCells, advance, opts = {}) {
     rightTop: rDy,
     interlocked,
     nested,
+    clearance: gap,
+    facingWorst: facing.worst,
     fused: contact > 0,
     cleanGap,
     saved: normal - advance
@@ -238,6 +356,9 @@ export function pairPlacements(a, b, o = {}) {
     allowNesting = true,
     requireBandFill = true,
     allowContact = false,
+    requiredClearance = 1,
+    // Varsayılan katı: ustanın kuralı karşılaşan her kenar için geçerli.
+    strict = true,
     limit = 200
   } = o
 
@@ -264,7 +385,9 @@ export function pairPlacements(a, b, o = {}) {
               bandHeight,
               leftTop,
               rightTop,
-              allowContact
+              allowContact,
+              requiredClearance,
+              strict
             })
             if (!p.ok) continue
 
@@ -313,5 +436,12 @@ const range = (a, b) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) =>
  * kullanıyor, burada dar olanı körü körüne yeğlemek okunurluğu bozuyor.
  */
 function cost(placement, s) {
-  return s.topGap * 100 + s.openArea * 3 + s.worstOpen * 2 + placement.width
+  return (
+    s.topGap * 100 +
+    // Karşılıklı kenarda 1'den büyük her boşluk dokuda delik demek.
+    Math.max(0, (placement.facingWorst ?? 1) - 1) * 20 +
+    s.openArea * 3 +
+    s.worstOpen * 2 +
+    placement.width
+  )
 }

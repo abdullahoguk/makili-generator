@@ -6,6 +6,7 @@ import {
   scoreBlock,
   place,
   pairPlacements,
+  clearance,
   NORMAL_GAP
 } from './fit.js'
 
@@ -191,5 +192,56 @@ describe('place: leftCount', () => {
     const r = place(hFull, aRef, 4, { bandHeight: H })
     expect(r.leftCount).toBe(hFull.length)
     expect(r.cells.length).toBe(hFull.length + aRef.length)
+  })
+})
+
+describe('clearance — açıklık tam 1 birim', () => {
+  it('değen hücrelerde 0 verir', () => {
+    expect(clearance([[0, 0]], [[1, 0]])).toBe(0)
+  })
+
+  it('köşeden temas da 0 sayılır', () => {
+    expect(clearance([[0, 0]], [[1, 1]])).toBe(0)
+  })
+
+  it('arada tam bir hücre varsa 1 verir', () => {
+    expect(clearance([[0, 0]], [[2, 0]])).toBe(1)
+    expect(clearance([[0, 0]], [[0, 2]])).toBe(1)
+  })
+
+  it('uzak duranlarda 2+ verir', () => {
+    expect(clearance([[0, 0]], [[4, 0]])).toBe(3)
+  })
+
+  it('en yakın çifti bulur', () => {
+    expect(clearance([[0, 0], [9, 9]], [[2, 0], [20, 20]])).toBe(1)
+  })
+})
+
+describe('place: açıklık kuralı', () => {
+  it('2 birim uzaktaki yerleşimi reddeder', () => {
+    const r = place(hFull, aRef, 5, { bandHeight: H })
+    expect(r.ok).toBe(false)
+    expect(r.reason).toMatch(/açıklık/)
+  })
+
+  it('tam 1 birimlik yerleşimi kabul eder ve açıklığı bildirir', () => {
+    const r = place(hFull, aRef, 4, { bandHeight: H })
+    expect(r.ok).toBe(true)
+    expect(r.clearance).toBe(1)
+  })
+
+  it('denetim kapatılabilir', () => {
+    expect(place(hFull, aRef, 5, { bandHeight: H, requiredClearance: null }).ok).toBe(true)
+  })
+})
+
+describe('pairPlacements: açıklık', () => {
+  it('her yerleşimde açıklık tam 1 birimdir', () => {
+    for (const [a, b] of [['l', 'i'], ['h', 'a'], ['b', 'i'], ['r', 'g']]) {
+      for (const p of pairPlacements(a, b, { bandHeight: H })) {
+        expect(p.clearance, `${a}+${b}`).toBe(1)
+      }
+    }
   })
 })
