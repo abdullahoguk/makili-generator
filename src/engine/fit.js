@@ -125,6 +125,8 @@ export function pockets(cells) {
  */
 export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
   const errors = []
+  const b = bbox(cells)
+  const filled = toSet(cells.map(([x, y]) => [x - b.x, y - b.y]))
 
   const corners = cornerTouches(cells)
   if (corners.length) errors.push(`köşeden birleşen ${corners.length} çift`)
@@ -144,12 +146,36 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
 
   const side = (pred) => open.filter(pred).reduce((n, p) => n + p.area, 0)
 
-  // Bir hücre eninde ya da boyundaki boşluklar kuralın kendisidir: harfler
-  // arası kanal, sayaç yarığı, aksan boşluğu. Kusur ancak iki hücreden geniş
-  // VE iki hücreden yüksek bir cep varsa başlar — gözün delik gördüğü yer.
-  const wide = ps
-    .filter((p) => !p.enclosed && Math.min(p.w, p.h) >= 2)
-    .reduce((n, p) => n + p.area, 0)
+  // Bir hücre KALINLIĞINDAKİ boşluklar kuralın kendisidir: harfler arası
+  // kanal, sayaç yarığı, aksan boşluğu. Kusur ancak boşluk iki hücre
+  // kalınlaşınca başlar — gözün delik gördüğü yer.
+  //
+  // Kalınlık, cebin sınırlayıcı kutusuyla ÖLÇÜLEMEZ: L biçiminde bir kanal
+  // her yerinde bir hücre ince olduğu halde kutusu geniş çıkar. Doğru ölçü
+  // yerel: boş bir hücre, tamamen boş bir 2x2 karenin parçasıysa kalındır.
+  const empty = new Set()
+  for (let y = 0; y < b.h; y++) {
+    for (let x = 0; x < b.w; x++) if (!filled.has(key(x, y))) empty.add(key(x, y))
+  }
+  const thick = new Set()
+  for (let y = 0; y < b.h - 1; y++) {
+    for (let x = 0; x < b.w - 1; x++) {
+      const quad = [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]]
+      if (quad.every(([qx, qy]) => empty.has(key(qx, qy)))) {
+        for (const [qx, qy] of quad) thick.add(key(qx, qy))
+      }
+    }
+  }
+  // Kapalı sayaçlar harfin kendi parçası; onları saymıyoruz.
+  const enclosedCells = new Set()
+  for (const p of ps) {
+    if (!p.enclosed) continue
+    for (let y = p.y; y < p.y + p.h; y++) {
+      for (let x = p.x; x < p.x + p.w; x++) if (empty.has(key(x, y))) enclosedCells.add(key(x, y))
+    }
+  }
+  let wide = 0
+  for (const k of thick) if (!enclosedCells.has(k)) wide++
 
   return {
     ok: errors.length === 0,
@@ -281,8 +307,15 @@ export function place(leftCells, rightCells, advance, opts = {}) {
     allowContact = false,
     // En yakın açıklık tam bu kadar olmalı. null = denetleme.
     requiredClearance = 1,
-    // Katı kip: karşılaşan HER kenar çifti tam 1 birim olmalı, yalnız en
-    // yakını değil. Ustanın kuralının tam okunuşu bu.
+    // Katı kip: karşılaşan HER kenar çifti tam 1 birim olmalı.
+    //
+    // VARSAYILAN KAPALI. Bu, "açıklık tam 1 birim" kuralının fazla düz
+    // okunuşuydu: harflerin içeri çekilmiş kısımları var ('e'nin bir satırı
+    // geri çekilir) ve orada açıklık doğal olarak 1'den büyük olur. Elle
+    // çizilmiş bloklar bunu gösterdi — katı kip onların çoğunu eliyordu.
+    //
+    // Kuralın doğru karşılığı iki ölçüde: en yakın açıklık tam 1 (clearance)
+    // ve hiçbir yerde iki hücre kalınlığında boşluk kalmaması (wideVoid).
     strict = false
   } = opts
   const lb = bbox(leftCells)
@@ -428,8 +461,7 @@ export function pairPlacements(a, b, o = {}) {
     requireBandFill = true,
     allowContact = false,
     requiredClearance = 1,
-    // Varsayılan katı: ustanın kuralı karşılaşan her kenar için geçerli.
-    strict = true,
+    strict = false,
     limit = 200
   } = o
 

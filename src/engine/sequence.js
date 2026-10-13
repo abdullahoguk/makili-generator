@@ -32,7 +32,7 @@ const DEFAULTS = {
   allowNesting: true,
   allowContact: false,
   requiredClearance: 1,
-  strict: true,
+  strict: false,
   // Lab'de verilmiş çift kararlarına uy. Kapatmak arama uzayını açar.
   useDecisions: true
 }

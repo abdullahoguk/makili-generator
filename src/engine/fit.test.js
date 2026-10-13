@@ -294,3 +294,28 @@ describe('wideVoid — bir hücrelik açıklık kural, geniş boşluk kusur', ()
     expect(scoreBlock(G('####', '#..#', '#..#', '####'), 4).wideVoid).toBe(0)
   })
 })
+
+describe('wideVoid: kalınlık yerel ölçülür, sınırlayıcı kutuyla değil', () => {
+  it('L biçiminde ince kanalı delik saymaz', () => {
+    // Her yerinde bir hücre ince, ama sınırlayıcı kutusu 3x3.
+    const s = scoreBlock(G('#.#', '#.#', '#..'), 3)
+    expect(s.wideVoid).toBe(0)
+  })
+
+  it('tarak biçiminde ince boşlukları delik saymaz', () => {
+    // Harf arası kanal + harfin kendi yarığı birleşince kutu genişler.
+    const s = scoreBlock(G('#.#.#', '#...#', '#.#.#'), 3)
+    expect(s.wideVoid).toBe(0)
+  })
+
+  it('iki hücre kalınlaşan boşluğu delik sayar', () => {
+    const s = scoreBlock(G('#..#', '#..#', '####'), 3)
+    expect(s.wideVoid).toBe(4)
+  })
+
+  it('yalnız kalın kısmı sayar, ince kuyruğu değil', () => {
+    //  ##..##   üstte 2x2 boşluk, altında tek hücrelik kuyruk
+    const s = scoreBlock(G('#..#', '#..#', '#.##', '####'), 4)
+    expect(s.wideVoid).toBe(4)
+  })
+})

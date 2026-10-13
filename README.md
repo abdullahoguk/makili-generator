@@ -175,11 +175,38 @@ köşe teması, bant doldurma, geniş delik, parça sayısı.
 
 ### Boşluk ölçüsü: bir hücre kural, iki hücre kusur
 
-`wideVoid` yalnız iki hücreden **hem geniş hem yüksek** cepleri sayar. Bir
-hücrelik açıklık kuralın kendisidir (harfler arası kanal, sayaç yarığı, aksan
-boşluğu); onları delik saymak her yerleşimi kusurlu gösteriyordu. Ayrıca
-harflerin kendi açık ağızları (n'nin altı, u'nun üstü) düşülür — ölçülen,
-yan yana gelmenin ÜRETTİĞİ fazladan boşluktur.
+`wideVoid` yalnız **iki hücre kalınlaşan** boşlukları sayar. Bir hücrelik
+açıklık kuralın kendisidir (harfler arası kanal, sayaç yarığı, aksan boşluğu).
+
+Kalınlık cebin sınırlayıcı kutusuyla ölçülemez: L biçiminde bir kanal her
+yerinde bir hücre ince olduğu halde kutusu geniş çıkar ve her blok kusurlu
+görünür. Ölçü yerel: boş bir hücre, tamamen boş bir 2×2 karenin parçasıysa
+kalındır. Harflerin kendi açık ağızları (n'nin altı, u'nun üstü) ayrıca
+düşülür — ölçülen, yan yana gelmenin ÜRETTİĞİ fazladan boşluktur.
+
+### "Açıklık tam 1 birim" nasıl okunmalı
+
+İki okuma denendi:
+
+1. **Katı** — karşılaşan *her* kenar çifti tam 1 birim. Fazla katı çıktı:
+   harflerin içeri çekilmiş kısımları var (`e`'nin bir satırı geri çekilir) ve
+   orada açıklık doğal olarak 1'den büyük. Bu okuma elle çizilmiş blokların
+   çoğunu eliyordu; `el`, `ay`, `ba`, `ey`, `kb` gibi çiftler "çözümsüz"
+   görünüyordu.
+2. **Doğru okuma** — *en yakın* açıklık tam 1 (`clearance`) ve hiçbir yerde
+   iki hücre kalınlığında boşluk kalmaması (`wideVoid`). Katı kip hâlâ
+   seçenek olarak duruyor ama varsayılan kapalı.
+
+Düzeltmenin etkisi: çözümü olmayan çift 29'dan 0'a, delikli çift 10'dan 0'a,
+tutan üçlü 10'dan 61'e.
+
+### Elle çizilen bloklar
+
+`tools/drawn-blocks.json` — lab'deki çizim tahtasından gelen üçlüler.
+`node tools/learn-from-drawings.mjs` her birini kurallara karşı denetler ve
+hangi gliflerden kurulduğunu geri-izlemeyle çözer. Çözülenlerin ardışık
+çiftleri onaylı karar olarak `pair-decisions.json`'a eklenir; çözülemeyenler
+kütüphanede eksik olan biçimi gösterir.
 
 ### Referansı yeniden ölçmek
 

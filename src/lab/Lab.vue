@@ -29,7 +29,7 @@ const s = reactive({
   allowInterlock: true,
   allowNesting: true,
   allowContact: false,
-  strict: true,
+  strict: false,
   maxInterlock: 3,
   onlyUndecided: false,
   word: 'hakbir',
@@ -452,7 +452,8 @@ function clearAll() {
           </label>
           <label class="chk">
             <input v-model="s.strict" type="checkbox" />
-            <span>katı açıklık — karşılaşan <em>her</em> kenar tam 1 birim</span>
+            <span>katı açıklık — karşılaşan <em>her</em> kenar tam 1 birim
+              <em>(fazla katı: harflerin içeri çekilmiş kısımlarını eler)</em></span>
           </label>
           <label class="chk">
             <input v-model="s.allowContact" type="checkbox" />

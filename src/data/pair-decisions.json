@@ -1,5 +1,5 @@
 {
-  "note": "Çift kararları — lab'de elle verildi. Kimlikler biçim özetine taşındı (konumsal kimlikler kırılgandı). 'ok' kayıtları birebir saklı; 'no' kayıtları çift bazında özetlendi (sayı + tümüReddedildi).",
+  "note": "Çift kararları — lab'de elle verildi. Kimlikler biçim özetine taşındı (konumsal kimlikler kırılgandı). 'ok' kayıtları birebir saklı; 'no' kayıtları çift bazında özetlendi (sayı + tümüReddedildi). Çizim tahtasından çözümlenen üçlülerin ardışık çiftleri de eklendi.",
   "semantics": {
     "prefer": "Bu çiftte her zaman bu yerleşim kullanılır.",
     "ok": "Kullanılabilir. Çiftte ok varsa çözücü yalnız onların arasından seçer.",
@@ -50,7 +50,9 @@
     "en": [
       ["e.ldn37", "n.yd6m8^1", 4, 0, 4],
       ["e.8rndf", "n.yd6m8^1", 4, 0, 0],
-      ["e.7zoed", "n.yd6m8", 4, 0, 0]
+      ["e.7zoed", "n.yd6m8", 4, 0, 0],
+      ["e.8rndf", "n.94oha", 4, 0, 0],
+      ["e.ldn37", "n.94oha", 4, 0, 0]
     ],
     "ge": [
       ["g.94cqp", "e.8rndf", 4, 0, 0],
@@ -91,7 +93,8 @@
       ["i.f6o1c", "r.zqgv2", 2, 0, 0],
       ["i.f6o1c", "r.g3nuv", 2, 0, 0],
       ["i.f6o1c", "r.ufgkw^3", 2, 0, 0],
-      ["i.f6o1c", "r.59yyh^3", 2, 0, 0]
+      ["i.f6o1c", "r.59yyh^3", 2, 0, 0],
+      ["i.do417^1", "r.g3nuv", 2, 0, 0]
     ],
     "li": [
       ["l.c8nxi", "i.do417^1", 2, 0, 0]
@@ -184,6 +187,28 @@
       ["y.920e6", "r.zqgv2", 4, 0, 0],
       ["y.vrx4c", "r.g3nuv", 4, 0, 0],
       ["y.920e6", "r.g3nuv", 4, 0, 0]
+    ],
+    "bi": [
+      ["b.xir4p", "i.f6o1c", 4, 0, 0]
+    ],
+    "em": [
+      ["e.8rndf", "m.6qxdr", 4, 0, 0]
+    ],
+    "el": [
+      ["e.8rndf", "l.42vdw", 4, 0, 0],
+      ["e.8rndf", "l.c8nxi", 4, 0, 0]
+    ],
+    "kb": [
+      ["k.9nhzt", "b.xir4p", 4, 0, 0]
+    ],
+    "ba": [
+      ["b.xir4p", "a.l9n3m", 4, 0, 0]
+    ],
+    "ey": [
+      ["e.8rndf", "y.920e6", 4, 0, 0]
+    ],
+    "ay": [
+      ["a.l9n3m", "y.920e6", 4, 0, 0]
     ]
   },
   "rejectedCounts": {
@@ -210,7 +235,6 @@
   "allRejected": [
     "ad",
     "di",
-    "em",
     "lu",
     "rd",
     "rş",
