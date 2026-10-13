@@ -8,16 +8,19 @@
 
 import { computed, reactive, ref, watch } from 'vue'
 import GridArt from './GridArt.vue'
+import PixelCanvas from './PixelCanvas.vue'
 import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
+
 import { layoutWord } from '../engine/sequence.js'
 import { hasDecisions, unsolvedPairs } from '../engine/decisions.js'
 import { CHARSET, variantsOf } from '../engine/glyphs.js'
-import { fromAscii } from '../engine/grid.js'
+import { fromAscii, toAscii } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
 import reference from '../data/reference.json'
 
 const STORE = 'makili.pair-decisions.v1'
 const STORE_LABELS = 'makili.block-labels.v1'
+const STORE_DRAWN = 'makili.drawn-blocks.v1'
 
 const s = reactive({
   left: 'l',
@@ -88,6 +91,97 @@ const queueStats = computed(() => ({
   total: queue.value.length,
   decided: queue.value.filter((q) => q.decided).length
 }))
+
+// ---- eksikler: çift ve üçlü ----------------------------------------------
+//
+// Bir çift üç şekilde eksik olabilir: motor hiç yerleşim üretemiyor,
+// ürettiklerinin tümü reddedilmiş, ya da en iyisinde bile geniş delik var.
+// Üçlüler ayrı sınanıyor çünkü iki çift tek tek iyi olsa da üçü tutmayabilir.
+
+function ngrams(n) {
+  const counts = new Map()
+  for (const line of s.corpus.toLowerCase().split('\n')) {
+    const chars = [...line].filter((c) => CHARSET.includes(c))
+    for (let i = 0; i + n <= chars.length; i++) {
+      const g = chars.slice(i, i + n).join('')
+      counts.set(g, (counts.get(g) ?? 0) + 1)
+    }
+  }
+  return [...counts].sort((a, b) => b[1] - a[1])
+}
+
+const gapPairs = computed(() =>
+  ngrams(2)
+    .map(([k, n]) => {
+      const [a, b] = [...k]
+      const list = pairPlacements(a, b, { bandHeight: s.bandHeight, limit: 120 })
+      let status
+      if (unsolvedPairs.has(k)) status = 'reddedildi'
+      else if (!list.length) status = 'yok'
+      else if ((list[0].excessWide ?? 0) > 0) status = 'delik'
+      else if (!hasDecisions(a, b)) status = 'kararsız'
+      else status = 'tamam'
+      return { k, n, status, best: list[0] ?? null }
+    })
+    .filter((x) => x.status !== 'tamam' && x.status !== 'kararsız')
+)
+
+const gapTriples = computed(() =>
+  ngrams(3)
+    .map(([k, n]) => {
+      const r = layoutWord(k, { bandHeight: s.bandHeight })
+      let status
+      if (!r.ok) status = 'yok'
+      else if (!r.bandOk) status = 'bant'
+      else if (r.report.wideVoid > 0) status = 'delik'
+      else status = 'tamam'
+      return { k, n, status, run: r }
+    })
+    .filter((x) => x.status !== 'tamam')
+    .slice(0, 36)
+)
+
+// ---- çizim tahtası -------------------------------------------------------
+
+const board = ref(null)
+const drawn = ref(loadDrawn())
+
+function loadDrawn() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_DRAWN) ?? '[]')
+  } catch {
+    return []
+  }
+}
+watch(drawn, (v) => {
+  try { localStorage.setItem(STORE_DRAWN, JSON.stringify(v)) } catch { /* yok say */ }
+}, { deep: true })
+
+/** Eksik bir n-gramı tahtaya aktar: varsa en iyi yerleşim başlangıç olsun. */
+function toBoard(item) {
+  const art = item.best
+    ? toAscii(item.best.cells).split('\n')
+    : item.run?.ok
+      ? toAscii(item.run.cells).split('\n')
+      : Array.from({ length: s.bandHeight }, () => '.'.repeat(5))
+  board.value?.load(art)
+  board.value?.setLabel(item.k)
+  document.getElementById('tahta')?.scrollIntoView({ behavior: 'smooth' })
+}
+
+function saveDrawn(block) {
+  drawn.value = [...drawn.value.filter((d) => d.chars !== block.chars), block]
+}
+const removeDrawn = (chars) => { drawn.value = drawn.value.filter((d) => d.chars !== chars) }
+
+function exportDrawn() {
+  exported.value = JSON.stringify(
+    { note: 'Elle çizilmiş bloklar — tools/drawn-blocks.json olarak kaydet', blocks: drawn.value },
+    null,
+    2
+  )
+  navigator.clipboard?.writeText(exported.value).catch(() => {})
+}
 
 function goto(q) {
   s.left = q.left
@@ -313,8 +407,10 @@ function clearAll() {
     </header>
 
     <main>
+      <div class="work">
+      <aside class="rail">
       <section class="panel">
-        <h2>Çift</h2>
+        <h2 class="section-head">Çift</h2>
         <div class="pair">
           <label>
             <span class="label">sol</span>
@@ -376,16 +472,16 @@ function clearAll() {
         </div>
       </section>
 
-      <section class="panel queue-panel">
-        <h2>
+      <section class="panel">
+        <h2 class="section-head">
           <span>Kuyruk</span>
           <span class="dim mono">{{ queueStats.decided }}/{{ queueStats.total }}</span>
         </h2>
         <p class="note">
           Bütün harf çiftlerini gezmene gerek yok — aşağıdaki metinde fiilen
-          geçen çiftler, sıklık sırasına göre. <b class="good">Yeşil</b> olanların
-          kararı depoya işlendi; <b class="bad">kesik kırmızı</b> olanların mevcut
-          biçimlerle çözümü yok, yeni glif gerekiyor.
+          geçen çiftler, sıklık sırasına göre. <b>Dolu</b> olanların kararı depoya
+          işlendi, <b>kalın çerçeveli</b> olanları bu oturumda işaretledin,
+          <s>üstü çizili</s> olanların mevcut biçimlerle çözümü yok.
         </p>
         <textarea v-model="s.corpus" class="corpus mono" rows="4" spellcheck="false" />
         <button class="solid wide" @click="nextUndecided">sonraki karar verilmemiş →</button>
@@ -408,9 +504,10 @@ function clearAll() {
           </button>
         </div>
       </section>
+      </aside>
 
       <section class="results">
-        <h2>
+        <h2 class="section-head">
           <span>{{ s.left }} + {{ s.right }}</span>
           <span class="dim mono">{{ shown.length }} gösteriliyor</span>
         </h2>
@@ -454,9 +551,70 @@ function clearAll() {
           </article>
         </div>
       </section>
+      </div>
 
-      <section class="panel wide">
-        <h2>Kelime denemesi</h2>
+      <div class="full">
+      <section class="panel">
+        <h2 class="section-head">
+          <span>Eksikler</span>
+          <span class="dim mono">{{ gapPairs.length }} çift · {{ gapTriples.length }} üçlü</span>
+        </h2>
+        <p class="note">
+          Metinde geçen ama çözülemeyen diziler. <b>yok</b> = motor hiç yerleşim
+          üretemiyor · <b>reddedildi</b> = ürettiklerinin tümünü reddettin ·
+          <b>delik</b> = en iyisinde bile geniş boşluk kalıyor · <b>bant</b> =
+          blok bandı doldurmuyor. Üzerine tıkla, aşağıdaki tahtaya düşsün.
+        </p>
+
+        <h3 class="sub-head">Çift</h3>
+        <div class="gaps">
+          <button v-for="g in gapPairs" :key="g.k" class="gap" @click="toBoard(g)">
+            <span class="mono gk">{{ g.k }}</span>
+            <span class="mono gn">{{ g.n }}</span>
+            <span class="gs">{{ g.status }}</span>
+          </button>
+          <p v-if="!gapPairs.length" class="note">eksik çift yok</p>
+        </div>
+
+        <h3 class="sub-head">Üçlü</h3>
+        <div class="gaps">
+          <button v-for="g in gapTriples" :key="g.k" class="gap" @click="toBoard(g)">
+            <span class="mono gk">{{ g.k }}</span>
+            <span class="mono gn">{{ g.n }}</span>
+            <span class="gs">{{ g.status }}</span>
+          </button>
+          <p v-if="!gapTriples.length" class="note">eksik üçlü yok</p>
+        </div>
+      </section>
+
+      <section id="tahta" class="panel">
+        <h2 class="section-head">
+          <span>Çizim tahtası</span>
+          <span class="dim mono">{{ drawn.length }} çizim</span>
+        </h2>
+        <p class="note">
+          Motorun bulamadığı biçimi kendin ver. Sürükleyerek boya, tekrar
+          tıklayarak sil. Kurallar çizerken denetleniyor — köşe teması, bant
+          doldurma, geniş delik. Altına hangi harf(ler) olduğunu yaz ve kaydet.
+        </p>
+        <PixelCanvas
+          ref="board"
+          :band-height="s.bandHeight"
+          :width="7"
+          @save="saveDrawn"
+        />
+
+        <div v-if="drawn.length" class="drawnlist">
+          <figure v-for="d in drawn" :key="d.chars">
+            <GridArt :cells="fromAscii(d.art.join('\n'))" :band-height="s.bandHeight" :cell="11" />
+            <figcaption class="mono">{{ d.chars }}</figcaption>
+            <button class="ghost tiny" @click="removeDrawn(d.chars)">sil</button>
+          </figure>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-head">Kelime denemesi</h2>
         <input v-model="s.word" class="word" spellcheck="false" placeholder="hakbir" />
         <div v-if="wordRun.ok" class="wordout">
           <GridArt :cells="wordRun.cells" :band-height="s.bandHeight" :cell="14" />
@@ -482,8 +640,8 @@ function clearAll() {
         </p>
       </section>
 
-      <section class="panel wide">
-        <h2>
+      <section class="panel">
+        <h2 class="section-head">
           <span>Ustanın blokları — etiketle</span>
           <span class="dim mono">
             {{ labelStats.labelled }}/{{ labelStats.total }} etiketli ·
@@ -520,11 +678,12 @@ function clearAll() {
         </div>
       </section>
 
-      <section class="panel wide">
-        <h2>Kararları dışa aktar</h2>
+      <section class="panel">
+        <h2 class="section-head">Kararları dışa aktar</h2>
         <div class="export">
           <button class="solid" @click="exportJson">çift kararları</button>
           <button class="solid" @click="exportLabels">blok etiketleri</button>
+          <button class="solid" @click="exportDrawn">çizimler</button>
           <button class="ghost" @click="clearAll">çift kararlarını sil</button>
         </div>
         <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
@@ -533,120 +692,126 @@ function clearAll() {
           çözücü oradan okuyacak.
         </p>
       </section>
+      </div>
     </main>
   </div>
 </template>
 
 <style scoped>
+/* Izgara: solda sabit ray, sağda içerik. Tam genişlik bölümler ayrı bir
+   kapsayıcıda, ızgaranın ALTINA iner — önceki sürümde grid-column: 1/-1
+   kullanılmıştı ve sonraki bölümü dar sütuna itiyordu. */
+
 .lab {
   min-height: 100dvh;
-  background: var(--paper);
 }
+
+/* --- başlık: tek hiyerarşi sıçraması, altında yapısal çizgi ------------- */
 
 header {
   border-bottom: 2px solid var(--rule);
-  padding: calc(var(--u) * 4) calc(var(--u) * 4) calc(var(--u) * 3);
+  padding: calc(var(--u) * 5) calc(var(--u) * 4) calc(var(--u) * 3);
 }
 h1 {
   margin: 0;
-  font-size: clamp(36px, 5.5vw, 68px);
-  font-weight: 900;
-  line-height: 0.85;
-  letter-spacing: -0.04em;
+  font-size: var(--t-display);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
   text-transform: uppercase;
 }
 .sub {
   margin: calc(var(--u) * 2) 0 0;
-  max-width: 68ch;
-  font-size: 13px;
-  line-height: 1.55;
+  max-width: 64ch;
   color: var(--ink-mute);
 }
 .facts {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--u) * 4);
-  margin: calc(var(--u) * 2) 0 0;
+  gap: calc(var(--u) * 5);
+  margin: calc(var(--u) * 3) 0 0;
 }
 .facts div {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 .facts dt {
-  font-size: var(--label-size);
+  font-size: var(--t-label);
   font-weight: 700;
-  letter-spacing: var(--label-track);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--ink-mute);
 }
 .facts dd {
   margin: 0;
   font-family: var(--mono);
-  font-size: 12px;
-  color: var(--signal);
+  font-size: var(--t-data);
 }
 
-main {
+/* --- ızgara ------------------------------------------------------------ */
+
+.work {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 0;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
   align-items: start;
 }
-.panel {
-  padding: calc(var(--u) * 3);
+.rail {
   border-right: 2px solid var(--rule);
-  border-bottom: 1px solid var(--rule-hair);
+  position: sticky;
+  top: 0;
+  max-height: 100dvh;
+  overflow-y: auto;
 }
-.panel.wide {
-  grid-column: 1 / -1;
-  border-right: 0;
+.full {
   border-top: 2px solid var(--rule);
 }
-h2 {
-  margin: 0 0 calc(var(--u) * 2);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: var(--label-track);
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  gap: var(--u);
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 8px;
+
+.panel,
+.results {
+  padding: calc(var(--u) * 3);
+}
+.panel + .panel {
+  border-top: 1px solid var(--rule-hair);
+}
+.full .panel + .panel {
+  border-top: 2px solid var(--rule);
 }
 .dim {
-  color: var(--ink-faint);
+  color: var(--ink-mute);
 }
 
+/* --- kontroller: tek kalıp, her yerde aynı ------------------------------ */
+
 .pair {
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
   gap: var(--u);
 }
 .pair label {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 .plus {
-  font-size: 20px;
   font-weight: 700;
-  padding-bottom: 4px;
-  color: var(--signal);
+  padding-bottom: 6px;
 }
 select,
-.word {
+.word,
+.corpus,
+.text {
   width: 100%;
   padding: 7px 8px;
   background: var(--paper-pure);
   border: 1px solid var(--rule);
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: var(--t-data);
 }
 select:focus,
-.word:focus {
+.word:focus,
+.corpus:focus {
   outline: 0;
   border-color: var(--signal);
 }
@@ -655,31 +820,33 @@ select:focus,
   margin-top: calc(var(--u) * 2);
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 .row {
   display: grid;
-  grid-template-columns: 1fr 90px auto;
+  grid-template-columns: 1fr 84px 2ch;
   align-items: center;
   gap: var(--u);
 }
-.row input {
+.row input,
+.chk input {
   accent-color: var(--signal);
 }
 .row b {
-  color: var(--signal);
+  font-family: var(--mono);
+  text-align: right;
 }
 .chk {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   gap: 7px;
-  font-size: 12px;
-  line-height: 1.35;
+  align-items: start;
+  font-size: var(--t-data);
+  line-height: 1.4;
   cursor: pointer;
 }
 .chk input {
-  accent-color: var(--signal);
-  margin: 2px 0 0;
-  flex: none;
+  margin: 3px 0 0;
 }
 .chk em {
   font-style: normal;
@@ -688,56 +855,109 @@ select:focus,
 
 .tally {
   display: flex;
-  gap: var(--u);
+  gap: calc(var(--u) * 2);
   margin-top: calc(var(--u) * 2);
   padding-top: var(--u);
   border-top: 1px solid var(--rule-hair);
 }
 .t.prefer {
-  color: var(--signal);
   font-weight: 700;
 }
 
-.results {
-  padding: calc(var(--u) * 3);
-  border-bottom: 1px solid var(--rule-hair);
-  min-width: 0;
+/* --- kuyruk: çipler. Durum renkle değil dolgu/konturla anlatılır, böylece
+       gri tonda da okunur. ------------------------------------------------ */
+
+.corpus {
+  margin-bottom: var(--u);
+  line-height: 1.6;
 }
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: var(--u);
+}
+.chip {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 5px;
+  border: 1px solid var(--rule-hair);
+  background: var(--paper-pure);
+  font-family: var(--mono);
+  font-size: var(--t-data);
+  cursor: pointer;
+}
+.chip em {
+  font-style: normal;
+  font-size: 9px;
+  color: var(--ink-mute);
+}
+.chip:hover {
+  border-color: var(--ink);
+}
+/* kayıtlı karar: dolu */
+.chip.saved {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.chip.saved em {
+  color: var(--paper);
+}
+/* bu oturumda işaretlendi: kalın kontur */
+.chip.done {
+  border-width: 2px;
+  border-color: var(--ink);
+  font-weight: 700;
+}
+/* çözümsüz: üstü çizili */
+.chip.unsolved {
+  text-decoration: line-through;
+  color: var(--ink-mute);
+}
+/* seçili: tek sinyal rengi burada, konumu göstermek için */
+.chip.on {
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+}
+
+/* --- yerleşim kartları -------------------------------------------------- */
+
 .empty {
   margin: 0;
   padding: calc(var(--u) * 3);
-  border: 1px dashed var(--signal);
+  border: 1px solid var(--signal);
   color: var(--ink-mute);
-  font-size: 13px;
 }
-/* Bloklar 1-12 hücre arası genişlikte; sabit sütun yerine akış kullanılıyor
-   ki geniş kartlar da yan yana sığsın. */
 .cards {
   display: flex;
   flex-wrap: wrap;
   gap: 1px;
+  /* kadar genişle: gri ayırıcı zemin yalnız kartların altında kalsın */
+  width: fit-content;
+  max-width: 100%;
   background: var(--rule-hair);
   border: 1px solid var(--rule-hair);
 }
 .card {
-  background: var(--paper-pure);
-  padding: calc(var(--u) * 1.5);
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: flex-start;
+  min-width: 122px;
+  padding: calc(var(--u) * 1.5);
+  background: var(--paper-pure);
   border-left: 3px solid transparent;
-  min-width: 118px;
 }
 .card.prefer {
   border-left-color: var(--signal);
-  background: #fff8f7;
 }
 .card.ok {
   border-left-color: var(--ink);
 }
 .card.no {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 .meta {
   display: flex;
@@ -750,24 +970,24 @@ select:focus,
   gap: 3px;
 }
 .meta dt {
-  color: var(--ink-faint);
+  color: var(--ink-mute);
 }
 .meta dd {
   margin: 0;
   font-weight: 700;
 }
 .flags {
-  margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
+  margin: 0;
   font-size: 9px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 .flags span {
-  border: 1px solid var(--rule-hair);
   padding: 1px 4px;
+  border: 1px solid var(--rule-hair);
 }
 .flags .warn {
   border-color: var(--signal);
@@ -788,205 +1008,175 @@ select:focus,
   border: 1px solid var(--rule);
   background: var(--paper);
   cursor: pointer;
-  font-size: 13px;
   line-height: 1;
 }
 .verdict button:hover {
-  background: var(--paper-pure);
-  color: var(--signal);
+  border-color: var(--signal);
 }
 .verdict button.on {
   background: var(--ink);
   color: var(--paper);
 }
 
-.queue-panel {
-  grid-column: 1 / -1;
-  border-right: 0;
-  border-top: 1px solid var(--rule-hair);
-}
-.corpus {
-  width: 100%;
-  padding: var(--u);
-  border: 1px solid var(--rule);
-  background: var(--paper-pure);
-  font-size: 11px;
-  line-height: 1.5;
-  margin-bottom: var(--u);
-}
-.solid.wide {
-  width: 100%;
-  margin-bottom: var(--u);
-}
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-}
-.chip {
-  border: 1px solid var(--rule-hair);
-  background: var(--paper-pure);
-  padding: 3px 6px;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  gap: 4px;
-  align-items: baseline;
-}
-.chip em {
-  font-style: normal;
-  font-size: 9px;
-  color: var(--ink-faint);
-}
-.chip:hover {
-  border-color: var(--signal);
-}
-.chip.done {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
-}
-.chip.star {
-  border-color: var(--signal);
-  border-width: 2px;
-}
-.chip.on {
-  outline: 2px solid var(--signal);
-  outline-offset: 1px;
-}
-/* Depoya işlenmiş karar: kalıcı, lab'de tekrar işaretlemeye gerek yok. */
-.chip.saved {
-  background: #e8f0e8;
-  border-color: #2f6b3a;
-}
-.chip.saved.done {
-  background: var(--ink);
-  color: var(--paper);
-}
-/* Mevcut biçimlerle çözümü olmayan çift — yeni glif gerekiyor. */
-.chip.unsolved {
-  border-color: var(--signal);
-  border-style: dashed;
-  color: var(--signal);
-}
+/* --- kelime denemesi ---------------------------------------------------- */
+
 .wordout {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: calc(var(--u) * 3);
-  margin-top: var(--u);
+  gap: calc(var(--u) * 4);
+  margin-top: calc(var(--u) * 2);
 }
 .warnline {
-  margin: var(--u) 0 0;
+  margin: calc(var(--u) * 2) 0 0;
   padding-left: calc(var(--u) * 1.5);
   border-left: 2px solid var(--signal);
-  font-size: 12px;
-  color: var(--ink);
 }
-.steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--u) * 2);
-  margin-top: var(--u);
-}
-.step {
-  border: 1px solid var(--rule-hair);
-  padding: var(--u);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.step.pref {
-  border-color: var(--signal);
-}
-.who {
-  font-size: 11px;
-  font-weight: 700;
-}
-.who em {
-  font-style: normal;
-  color: var(--ink-faint);
-  font-weight: 400;
-}
-.none {
-  color: var(--signal);
-  font-size: 11px;
-}
+
+/* --- ustanın blokları --------------------------------------------------- */
 
 .master {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--u) * 2);
-  margin-top: var(--u);
+  gap: 1px;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: calc(var(--u) * 2);
+  background: var(--rule-hair);
+  border: 1px solid var(--rule-hair);
 }
 .master figure {
-  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   align-items: center;
-  padding: 6px;
-  border: 1px solid var(--rule-hair);
-  width: 92px;
+  gap: 5px;
+  width: 96px;
+  margin: 0;
+  padding: var(--u);
+  background: var(--paper-pure);
 }
 .master figure.bad {
-  border-color: var(--signal);
-  background: #fff6f5;
-}
-.master figure.done {
-  border-color: var(--ink);
+  outline: 2px solid var(--signal);
+  outline-offset: -2px;
 }
 .master figure.fine {
-  opacity: 0.55;
+  opacity: 0.4;
 }
 figcaption {
-  font-size: 9px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1px;
+  font-size: 9px;
 }
 .bad {
   color: var(--signal);
 }
-.good {
-  color: #2f6b3a;
-}
 .lbl {
   width: 100%;
+  padding: 1px 0;
   border: 0;
   border-bottom: 1px solid var(--rule);
   background: transparent;
+  font-family: var(--mono);
   text-align: center;
-  font-size: 13px;
-  padding: 1px 0;
 }
 .lbl:focus {
   outline: 0;
   border-color: var(--signal);
-  background: #fffbe6;
 }
 
-.note {
-  margin: var(--u) 0 0;
-  font-size: 11px;
-  line-height: 1.5;
+/* --- eksikler ----------------------------------------------------------- */
+
+.sub-head {
+  margin: calc(var(--u) * 3) 0 var(--u);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
   color: var(--ink-mute);
-  max-width: 72ch;
+}
+.gaps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.gap {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 7px;
+  border: 1px solid var(--rule-hair);
+  background: var(--paper-pure);
+  cursor: pointer;
+}
+.gap:hover {
+  border-color: var(--signal);
+}
+.gk {
+  font-weight: 700;
+}
+.gn {
+  font-size: 9px;
+  color: var(--ink-mute);
+}
+.gs {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+/* --- çizim listesi ------------------------------------------------------ */
+
+.drawnlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: calc(var(--u) * 3);
+  background: var(--rule-hair);
+  border: 1px solid var(--rule-hair);
+}
+.drawnlist figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 96px;
+  margin: 0;
+  padding: var(--u);
+  background: var(--paper-pure);
+}
+.tiny {
+  padding: 2px 6px;
+  font-size: 9px;
+}
+
+/* --- ortak: not, düğme -------------------------------------------------- */
+
+.note {
+  margin: calc(var(--u) * 1.5) 0 0;
+  max-width: 76ch;
+  font-size: var(--t-data);
+  line-height: 1.6;
+  color: var(--ink-mute);
 }
 .export {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--u);
 }
 .solid,
 .ghost {
   padding: 9px 16px;
-  font-size: 10px;
+  border: 1px solid var(--rule);
+  font-size: var(--t-label);
   font-weight: 700;
-  letter-spacing: var(--label-track);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   cursor: pointer;
-  border: 1px solid var(--rule);
 }
 .solid {
   background: var(--ink);
@@ -996,11 +1186,13 @@ figcaption {
   background: var(--signal);
   border-color: var(--signal);
 }
+.solid.wide {
+  width: 100%;
+}
 .ghost {
   background: none;
 }
 .ghost:hover {
-  color: var(--signal);
   border-color: var(--signal);
 }
 .out {
@@ -1008,16 +1200,19 @@ figcaption {
   margin-top: var(--u);
   padding: var(--u);
   border: 1px solid var(--rule);
-  font-size: 11px;
   background: var(--paper-pure);
+  font-size: 11px;
 }
 
-@media (max-width: 860px) {
-  main {
+@media (max-width: 900px) {
+  .work {
     grid-template-columns: 1fr;
   }
-  .panel {
+  .rail {
+    position: static;
+    max-height: none;
     border-right: 0;
+    border-bottom: 2px solid var(--rule);
   }
 }
 </style>

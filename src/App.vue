@@ -74,8 +74,9 @@ function onPin({ li, gi, width }) {
 </template>
 
 <style scoped>
-/* Uygulama kabuğu viewport'a sabit; sayfa kaymaz, paneller kendi içinde kayar.
-   Tuvalin gerçek yüksekliğini bilmesi buna bağlı — sığdırma oradan hesaplanıyor. */
+/* Swiss: üç metin düzeyi, iki ağırlık, tek sinyal rengi.
+   Kabuk viewport'a sabit; başlık, ray ve tuval üç yapısal bölge. */
+
 .app {
   display: flex;
   flex-direction: column;
@@ -83,8 +84,8 @@ function onPin({ li, gi, width }) {
   overflow: hidden;
 }
 
-/* Başlık sayfanın tepesinde asimetrik bir blok: solda devasa tipografi,
-   sağda aracın kendi ürettiği logo. İkisini tek bir sert kural ayırır. */
+/* --- başlık ------------------------------------------------------------- */
+
 .masthead {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -96,16 +97,15 @@ function onPin({ li, gi, width }) {
 }
 
 h1 {
-  margin: 0;
   display: flex;
   align-items: baseline;
-  gap: 0.22em;
-  font-size: clamp(38px, 6vw, 76px);
-  font-weight: 900;
-  line-height: 0.82;
-  letter-spacing: -0.045em;
+  gap: 0.2em;
+  margin: 0;
+  font-size: var(--t-display);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
   text-transform: uppercase;
-  font-stretch: 112%;
 }
 .l2 {
   color: var(--signal);
@@ -113,9 +113,7 @@ h1 {
 
 .sub {
   margin: calc(var(--u) * 1.5) 0 0;
-  max-width: 62ch;
-  font-size: 13px;
-  line-height: 1.5;
+  max-width: 64ch;
   color: var(--ink-mute);
 }
 
@@ -124,12 +122,12 @@ h1 {
   flex-direction: column;
   align-items: flex-end;
   gap: var(--u);
-  color: var(--ink);
 }
 .caption {
-  color: var(--ink-faint);
   text-align: right;
 }
+
+/* --- ızgara ------------------------------------------------------------- */
 
 .work {
   display: grid;
@@ -141,7 +139,6 @@ h1 {
 .rail {
   border-right: 2px solid var(--rule);
   overflow-y: auto;
-  background: var(--paper);
 }
 
 .view {
@@ -152,7 +149,6 @@ h1 {
   background: var(--paper-pure);
 }
 
-/* Dar ekranda ray yazının altına iner; grid tek sütuna düşer. */
 @media (max-width: 900px) {
   .app {
     height: auto;

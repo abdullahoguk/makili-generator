@@ -144,6 +144,13 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
 
   const side = (pred) => open.filter(pred).reduce((n, p) => n + p.area, 0)
 
+  // Bir hücre eninde ya da boyundaki boşluklar kuralın kendisidir: harfler
+  // arası kanal, sayaç yarığı, aksan boşluğu. Kusur ancak iki hücreden geniş
+  // VE iki hücreden yüksek bir cep varsa başlar — gözün delik gördüğü yer.
+  const wide = ps
+    .filter((p) => !p.enclosed && Math.min(p.w, p.h) >= 2)
+    .reduce((n, p) => n + p.area, 0)
+
   return {
     ok: errors.length === 0,
     errors,
@@ -154,6 +161,7 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
     openLeft: side((p) => p.openLeft && !p.openTop && !p.openBottom),
     // Kimsenin dolduramayacağı boşluklar — bant sınırına açılıyor
     openVertical: side((p) => p.openTop || p.openBottom),
+    wideVoid: wide,
     worstOpen: open.reduce((m, p) => Math.max(m, p.area), 0),
     enclosedArea: ps.filter((p) => p.enclosed).reduce((n, p) => n + p.area, 0),
     parts: components(cells).length
@@ -225,6 +233,33 @@ export function facingGaps(aCells, bCells) {
     worst: all.length ? Math.max(...all) : 0,
     overlapping: all.some((g) => g < 0)
   }
+}
+
+/**
+ * Bir glifin TEK BAŞINA bıraktığı boşluk.
+ *
+ * Harfin kendi açık ağzı (n'nin altı, u'nun üstü, c'nin sağı) bir kusur değil,
+ * biçimin kendisidir. Bir çifti değerlendirirken bunları ceza saymak harfleri
+ * kendi tasarımları yüzünden cezalandırmak olur; ölçülmesi gereken, yan yana
+ * gelmenin ÜRETTİĞİ fazladan boşluktur.
+ */
+const intrinsicCache = new Map()
+
+export function intrinsicVoid(cells, bandHeight = BAND_HEIGHT, id = null) {
+  const key = id ? `${id}|${bandHeight}` : null
+  if (key && intrinsicCache.has(key)) return intrinsicCache.get(key)
+
+  const b = bbox(cells)
+  const lifted = cells.map(([x, y]) => [x - b.x, y - b.y + (bandHeight - b.h)])
+  const s = scoreBlock(lifted, bandHeight)
+  const out = {
+    vertical: s.openVertical,
+    left: s.openLeft,
+    right: s.openRight,
+    wide: s.wideVoid
+  }
+  if (key) intrinsicCache.set(key, out)
+  return out
 }
 
 /**
@@ -431,6 +466,19 @@ export function pairPlacements(a, b, o = {}) {
             // Blok bandı doldurmalı — kural harfe değil bloğa ait.
             if (requireBandFill && s.topGap > 0) continue
 
+            // Harflerin kendi açık ağızlarını düş; kalan, bu yerleşimin
+            // ürettiği fazladan boşluktur.
+            const li = intrinsicVoid(lv.cells, bandHeight, lv.id)
+            const ri = intrinsicVoid(rv.cells, bandHeight, rv.id)
+            const excess = {
+              vertical: Math.max(0, s.openVertical - li.vertical - ri.vertical),
+              left: Math.max(0, s.openLeft - li.left - ri.left),
+              right: Math.max(0, s.openRight - li.right - ri.right),
+              // Asıl ölçü: harflerin kendi geniş boşluklarını düştükten sonra
+              // yan yana gelmenin ürettiği geniş delik.
+              wide: Math.max(0, s.wideVoid - li.wide - ri.wide)
+            }
+
             // Aynı hücre kümesine farklı yoldan varılabiliyor; bir kez göster.
             const sig = p.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
             if (seen.has(sig)) continue
@@ -445,9 +493,15 @@ export function pairPlacements(a, b, o = {}) {
               openRight: s.openRight,
               openLeft: s.openLeft,
               openVertical: s.openVertical,
+              // Asıl ölçü: yan yana gelmenin ÜRETTİĞİ boşluk.
+              wideVoid: s.wideVoid,
+              excessWide: excess.wide,
+              excessVertical: excess.vertical,
+              excessLeft: excess.left,
+              excessRight: excess.right,
               worstOpen: s.worstOpen,
               parts: s.parts,
-              score: cost(p, s)
+              score: cost(p, s, excess)
             })
           }
         }
@@ -483,14 +537,16 @@ const range = (a, b) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) =>
  * bakıldığında "olmaz" görünen bir yerleşim, dizide kabul edilebilir olabilir
  * — karar sırayı gördükten sonra verilir (bkz. sequence.js).
  */
-function cost(placement, s) {
+function cost(placement, s, excess) {
   return (
     s.topGap * 100 +
     Math.max(0, (placement.facingWorst ?? 1) - 1) * 20 +
-    s.openVertical * 4 +
-    s.openRight * 1 +
-    s.openLeft * 3 +
-    s.worstOpen * 2 +
+    // Harflerin kendi ağızları değil, yerleşimin ürettiği fazlalık cezalanır;
+    // ve yalnız GENİŞ boşluk delik sayılır — bir hücrelik açıklık kuraldır.
+    excess.wide * 6 +
+    excess.vertical * 2 +
+    excess.right * 1 +
+    excess.left * 2 +
     placement.width
   )
 }

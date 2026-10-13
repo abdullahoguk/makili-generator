@@ -1,30 +1,44 @@
-/* Swiss / International Style belirteçleri.
-   Palet Müller-Brockmann disiplininde: kağıt, mürekkep, tek sinyal rengi.
-   Yuvarlatma yok, gölge yok, degrade yok. Hiyerarşi tipografi ve kuralla. */
+/* Swiss / International Style.
+   Dört ilke: indirgeme, ızgara, hiyerarşi, tipografi.
+
+   Tipografi yapısal işi yapar, renk değil. Üç metin düzeyi var — başlık,
+   gövde, etiket — ve veri için tek bir monospace. Ağırlık ikiye indirildi
+   (400/700); arada gezinen ağırlıklar hiyerarşiyi bulandırıyordu.
+
+   Renk tek sinyale indirildi. Önceki sürümde "kayıtlı" durumu yeşille
+   anlatılıyordu; artık dolgu/kontur farkıyla anlatılıyor, çünkü renk
+   hiyerarşi kuramaz, yalnız destekler. Gri tonda da okunur. */
 
 :root {
-  /* yüzeyler */
+  /* yüzey — üç ton yeter */
   --paper: #f2f1ec;
   --paper-pure: #ffffff;
   --ink: #111110;
-  --ink-mute: #6b6a64;
-  --ink-faint: #a8a69d;
+  --ink-mute: #6f6e67;
+
+  /* çizgi — iki ağırlık: yapısal ve ayırıcı */
   --rule: #111110;
-  --rule-hair: #d6d4cb;
+  --rule-hair: #d8d6cd;
+
+  /* tek sinyal */
   --signal: #e5241c;
 
-  /* tipografi */
   --sans: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-  /* Swiss grid: tek bir temel birim, her ölçü katı */
+  /* ölçü: tek taban birim, her boşluk katı */
   --u: 8px;
-  --gutter: calc(var(--u) * 3);
-  --rail: 340px;
 
-  /* etiket stili — her yerde aynı */
-  --label-size: 10px;
-  --label-track: 0.16em;
+  /* üç metin düzeyi */
+  --t-display: clamp(38px, 5.4vw, 64px);
+  --t-body: 14px;
+  --t-label: 11px;
+  --t-data: 12px;
+
+  --track-label: 0.12em;
+
+  /* sol ray genişliği — ızgaranın sabit sütunu */
+  --rail: 288px;
 }
 
 * {
@@ -41,13 +55,13 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Swiss'te her şey sola dayalı, hiçbir şey yuvarlak değil. */
 button,
 input,
 select,
@@ -67,19 +81,34 @@ textarea {
   color: var(--paper-pure);
 }
 
-/* Tekrar eden küçük etiket — rail boyunca ritmi kuran öğe. */
+/* Üç düzeyin ikisi burada; başlıklar bileşenlerde. */
+
 .label {
-  font-size: var(--label-size);
+  font-size: var(--t-label);
   font-weight: 700;
-  letter-spacing: var(--label-track);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--ink-mute);
 }
 
 .mono {
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.02em;
+  font-size: var(--t-data);
+}
+
+/* Bölüm başlığı: etiket düzeyinde, altında yapısal çizgi. Her panelde aynı. */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--u);
+  margin: 0 0 calc(var(--u) * 2);
+  padding-bottom: calc(var(--u) * 1.25);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: reduce) {

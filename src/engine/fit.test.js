@@ -272,3 +272,25 @@ describe('scoreBlock: boşluğun yönü', () => {
     expect(s.enclosedArea).toBe(1)
   })
 })
+
+describe('wideVoid — bir hücrelik açıklık kural, geniş boşluk kusur', () => {
+  it('bir hücre eninde dikey kanalı delik saymaz', () => {
+    // İki gövde, arada tam bir sütun: kuralın ta kendisi.
+    const s = scoreBlock(G('#.#', '#.#', '#.#'), 3)
+    expect(s.wideVoid).toBe(0)
+  })
+
+  it('bir hücre boyundaki yatay yarığı delik saymaz', () => {
+    const s = scoreBlock(G('###', '...', '###'), 3)
+    expect(s.wideVoid).toBe(0)
+  })
+
+  it('iki hücre eninde boşluğu delik sayar', () => {
+    const s = scoreBlock(G('#..#', '#..#', '####'), 3)
+    expect(s.wideVoid).toBeGreaterThan(0)
+  })
+
+  it('kapalı sayacı delik saymaz', () => {
+    expect(scoreBlock(G('####', '#..#', '#..#', '####'), 4).wideVoid).toBe(0)
+  })
+})

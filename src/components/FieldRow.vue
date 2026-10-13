@@ -30,7 +30,8 @@ defineProps({
   margin-bottom: var(--u);
 }
 .val {
-  color: var(--signal);
+  font-family: var(--mono);
+  font-size: var(--t-data);
   font-weight: 700;
 }
 .body {

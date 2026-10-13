@@ -153,6 +153,34 @@ tahmini atar (kaynaşma sayıları çıkarıcının saydığıyla birebir tutuyo
 tahmin kesin değil — aynı biçim iki harfe düşebiliyor, lab bunu kırmızı
 gösterir. Doğrusu elle etiketlenir ve kütüphanenin kaynağı olur.
 
+### Eksikler ve çizim tahtası
+
+`node tools/gaps.mjs` metinde geçen ama çözülemeyen çiftleri ve üçlüleri
+çıkarır. Dört durum ayrılır:
+
+| durum | anlamı |
+|---|---|
+| `yok` | motor hiç geçerli yerleşim üretemiyor |
+| `reddedildi` | ürettiklerinin tümü lab'de reddedilmiş |
+| `delik` | en iyi yerleşimde bile geniş boşluk kalıyor |
+| `bant` | blok bandı doldurmuyor |
+
+Üçlüler ayrı sınanır, çünkü iki çift tek tek iyi olsa da üçü bir arada
+tutmayabilir — ya da tersine, tek başına kötü görünen bir çift üçüncü harfin
+uzantısı boşluğu doldurunca kabul edilebilir hale gelir.
+
+Lab'deki aynı liste tıklanabilir: bir eksiğe tıklayınca **çizim tahtasına**
+düşer ve doğru biçimi elle verebilirsin. Tahta kuralları çizerken denetler —
+köşe teması, bant doldurma, geniş delik, parça sayısı.
+
+### Boşluk ölçüsü: bir hücre kural, iki hücre kusur
+
+`wideVoid` yalnız iki hücreden **hem geniş hem yüksek** cepleri sayar. Bir
+hücrelik açıklık kuralın kendisidir (harfler arası kanal, sayaç yarığı, aksan
+boşluğu); onları delik saymak her yerleşimi kusurlu gösteriyordu. Ayrıca
+harflerin kendi açık ağızları (n'nin altı, u'nun üstü) düşülür — ölçülen,
+yan yana gelmenin ÜRETTİĞİ fazladan boşluktur.
+
 ### Referansı yeniden ölçmek
 
 ```bash
