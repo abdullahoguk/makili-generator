@@ -4,7 +4,8 @@
     "umlaut": "sources/hakbir normal.png 'gönül' kelimesinden doğrulandı: gövdenin üstünde ayrı iki nokta, araya bir boşluk satırı. Nokta 1 + boşluk 1 + gövde 7 = 9. 'i' ile aynı mantık.",
     "sedilla": "ç'den doğrulandı: gövde 7 + boyun 1 + bar 1 = 9. Boyun gövdenin alt ucuna kenardan bağlanır.",
     "breve": "ÖNERİ — kaynakta ğ yok. Umlaut'un yerine düz bar; iki nokta ile karışmasın diye.",
-    "bant": "Ustanın 67 bloğunun 67'si hem üst hem alt çizgiye değiyor. Bandı doldurmayan varyant tek başına kullanılmaz; ancak komşusunun boşluğuna yuvalanarak kullanılabilir."
+    "bant": "Ustanın 67 bloğunun 67'si hem üst hem alt çizgiye değiyor. Bandı doldurmayan varyant tek başına kullanılmaz; ancak komşusunun boşluğuna yuvalanarak kullanılabilir.",
+    "el": "extra:<harf>.elN — lab'deki Harf varyantları panelinde elle çizilen biçimler. Kurallara karşı doğrulandı: köşe teması yok, bandı dolduruyor, kütüphanede eşi yok. r.el3-el8 ve t.el3 gibi uzun kuyruklu biçimler kasıtlı: komşunun köşesine uzanıp boşluğu kapatmak için."
   },
   "ascii": [
     {
@@ -189,6 +190,966 @@
         "#.#",
         "#.#",
         "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "extra:a.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "extra:a.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "extra:d.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "extra:d.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "extra:b.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "extra:b.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "extra:b.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "extra:a.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "extra:a.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "extra:a.el5",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "extra:a.el6",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "extra:c.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "extra:c.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "extra:ç.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "extra:ç.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "extra:ç.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "extra:e.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "extra:e.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "extra:e.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "extra:e.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "f",
+      "source": "extra:f.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "f",
+      "source": "extra:f.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "g",
+      "source": "extra:g.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "extra:g.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "extra:g.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "ğ",
+      "source": "extra:ğ.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###.#",
+        "#.#.#",
+        "#.#.#",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "ğ",
+      "source": "extra:ğ.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "...",
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "ğ",
+      "source": "extra:ğ.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "...",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "extra:h.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "extra:k.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "extra:k.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "p",
+      "source": "extra:p.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el5",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el6",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el7",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "####",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#..."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "extra:r.el8",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#####",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#...."
+      ]
+    },
+    {
+      "char": "s",
+      "source": "extra:s.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "extra:s.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "extra:s.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "extra:s.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "extra:s.el5",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "ş",
+      "source": "extra:ş.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "ş",
+      "source": "extra:ş.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "extra:t.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "extra:t.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "extra:t.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#######",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#..."
+      ]
+    },
+    {
+      "char": "v",
+      "source": "extra:v.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "extra:y.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "extra:y.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "extra:y.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "extra:y.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "extra:z.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "extra:z.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "extra:z.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "extra:z.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "extra:z.el5",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
       ]
     }
   ]

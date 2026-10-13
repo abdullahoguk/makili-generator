@@ -243,9 +243,12 @@ harfin yeni biçimi çizilir.
 
 Tek harfte kural başka şey söyler: harfin kendi açık ağzı (`n`'in altı,
 `u`'nun üstü) zorunlu olarak geniş boşluktur, hata değil — o yüzden tahtanın
-`glyph` kipinde delik ölçülür ama suç sayılmaz. Zorunlu olan ikisi: köşeden
-birleşme olmaması ve **bandı baştan sona doldurmak**. Aynı biçim kütüphanede
-ya da listede varsa kayıt engellenir (biçim imzası konumdan bağımsız).
+`glyph` kipinde delik ölçülür ama suç sayılmaz. Zorunlu olan köşeden birleşme
+olmaması; bandı doldurmak kural ama mutlak değil — `ö.short`, `ğ.short` gibi
+6-7 satırlık biçimler geçerli, üstlerine komşunun noktası ya da uzantısı
+gelir. Kısa biçim çizmek için tahtadaki **kısa biçim** kutusu işaretlenir.
+Aynı biçim kütüphanede ya da listede varsa kayıt engellenir (biçim imzası
+konumdan bağımsız).
 
 Panelden çıkan JSON doğrudan `tools/glyphs.extra.json`'un `ascii` dizisine
 girer:
@@ -257,6 +260,24 @@ npm run glyphs:build
 
 Build ASCII'yi hücrelere çevirir, değişmezlere karşı doğrular ve içerik
 hash'inden kimlik üretir (`extra:d.el1` → `d.5nvpv`).
+
+### Hatalı biçmi kütüphaneden çıkarmak
+
+Kaynak çizimden (`letters.svg`) gelen her biçim doğru değil: bazıları hatalı,
+bazıları yanlış harfe etiketlenmiş. `tools/glyph-rejects.json`'daki biçimler
+kütüphaneye hiç girmez. Lab'deki panelden **çıkar** ile işaretlenir, dışa
+aktarılır, `npm run glyphs:build` ile uygulanır.
+
+Çıkarma kimliğe göre yapılır (`a.unv33`), kimlik de biçimden türediği için
+kütüphane değişse de aynı biçmi tutar. İki güvenlik ağı var:
+
+- panel her biçmin **kaç onaylı kararda** kullanıldığını yazar — çıkarılırsa
+  o kararlar sessizce uygulanmaz hale gelir,
+- build çıkarılanı `⚠ AFİŞTEN` diye işaretler (afişten gelen biçim ustanın
+  fiilen kullandığı form, yani doğruluk kaynağı) ve etkilenen kararları
+  tek tek listeler.
+
+Bir harfin bütün biçimleri çıkarılırsa build hata verip durur.
 
 ### Referansı yeniden ölçmek
 

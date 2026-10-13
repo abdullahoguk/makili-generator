@@ -12,7 +12,7 @@ import PixelCanvas from './PixelCanvas.vue'
 import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
 
 import { layoutWord } from '../engine/sequence.js'
-import { hasDecisions, unsolvedPairs } from '../engine/decisions.js'
+import decisionStore, { hasDecisions, unsolvedPairs } from '../engine/decisions.js'
 import { CHARSET, variantsOf } from '../engine/glyphs.js'
 import { fromAscii, toAscii, bbox } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
@@ -22,6 +22,7 @@ const STORE = 'makili.pair-decisions.v1'
 const STORE_LABELS = 'makili.block-labels.v1'
 const STORE_DRAWN = 'makili.drawn-blocks.v1'
 const STORE_VARIANTS = 'makili.glyph-variants.v1'
+const STORE_REJECTS = 'makili.glyph-rejects.v1'
 
 const s = reactive({
   left: 'l',
@@ -36,6 +37,7 @@ const s = reactive({
   // harf varyantı tahtası
   vletter: 'a',
   vnote: '',
+  vshort: false,
   word: 'hakbir',
   // Çift kuyruğu bu metinden çıkar: 841 çifti tek tek gezmek yerine
   // gerçekten geçen çiftlere, sıklık sırasına göre bakılır.
@@ -262,6 +264,7 @@ function saveVariant({ art }) {
       char,
       source: `extra:${char}.el${n}`,
       note: s.vnote.trim() || 'lab çizim tahtasında elle çizildi',
+      short: s.vshort || undefined,
       art
     }
   ]
@@ -287,6 +290,66 @@ const letterCounts = computed(() =>
   }))
 )
 
+// ---- hatalı biçimi kütüphaneden çıkarma --------------------------------
+//
+// Kaynak çizimden (letters.svg) gelen her biçim doğru değil: bazıları hatalı,
+// bazıları yanlış harfe etiketlenmiş. Burada işaretlenenler
+// tools/glyph-rejects.json'a aktarılır, build onları kütüphaneye hiç almaz.
+//
+// Kimlik biçimden türediği için (d.coso1) kütüphane değişse de aynı biçmi
+// tutar — konuma dayalı numara olsa kayardı.
+
+const rejects = ref(loadRejects())
+
+function loadRejects() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_REJECTS) ?? '[]')
+  } catch {
+    return []
+  }
+}
+watch(rejects, (v) => {
+  try { localStorage.setItem(STORE_REJECTS, JSON.stringify(v)) } catch { /* yok say */ }
+}, { deep: true })
+
+const isRejected = (id) => rejects.value.some((r) => r.id === id)
+
+function toggleReject(v) {
+  if (isRejected(v.id)) {
+    rejects.value = rejects.value.filter((r) => r.id !== v.id)
+    return
+  }
+  rejects.value = [
+    ...rejects.value,
+    { id: v.id, char: s.vletter, source: v.source, reason: s.vnote.trim() || 'lab\'de hatalı işaretlendi' }
+  ]
+  s.vnote = ''
+}
+
+/**
+ * Bu biçme atıfta bulunan onaylı kararlar. Biçim çıkarılırsa o kararlar
+ * sessizce uygulanmaz hale gelir; karar vermeden önce görünmesi gerekiyor.
+ */
+function decisionsUsing(id) {
+  const hits = []
+  for (const [pair, rows] of Object.entries(decisionStore.ok ?? {})) {
+    for (const row of rows) if (row[0] === id || row[1] === id) hits.push(pair)
+  }
+  return [...new Set(hits)]
+}
+
+function exportRejects() {
+  exported.value = JSON.stringify(
+    {
+      _note: 'Kütüphaneden çıkarılacak biçimler. tools/glyph-rejects.json olarak kaydet, sonra npm run glyphs:build.',
+      rejected: rejects.value
+    },
+    null,
+    2
+  )
+  navigator.clipboard?.writeText(exported.value).catch(() => {})
+}
+
 function exportVariants() {
   exported.value = JSON.stringify(
     {
@@ -295,6 +358,7 @@ function exportVariants() {
         char: v.char,
         source: v.source,
         note: v.note,
+        ...(v.short ? { short: true } : {}),
         art: v.art
       }))
     },
@@ -792,20 +856,56 @@ function clearAll() {
         </div>
 
         <h3 class="sub-head">Kütüphanedeki biçimler — '{{ s.vletter }}'</h3>
+        <p class="note">
+          Biçme tıklayınca tahtaya gelir. Hatalı olanı <b>çıkar</b> ile
+          işaretle — kaynak çizimden gelen her biçim doğru değil, bazıları
+          yanlış harfe etiketlenmiş. İşaretlediklerin dışa aktarılıp
+          <span class="mono">tools/glyph-rejects.json</span>'a kaydedilir,
+          build onları kütüphaneye hiç almaz.
+        </p>
         <div class="varlist">
-          <figure v-for="v in libVariants" :key="v.id">
+          <figure v-for="v in libVariants" :key="v.id" :class="{ out: isRejected(v.id) }">
             <button class="plain" :title="`${v.id} · tahtaya al`" @click="variantToBoard(v.cells)">
               <GridArt :cells="v.cells" :band-height="s.bandHeight" :cell="12" />
             </button>
-            <figcaption class="mono">{{ v.w }}×{{ v.h }}<em v-if="v.master">usta</em></figcaption>
+            <figcaption class="mono">
+              {{ v.w }}×{{ v.h }}<em v-if="v.master">usta</em>
+            </figcaption>
+            <button
+              class="ghost tiny"
+              :class="{ on: isRejected(v.id) }"
+              :title="v.master
+                ? 'AFİŞTEN gelen biçim — ustanın fiilen kullandığı form'
+                : v.id"
+              @click="toggleReject(v)"
+            >{{ isRejected(v.id) ? 'geri al' : 'çıkar' }}</button>
+            <p v-if="decisionsUsing(v.id).length" class="usedby mono">
+              {{ decisionsUsing(v.id).length }} kararda:
+              {{ decisionsUsing(v.id).join(' ') }}
+            </p>
           </figure>
           <p v-if="!libVariants.length" class="note">bu harfin kütüphanede biçimi yok</p>
         </div>
 
+        <p v-if="rejects.length" class="note warn-note">
+          <b>{{ rejects.length }} biçim çıkarılmak üzere işaretli.</b>
+          Dışa aktar · <span class="mono">tools/glyph-rejects.json</span> ·
+          <span class="mono">npm run glyphs:build</span>. Çıkarılan biçme atıfta
+          bulunan onaylı kararlar varsa build onları da sayar.
+        </p>
+
         <h3 class="sub-head">Yeni varyant çiz</h3>
         <label class="field">
-          <span class="label">not (ne için gerekti)</span>
+          <span class="label">not (ne için gerekti · ya da neden hatalı)</span>
           <input v-model="s.vnote" class="mono vnote" placeholder="dem, rde, had için dar göbekli d" />
+        </label>
+        <label class="check">
+          <input v-model="s.vshort" type="checkbox" />
+          <span>
+            kısa biçim — bandı doldurmuyor, üstüne komşunun noktası ya da
+            uzantısı gelecek (<span class="mono">ö.short</span>,
+            <span class="mono">ğ.short</span> gibi)
+          </span>
         </label>
         <PixelCanvas
           ref="glyphBoard"
@@ -813,6 +913,7 @@ function clearAll() {
           nameless
           :band-height="s.bandHeight"
           :width="4"
+          :allow-short="s.vshort"
           :blocked="variantBlocked"
           @change="onGlyphDraw"
           @save="saveVariant"
@@ -931,6 +1032,7 @@ function clearAll() {
           <button class="solid" @click="exportLabels">blok etiketleri</button>
           <button class="solid" @click="exportDrawn">çizimler</button>
           <button class="solid" @click="exportVariants">harf varyantları</button>
+          <button class="solid" @click="exportRejects">çıkarılacak biçimler</button>
           <button class="ghost" @click="clearAll">çift kararlarını sil</button>
         </div>
         <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
@@ -1429,6 +1531,28 @@ figcaption em {
 .varlist .plain:hover {
   outline: 2px solid var(--signal);
   outline-offset: 2px;
+}
+/* Çıkarılmak üzere işaretli biçim: soluk ve üstü çizili. Renk değil, yapı. */
+.varlist figure.out {
+  opacity: 0.45;
+}
+.varlist figure.out figcaption {
+  text-decoration: line-through;
+}
+.varlist .ghost.tiny.on {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.varlist .usedby {
+  margin: 0;
+  max-width: 120px;
+  color: var(--signal);
+  font-weight: 700;
+}
+.warn-note {
+  border-left: 3px solid var(--signal);
+  padding-left: var(--u);
 }
 .chips.letters {
   margin-bottom: calc(var(--u) * 2);

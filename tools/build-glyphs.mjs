@@ -12,6 +12,7 @@ const RAW = 'build/glyphs.raw.json'
 const LABELS = 'tools/labels.json'
 const EXTRA = 'tools/glyphs.extra.json'
 const BLOCKS = 'tools/block-labels.json'
+const REJECTS = 'tools/glyph-rejects.json'
 const OUT = 'src/data/glyphs.json'
 
 // v1 karakter seti. Bu listede olmayan hiçbir şey kütüphaneye girmez.
@@ -21,6 +22,14 @@ const raw = JSON.parse(readFileSync(RAW, 'utf8'))
 const labels = existsSync(LABELS) ? JSON.parse(readFileSync(LABELS, 'utf8')) : {}
 const extra = existsSync(EXTRA) ? JSON.parse(readFileSync(EXTRA, 'utf8')) : { glyphs: [] }
 const blocks = existsSync(BLOCKS) ? JSON.parse(readFileSync(BLOCKS, 'utf8')) : { labels: [] }
+const rejects = existsSync(REJECTS) ? JSON.parse(readFileSync(REJECTS, 'utf8')) : { rejected: [] }
+
+// Çıkarılacak biçimler. Kaynak çizimden gelen her biçim doğru değil — bazıları
+// hatalı, bazıları yanlış harfe etiketlenmiş. Kimlik biçimden türediği için
+// kimliğe göre çıkarmak kütüphane değişse de aynı biçmi tutar.
+const rejectIds = new Set((rejects.rejected ?? []).map((r) => r.id).filter(Boolean))
+const rejectSources = new Set((rejects.rejected ?? []).map((r) => r.source).filter(Boolean))
+const rejected = []
 
 const byChar = new Map(CHARSET.map((c) => [c, []]))
 const skipped = []
@@ -136,7 +145,17 @@ for (const [char, variants] of byChar) {
   if (!variants.length) continue
   // Afişten doğrulanmış biçimler önce — varsayılan varyant oradan seçilsin.
   variants.sort((a, b) => Number(Boolean(b.master)) - Number(Boolean(a.master)) || a.w - b.w || a.h - b.h)
-  glyphs[char] = variants.map((v) => ({ id: shapeId(char, v.cells), ...v }))
+  const all = variants.map((v) => ({ id: shapeId(char, v.cells), ...v }))
+  glyphs[char] = all.filter((v) => {
+    const out = rejectIds.has(v.id) || rejectSources.has(v.source)
+    if (out) rejected.push({ char, id: v.id, source: v.source, w: v.w, h: v.h, master: v.master })
+    return !out
+  })
+  if (!glyphs[char].length) {
+    throw new Error(
+      `'${char}' için hiç biçim kalmadı — çıkarılanları gözden geçir (tools/glyph-rejects.json)`
+    )
+  }
 
   const ids = new Set(glyphs[char].map((v) => v.id))
   if (ids.size !== glyphs[char].length) {
@@ -165,6 +184,34 @@ console.log(`afişten   : ${fromMaster} biçim (doğruluk kaynağı)`)
 console.log(`harf      : ${Object.keys(glyphs).length}/${CHARSET.length}`)
 console.log(`varyant   : ${Object.values(glyphs).reduce((n, v) => n + v.length, 0)}`)
 console.log(`eksik     : ${missing.length ? missing.join(' ') : '—'}`)
+if (rejected.length) {
+  console.log(`çıkarıldı : ${rejected.length}`)
+  for (const r of rejected) {
+    const why = (rejects.rejected ?? []).find((x) => x.id === r.id || x.source === r.source)
+    console.log(
+      `  ${r.id}  ${r.source}  ${r.w}×${r.h}${r.master ? '  ⚠ AFİŞTEN' : ''}` +
+        (why?.reason ? `  — ${why.reason}` : '')
+    )
+  }
+  // Çıkarılan biçme atıfta bulunan onaylı karar varsa sessizce bozulur:
+  // karar o kimliği arar, bulamaz, yerleşim uygulanmaz. Burada söylenir.
+  const DEC = 'src/data/pair-decisions.json'
+  if (existsSync(DEC)) {
+    const dec = JSON.parse(readFileSync(DEC, 'utf8'))
+    const gone = new Set(rejected.map((r) => r.id))
+    const orphan = []
+    for (const [pair, rows] of Object.entries(dec.ok ?? {})) {
+      for (const row of rows) {
+        if (gone.has(row[0]) || gone.has(row[1])) orphan.push(`${pair} [${row[0]} ${row[1]}]`)
+      }
+    }
+    if (orphan.length) {
+      console.log(`\n⚠ ÇIKARILAN BİÇME ATIFTA BULUNAN ${orphan.length} ONAYLI KARAR VAR:`)
+      for (const o of orphan) console.log(`  ${o}`)
+      console.log('  Bu kararlar artık uygulanmaz. Çiftleri lab\'de yeniden karara bağla.')
+    }
+  }
+}
 if (skipped.length) {
   console.log(`atlandı   : ${skipped.length}`)
   for (const s of skipped) console.log(`  ${s.key}  ${s.reason}`)

@@ -1,0 +1,9 @@
+{
+  "_note": "Kütüphaneden ÇIKARILACAK biçimler. Kaynak çizimden (letters.svg) gelen bazı biçimler hatalı ya da yanlış harfe etiketlenmiş; burada listelenenler src/data/glyphs.json'a hiç girmez. Lab'deki Harf varyantları panelinden işaretlenir, oradan dışa aktarılır.",
+  "_semantics": {
+    "id": "biçim özeti kimliği (d.coso1 gibi) — biçimden türediği için kütüphane değişse de sabit",
+    "source": "ya da kaynak anahtarı (letters.3.1 gibi); ikisinden biri yeter",
+    "reason": "neden çıkarıldığı — sonradan bakan anlasın"
+  },
+  "rejected": []
+}

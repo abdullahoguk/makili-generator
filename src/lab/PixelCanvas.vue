@@ -21,6 +21,10 @@ const props = defineProps({
   width: { type: Number, default: 7 },
   cell: { type: Number, default: 26 },
   mode: { type: String, default: 'block' }, // 'block' | 'glyph'
+  // Kısa biçme izin: kütüphanede ö.short, ğ.short gibi 6-7 satırlık biçimler
+  // var ve geçerli — üstlerine komşunun noktası/uzantısı geliyor. Bandı
+  // doldurma zorunluluğu bu yüzden mutlak değil, bilinçli bir seçim.
+  allowShort: { type: Boolean, default: false },
   // Ad alanı dışarıdan yönetiliyorsa (harf zaten seçilmişse) gizlenir.
   nameless: { type: Boolean, default: false },
   // Kaydetmeyi engelleyen dış durum: aynı biçim zaten var gibi.
@@ -77,7 +81,7 @@ const report = computed(() => {
     w: b.w,
     h: b.h,
     ok: glyphMode.value
-      ? corners.length === 0 && fillsBand
+      ? corners.length === 0 && (fillsBand || props.allowShort)
       : corners.length === 0 && s.topGap === 0 && s.wideVoid === 0
   }
 })
@@ -159,8 +163,9 @@ const copy = () => navigator.clipboard?.writeText(ascii.value).catch(() => {})
       <div v-if="!glyphMode" :class="{ bad: report.topGap > 0 }">
         <dt>üstte boşluk</dt><dd>{{ report.topGap }}</dd>
       </div>
-      <div v-if="glyphMode" :class="{ bad: !report.fillsBand }">
-        <dt>bandı dolduruyor</dt><dd>{{ report.fillsBand ? 'evet' : 'hayır' }}</dd>
+      <div v-if="glyphMode" :class="{ bad: !report.fillsBand && !allowShort }">
+        <dt>bandı dolduruyor</dt>
+        <dd>{{ report.fillsBand ? 'evet' : allowShort ? 'hayır — kısa biçim' : 'hayır' }}</dd>
       </div>
       <div :class="{ bad: !glyphMode && report.wideVoid > 0 }">
         <dt>{{ glyphMode ? 'kendi deliği' : 'geniş delik' }}</dt>
