@@ -114,6 +114,35 @@ export function widthMap(variants, maxWidth) {
   return out
 }
 
+/**
+ * Bir harfin tüm varyantlarından, genişlik -> O GENİŞLİKTEKİ BÜTÜN biçimler.
+ *
+ * `widthMap` her genişlik için tek biçim tutar; hizalama yalnız genişliğe
+ * baktığı sürece bu yeterliydi. Ama aynı genişlikte birden çok tasarım var
+ * ('a'nın 11 biçiminin hepsi 3 birim) ve hangisinin doğru olduğu komşusuna
+ * bağlı. Tek biçim tutmak o seçimi daha baştan yok ediyordu — elle çizilen
+ * varyantlar dizgide hiç görünmüyordu.
+ *
+ * Liste türetilmemişten türetilmişe doğru sıralı; aynı hücre kümesi bir kez.
+ */
+export function widthOptions(variants, maxWidth) {
+  const out = new Map()
+  for (const v of variants) {
+    for (const [w, g] of widthLadder(v, maxWidth)) {
+      const list = out.get(w) ?? []
+      const sig = g.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
+      if (!list.some((o) => o.sig === sig)) list.push({ sig, g })
+      out.set(w, list)
+    }
+  }
+  return new Map(
+    [...out].map(([w, list]) => [
+      w,
+      list.sort((a, b) => cost(a.g) - cost(b.g)).map((o) => o.g)
+    ])
+  )
+}
+
 const cost = (g) => (g.derived ? g.derived.widenBy ?? g.derived.heightenBy ?? 0 : 0)
 
 // ---------------------------------------------------------------- yükseklik

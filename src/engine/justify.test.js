@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { tokenize, lineWidth, naturalWidth, WORD_GAP, LETTER_GAP } from './layout.js'
-import { reachableWidths, commonWidths, solveLine, justify, compose } from './justify.js'
+import { reachableWidths, commonWidths, solveLine, justify, compose, pairVoid } from './justify.js'
+import { widthOptions } from './derive.js'
+import { variantsOf, defaultVariant } from './glyphs.js'
+import { scoreBlock } from './fit.js'
+import { bbox } from './grid.js'
 
 describe('reachableWidths', () => {
   it('tek harf için harfin genişlik merdivenini verir', () => {
@@ -185,5 +189,55 @@ describe('justify: genişlik mümkün olduğunca eşit', () => {
     expect(left.width).toBe(right.width)
     const minX = (c) => c.lines[0].x
     expect(minX(right)).toBeGreaterThan(minX(left))
+  })
+})
+
+describe('doku: aynı genişlikte biçim seçimi', () => {
+  it('bir genişlikte birden çok biçim taşınır', () => {
+    // 'a'nın bütün biçimleri 3 birim. Tek biçim tutulsaydı elle çizilen
+    // varyantlar dizgide hiç görünmezdi.
+    const def = defaultVariant('a')
+    const pool = (variantsOf('a') ?? []).filter((v) => v.h === def.h)
+    const opts = widthOptions(pool, 9)
+    expect(opts.get(3).length).toBeGreaterThan(1)
+    // Aynı hücre kümesi iki kez listelenmez.
+    const sigs = opts.get(3).map((g) => g.cells.map(([x, y]) => `${x},${y}`).sort().join('|'))
+    expect(new Set(sigs).size).toBe(sigs.length)
+  })
+
+  it('pairVoid yan yana gelmenin ÜRETTİĞİ deliği ölçer, harfin kendi ağzını değil', () => {
+    const l = defaultVariant('l')
+    // Kendi başına 'l' boşlukludur; kendi ağzı eşleşme bedeline girmemeli.
+    expect(pairVoid(l, l)).toBeGreaterThanOrEqual(0)
+    expect(pairVoid(null, l)).toBe(0)
+    expect(pairVoid(l, null)).toBe(0)
+  })
+
+  it('doku bedeli açıkken satırda daha az delik kalır', () => {
+    const text = 'hak bir gönül verdi bana\nha demeyen hayran olur'
+    const holes = (o) => {
+      const r = compose(text, o)
+      expect(r.ok).toBe(true)
+      let total = 0
+      for (const l of r.lines) {
+        const line = l.line ?? l
+        const cells = []
+        for (const it of line.items) {
+          const b = bbox(it.variant.cells)
+          for (const [x, y] of it.variant.cells) cells.push([x - b.x + it.x, y - b.y + it.y])
+        }
+        total += scoreBlock(cells, 9).wideVoid
+      }
+      return total
+    }
+    const off = holes({ voidCost: 0, densityCost: 0 })
+    const on = holes({})
+    expect(on).toBeLessThan(off)
+  })
+
+  it('doku bedeli hedef genişliği bozmaz', () => {
+    const r = compose('hak bir gönül verdi bana\nha demeyen hayran olur')
+    expect(r.ok).toBe(true)
+    for (const l of r.lines) expect((l.line ?? l).width).toBe(r.target)
   })
 })

@@ -13,14 +13,66 @@
 // raporlanır.
 
 import { variantsOf, defaultVariant } from './glyphs.js'
-import { widthMap } from './derive.js'
+import { widthOptions } from './derive.js'
 import { tokenize, layoutLine, naturalWidth, stack, LETTER_GAP, WORD_GAP } from './layout.js'
 import { thickenStack, weightToAmount } from './render/weight.js'
+import { scoreBlock, intrinsicVoid, BAND_HEIGHT } from './fit.js'
+import { bbox } from './grid.js'
 
 export const DEFAULTS = {
   maxGlyphWidth: 9, // bir harf en fazla bu kadar geniş olabilir
   maxWiden: 4, // tek harf en fazla bu kadar birim genişletilebilir
-  tallOnly: true // yalnız tam boy gövdeler; kısa varyantlar dizgiyi bozuyor
+  tallOnly: true, // yalnız tam boy gövdeler; kısa varyantlar dizgiyi bozuyor
+  // Komşu iki harfin yan yana gelmesinden doğan fazladan deliğin birim
+  // bedeli. 0 = eski davranış (yalnız genişliğe bak). 1 birimlik delik, bir
+  // harfi 1 birim germekle aynı bedelde.
+  voidCost: 1,
+  // Biçimin KENDİ boşluğunun birim bedeli. Eşleşme bedeli her glifin kendi
+  // ağzını düşer — iki harfi yan yana koymanın ürettiği fazlalığı ölçmek
+  // için doğru olan bu. Ama aynı harfin aynı genişlikteki biçimleri
+  // arasında seçerken asıl ayırt edici tam o kendi boşluğu: 'a'nın 3 birimlik
+  // 11 biçiminden hangisi daha sık dokuyorsa o. Ayrı terim olmasının sebebi
+  // bu; ağırlığı daha düşük, yoksa harf kimliğini bastırır.
+  densityCost: 0.35
+}
+
+// ---------------------------------------------------------------- doku
+//
+// Hizalama uzun süre yalnız GENİŞLİĞE baktı: hedefe ulaşan en ucuz genişlik
+// ataması. Ama aynı genişlikte birden çok biçim var ve hangisinin doğru
+// olduğu komşusuna bağlı — yan yana iki biçim arasında kapanmamış delik
+// kalabiliyor. Dizgi hedefi tutturuyor ama doku deliniyordu.
+//
+// Ölçü lab'dekiyle aynı: iki glifi normal açıklıkla yan yana koy, oluşan
+// geniş deliği ölç, her ikisinin KENDİ açık ağzını düş. Kalan, yan yana
+// gelmenin ürettiği fazladan boşluktur.
+
+const voidCache = new Map()
+
+/** Biçimin kendi geniş boşluğu — ne kadar seyrek dokuduğu. */
+export function ownVoid(glyph, bandHeight = BAND_HEIGHT) {
+  return intrinsicVoid(glyph.cells, bandHeight, glyph.id).wide
+}
+
+export function pairVoid(left, right, bandHeight = BAND_HEIGHT) {
+  if (!left || !right) return 0
+  const k = `${left.id}|${right.id}|${bandHeight}`
+  const hit = voidCache.get(k)
+  if (hit !== undefined) return hit
+
+  const lb = bbox(left.cells)
+  const rb = bbox(right.cells)
+  const L = left.cells.map(([x, y]) => [x - lb.x, y - lb.y + (bandHeight - lb.h)])
+  const R = right.cells.map(([x, y]) => [
+    x - rb.x + lb.w + LETTER_GAP,
+    y - rb.y + (bandHeight - rb.h)
+  ])
+  const s = scoreBlock([...L, ...R], bandHeight)
+  const li = intrinsicVoid(left.cells, bandHeight, left.id)
+  const ri = intrinsicVoid(right.cells, bandHeight, right.id)
+  const out = Math.max(0, s.wideVoid - li.wide - ri.wide)
+  voidCache.set(k, out)
+  return out
 }
 
 const cache = new Map()
@@ -34,7 +86,7 @@ function widthsFor(char, opts) {
   const all = variantsOf(char) ?? []
   const def = defaultVariant(char)
   const pool = opts.tallOnly ? all.filter((v) => v.h === def.h) : all
-  const map = widthMap(pool.length ? pool : all, opts.maxGlyphWidth)
+  const map = widthOptions(pool.length ? pool : all, opts.maxGlyphWidth)
 
   // Tek harfin aşırı şişmesini engelle.
   const base = Math.min(...map.keys())
@@ -68,9 +120,14 @@ function optionsFor(char, index, opts) {
   const map = widthsFor(char, opts)
   const pin = opts.pins?.[index]
   if (pin == null) return map
-  const g = map.get(pin)
-  return g ? new Map([[pin, g]]) : map
+  const list = map.get(pin)
+  // Sabitlenen GENİŞLİK; o genişlikteki biçimler arasından seçim çözücüde
+  // kalır, komşusuna göre karar verilsin.
+  return list ? new Map([[pin, list]]) : map
 }
+
+/** Bir harfin o anki seçeneklerinden ilki — varsayılan biçim. */
+const firstOf = (map, w) => map.get(w)?.[0] ?? null
 
 /** Satırın ulaşabildiği toplam genişlikler. */
 export function reachableWidths(tokens, options = {}) {
@@ -119,21 +176,36 @@ export function solveLine(tokens, target, options = {}) {
 
   const maps = chars.map((t, i) => optionsFor(t.char, i, opts))
   const bases = maps.map((m) => Math.min(...m.keys()))
+  const band = opts.bandHeight ?? BAND_HEIGHT
+  const voidCost = opts.voidCost ?? DEFAULTS.voidCost
+  const densityCost = opts.densityCost ?? DEFAULTS.densityCost
 
-  // dp[i] : i. harften sonra ulaşılan genişlik -> { cost, w, prev }
-  let dp = new Map([[0, { cost: 0, from: null, w: 0 }]])
+  // Durum artık yalnız ulaşılan genişlik değil, SON SEÇİLEN BİÇİM de.
+  // Doku bedeli komşuluğa bağlı olduğu için önceki harfin hangi biçimde
+  // olduğunu bilmeden sonraki harfin bedeli hesaplanamaz.
+  //
+  // Anahtar: `${ulaşılanGenişlik}|${glifKimliği}`.
+  let dp = new Map([['0|', { cost: 0, sum: 0, from: null, glyph: null }]])
   const layers = [dp]
 
   for (let i = 0; i < chars.length; i++) {
     const remainingMin = bases.slice(i + 1).reduce((a, b) => a + b, 0)
     const next = new Map()
-    for (const [sum, state] of dp) {
-      for (const [w, glyph] of maps[i]) {
-        const s = sum + w
+    for (const [prevKey, state] of dp) {
+      for (const [w, list] of maps[i]) {
+        const s = state.sum + w
         if (s + remainingMin > goal) continue // bu daldan hedefe yetişilemez
-        const c = state.cost + stretchCost(w - bases[i], glyph)
-        const cur = next.get(s)
-        if (!cur || c < cur.cost) next.set(s, { cost: c, from: sum, w, glyph })
+        const stretch = stretchCost(w - bases[i], list[0])
+        for (const glyph of list) {
+          const c =
+            state.cost +
+            stretch +
+            voidCost * pairVoid(state.glyph, glyph, band) +
+            densityCost * ownVoid(glyph, band)
+          const k = `${s}|${glyph.id}`
+          const cur = next.get(k)
+          if (!cur || c < cur.cost) next.set(k, { cost: c, sum: s, from: prevKey, glyph })
+        }
       }
     }
     dp = next
@@ -141,14 +213,21 @@ export function solveLine(tokens, target, options = {}) {
     if (!dp.size) return null
   }
 
-  if (!dp.has(goal)) return null
+  // Hedefe ulaşanlar arasından en ucuzu.
+  let best = null
+  let bestKey = null
+  for (const [k, st] of dp) {
+    if (st.sum !== goal) continue
+    if (!best || st.cost < best.cost) { best = st; bestKey = k }
+  }
+  if (!best) return null
 
   const out = []
-  let sum = goal
+  let key = bestKey
   for (let i = chars.length; i > 0; i--) {
-    const st = layers[i].get(sum)
+    const st = layers[i].get(key)
     out.unshift(st.glyph)
-    sum = st.from
+    key = st.from
   }
   return out
 }
@@ -189,7 +268,7 @@ export function justify(text, options = {}) {
       const pins = opts.pinsByLine?.[li]
       const chosen = glyphsOf(tokens).map((t, i) => {
         const pin = pins?.[i]
-        const g = pin != null ? optionsFor(t.char, i, { ...opts, pins }).get(pin) : null
+        const g = pin != null ? firstOf(optionsFor(t.char, i, { ...opts, pins }), pin) : null
         return g ?? defaultVariant(t.char)
       })
       return { ...layoutLine(tokens, chosen), tokens }
@@ -209,7 +288,7 @@ export function justify(text, options = {}) {
     const pins = opts.pinsByLine?.[0]
     const chosen = glyphsOf(tokens).map((t, i) => {
       const pin = pins?.[i]
-      const g = pin != null ? optionsFor(t.char, i, { ...opts, pins }).get(pin) : null
+      const g = pin != null ? firstOf(optionsFor(t.char, i, { ...opts, pins }), pin) : null
       return g ?? defaultVariant(t.char)
     })
     const line = layoutLine(tokens, chosen)

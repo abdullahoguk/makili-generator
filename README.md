@@ -26,6 +26,19 @@ doldurduğu sürece. `l` + `i` bunun tipik örneği.
 Boşluklar sabit olduğu için satırları aynı genişliğe getirmenin tek yolu harf
 genişliklerini değiştirmektir — projenin asıl problemi bu.
 
+**Hizalama yalnız genişliğe bakmaz, dokuya da bakar.** Aynı genişlikte birden
+çok biçim var ('a'nın 11 biçiminin hepsi 3 birim) ve hangisinin doğru olduğu
+komşusuna bağlı. Çözücü bu yüzden iki şeyi birlikte ölçer:
+
+- `voidCost` — yan yana iki biçimin ÜRETTİĞİ fazladan delik (her ikisinin
+  kendi açık ağzı düşülerek; ölçü lab'dekiyle aynı),
+- `densityCost` — biçimin kendi boşluğu, yani ne kadar seyrek dokuduğu.
+
+Ağırlıklar düşük tutuldu; genişlik hedefi hâlâ tam tutturulur, yalnız aynı
+hedefe götüren atamalar arasından dokusu sık olan seçilir. Varsayılan şiirde
+ölçülen etki: satırlardaki geniş delik **327 → 96 hücre**, hedef genişlik
+değişmeden (79).
+
 **Genişlik eşitliği mümkün olduğunca sağlanır.** Bütün satırların ulaşabildiği
 ortak bir genişlik varsa hepsi tam ona getirilir. Yoksa hedef en geniş satırın
 doğal genişliği olur; yetişemeyen satır kendi en büyük ulaşılabilir
