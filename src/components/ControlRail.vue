@@ -37,6 +37,19 @@ const alignOptions = [
   { value: 'right', label: 'sağ' }
 ]
 
+/**
+ * Hedefe tam ulaşamayan satırların artan payı. Hizalama açıkken de olabilir:
+ * satırların ortak bir genişliği yoksa motor en geniş satırı hedef alır,
+ * yetişemeyen satır kendi en büyük genişliğinde kalır. O boşluğun nereye
+ * gideceği — sol, orta, sağ — sanatçının kararı, o yüzden hizalama denetimi
+ * bu durumda da açık kalmalı.
+ */
+const slackLines = computed(() =>
+  (props.composed.lines ?? [])
+    .map((l, i) => ({ n: i + 1, slack: (l.line ?? l).slack ?? 0 }))
+    .filter((l) => l.slack > 0)
+)
+
 const widest = computed(() => {
   const lines = props.state.text.split('\n').filter((l) => l.trim())
   if (!lines.length) return null
@@ -129,7 +142,12 @@ const onPng = (scale) => exportPng(props.svg, `${stem.value}@${scale}x.png`, sca
         </button>
       </template>
 
-      <SegmentedControl v-else v-model="state.align" :options="alignOptions" />
+      <!-- Hizalama: satırlar hedefe tam ulaşamadığında da gerekiyor. -->
+      <SegmentedControl
+        v-if="!state.justifyOn || slackLines.length"
+        v-model="state.align"
+        :options="alignOptions"
+      />
 
       <p v-for="w in composed.warnings ?? []" :key="w" class="warn">{{ w }}</p>
 

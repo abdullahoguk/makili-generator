@@ -235,6 +235,29 @@ kütüphanede eksik olan biçimi gösterir.
 Aynı kombinasyona birden çok çizim verilebilir — bir çiftin tek doğru biçimi
 yok, varyantları var. Yalnız birebir aynı çizim iki kez eklenmez.
 
+### Harf varyantı eklemek
+
+Çift ve üçlü denemeleri bir yere kadar: kütüphanede o harfin uygun biçimi
+yoksa hiçbir yerleşim kurtarmaz. Lab'deki **Harf varyantları** panelinde tek
+harfin yeni biçimi çizilir.
+
+Tek harfte kural başka şey söyler: harfin kendi açık ağzı (`n`'in altı,
+`u`'nun üstü) zorunlu olarak geniş boşluktur, hata değil — o yüzden tahtanın
+`glyph` kipinde delik ölçülür ama suç sayılmaz. Zorunlu olan ikisi: köşeden
+birleşme olmaması ve **bandı baştan sona doldurmak**. Aynı biçim kütüphanede
+ya da listede varsa kayıt engellenir (biçim imzası konumdan bağımsız).
+
+Panelden çıkan JSON doğrudan `tools/glyphs.extra.json`'un `ascii` dizisine
+girer:
+
+```bash
+# lab > harf varyantları > dışa aktar, çıktıyı ascii dizisine ekle
+npm run glyphs:build
+```
+
+Build ASCII'yi hücrelere çevirir, değişmezlere karşı doğrular ve içerik
+hash'inden kimlik üretir (`extra:d.el1` → `d.5nvpv`).
+
 ### Referansı yeniden ölçmek
 
 ```bash

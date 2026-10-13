@@ -3,6 +3,14 @@
 //
 // Kurallar çizerken denetlenir, sonradan değil: köşe teması, bant doldurma,
 // geniş boşluk, parça sayısı. Böylece çizim sırasında neyin bozulduğu görünür.
+//
+// İki kip var, çünkü kural tek harfte başka şey demek:
+//
+//   block  birkaç harflik blok. Geniş delik HATADIR — blokta kapanmamış
+//          boşluk kalmamalı.
+//   glyph  tek harfin varyantı. Harfin kendi açık ağzı (n'in altı, u'nun
+//          üstü) zorunlu olarak geniş boşluktur; hata değil, ölçü. Buna
+//          karşılık bandı baştan sona doldurmak ZORUNLUDUR.
 
 import { computed, ref, watch } from 'vue'
 import { cornerTouches, components, toAscii, bbox } from '../engine/grid.js'
@@ -11,9 +19,14 @@ import { scoreBlock } from '../engine/fit.js'
 const props = defineProps({
   bandHeight: { type: Number, default: 9 },
   width: { type: Number, default: 7 },
-  cell: { type: Number, default: 26 }
+  cell: { type: Number, default: 26 },
+  mode: { type: String, default: 'block' }, // 'block' | 'glyph'
+  // Ad alanı dışarıdan yönetiliyorsa (harf zaten seçilmişse) gizlenir.
+  nameless: { type: Boolean, default: false },
+  // Kaydetmeyi engelleyen dış durum: aynı biçim zaten var gibi.
+  blocked: { type: String, default: '' }
 })
-const emit = defineEmits(['save'])
+const emit = defineEmits(['save', 'change'])
 
 const W = ref(props.width)
 watch(() => props.width, (v) => { W.value = v })
@@ -44,6 +57,8 @@ const up = () => { painting.value = null }
 
 const cells = computed(() => [...on.value].map((k) => k.split(',').map(Number)))
 
+const glyphMode = computed(() => props.mode === 'glyph')
+
 const report = computed(() => {
   const c = cells.value
   if (!c.length) return null
@@ -51,18 +66,26 @@ const report = computed(() => {
   const parts = components(c)
   const s = scoreBlock(c, props.bandHeight)
   const b = bbox(c)
+  // topGap = bant - yükseklik, yani bandı doldurmakla aynı ölçü.
+  const fillsBand = b.h === props.bandHeight
   return {
     corners: corners.length,
     parts: parts.length,
     topGap: s.topGap,
     wideVoid: s.wideVoid,
+    fillsBand,
     w: b.w,
     h: b.h,
-    ok: corners.length === 0 && s.topGap === 0 && s.wideVoid === 0
+    ok: glyphMode.value
+      ? corners.length === 0 && fillsBand
+      : corners.length === 0 && s.topGap === 0 && s.wideVoid === 0
   }
 })
 
 const ascii = computed(() => (cells.value.length ? toAscii(cells.value) : ''))
+
+// Dışarıda canlı denetim yapılabilsin: aynı biçim zaten var mı gibi.
+watch(ascii, (v) => emit('change', v))
 
 function clear() {
   on.value = new Set()
@@ -83,7 +106,7 @@ const setLabel = (v) => { label.value = v }
 defineExpose({ load, clear, setLabel })
 
 function save() {
-  if (!cells.value.length) return
+  if (!cells.value.length || props.blocked) return
   emit('save', { chars: label.value.trim(), art: ascii.value.split('\n') })
 }
 
@@ -97,11 +120,16 @@ const copy = () => navigator.clipboard?.writeText(ascii.value).catch(() => {})
         <span class="label">genişlik</span>
         <input v-model.number="W" type="number" min="1" max="24" />
       </label>
-      <label class="field grow">
+      <label v-if="!nameless" class="field grow">
         <span class="label">bu blok hangi harf(ler)</span>
         <input v-model="label" class="mono" placeholder="ad · rd · lu" />
       </label>
-      <button class="solid" :disabled="!report || !label.trim()" @click="save">kaydet</button>
+      <button
+        class="solid"
+        :disabled="!report || (!nameless && !label.trim()) || Boolean(blocked)"
+        :title="blocked || 'çizimi kaydet'"
+        @click="save"
+      >kaydet</button>
       <button class="ghost" @click="copy">ascii kopyala</button>
       <button class="ghost" @click="clear">temizle</button>
     </div>
@@ -128,16 +156,21 @@ const copy = () => navigator.clipboard?.writeText(ascii.value).catch(() => {})
       <div :class="{ bad: report.corners > 0 }">
         <dt>köşe teması</dt><dd>{{ report.corners }}</dd>
       </div>
-      <div :class="{ bad: report.topGap > 0 }">
+      <div v-if="!glyphMode" :class="{ bad: report.topGap > 0 }">
         <dt>üstte boşluk</dt><dd>{{ report.topGap }}</dd>
       </div>
-      <div :class="{ bad: report.wideVoid > 0 }">
-        <dt>geniş delik</dt><dd>{{ report.wideVoid }}</dd>
+      <div v-if="glyphMode" :class="{ bad: !report.fillsBand }">
+        <dt>bandı dolduruyor</dt><dd>{{ report.fillsBand ? 'evet' : 'hayır' }}</dd>
+      </div>
+      <div :class="{ bad: !glyphMode && report.wideVoid > 0 }">
+        <dt>{{ glyphMode ? 'kendi deliği' : 'geniş delik' }}</dt>
+        <dd>{{ report.wideVoid }}</dd>
       </div>
       <div><dt>parça</dt><dd>{{ report.parts }}</dd></div>
       <div><dt>ölçü</dt><dd>{{ report.w }}×{{ report.h }}</dd></div>
     </dl>
     <p v-else class="report mono dim">boş</p>
+    <p v-if="blocked" class="report mono bad-line">{{ blocked }}</p>
   </div>
 </template>
 
@@ -238,6 +271,10 @@ const copy = () => navigator.clipboard?.writeText(ascii.value).catch(() => {})
 }
 .dim {
   color: var(--ink-mute);
+}
+.bad-line {
+  color: var(--signal);
+  font-weight: 700;
 }
 
 .solid,

@@ -14,13 +14,14 @@ import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
 import { layoutWord } from '../engine/sequence.js'
 import { hasDecisions, unsolvedPairs } from '../engine/decisions.js'
 import { CHARSET, variantsOf } from '../engine/glyphs.js'
-import { fromAscii, toAscii } from '../engine/grid.js'
+import { fromAscii, toAscii, bbox } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
 import reference from '../data/reference.json'
 
 const STORE = 'makili.pair-decisions.v1'
 const STORE_LABELS = 'makili.block-labels.v1'
 const STORE_DRAWN = 'makili.drawn-blocks.v1'
+const STORE_VARIANTS = 'makili.glyph-variants.v1'
 
 const s = reactive({
   left: 'l',
@@ -32,6 +33,9 @@ const s = reactive({
   strict: false,
   maxInterlock: 3,
   onlyUndecided: false,
+  // harf varyantı tahtası
+  vletter: 'a',
+  vnote: '',
   word: 'hakbir',
   // Çift kuyruğu bu metinden çıkar: 841 çifti tek tek gezmek yerine
   // gerçekten geçen çiftlere, sıklık sırasına göre bakılır.
@@ -194,6 +198,112 @@ function saveDrawn(block) {
 const removeDrawn = (id) => { drawn.value = drawn.value.filter((d) => d.id !== id) }
 
 /** Bir kombinasyonun kaçıncı çizimi — listede numaralandırmak için. */
+// ---- harf varyantları ----------------------------------------------------
+//
+// Çiftler ve üçlüler bir yere kadar: kütüphanede o harfin uygun bir biçimi
+// yoksa hiçbir yerleşim kurtarmaz. Burada tek harfin yeni varyantı çiziliyor.
+// Kayıt tools/glyphs.extra.json'un beklediği biçimde dışa aktarılır, oradan
+// `npm run glyphs:build` ile kütüphaneye girer.
+
+const glyphBoard = ref(null)
+const variants = ref(loadVariants())
+
+function loadVariants() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_VARIANTS) ?? '[]')
+  } catch {
+    return []
+  }
+}
+watch(variants, (v) => {
+  try { localStorage.setItem(STORE_VARIANTS, JSON.stringify(v)) } catch { /* yok say */ }
+}, { deep: true })
+
+/** Biçim imzası — hücre kümesi, kutunun sol üstüne taşınmış. Konum fark etmez. */
+function shapeSig(cells) {
+  const b = bbox(cells)
+  return cells
+    .map(([x, y]) => `${x - b.x},${y - b.y}`)
+    .sort()
+    .join('|')
+}
+
+/** Kütüphanedeki varyantlar — türetilmiş değil, asıl biçimler. */
+const libVariants = computed(() => variantsOf(s.vletter) ?? [])
+
+/** Bu harf için çizilmiş yeni varyantlar. */
+const myVariants = computed(() => variants.value.filter((v) => v.char === s.vletter))
+
+/** Tahtadaki anlık çizim — yinelenme denetimi için canlı okunur. */
+const glyphArt = ref('')
+const onGlyphDraw = (art) => { glyphArt.value = art }
+
+/** Kaydetmeyi engelleyen durum: aynı biçim kütüphanede ya da listede var mı. */
+const variantBlocked = computed(() => {
+  const art = glyphArt.value
+  if (!art) return ''
+  const sig = shapeSig(fromAscii(art))
+  if (libVariants.value.some((v) => shapeSig(v.cells) === sig)) {
+    return 'Bu biçim kütüphanede zaten var.'
+  }
+  if (myVariants.value.some((v) => shapeSig(fromAscii(v.art.join('\n'))) === sig)) {
+    return 'Bu biçimi zaten çizdin.'
+  }
+  return ''
+})
+
+function saveVariant({ art }) {
+  const char = s.vletter
+  const n = variants.value.filter((v) => v.char === char).length + 1
+  variants.value = [
+    ...variants.value,
+    {
+      id: `${char}.v${n}-${Date.now().toString(36)}`,
+      char,
+      source: `extra:${char}.el${n}`,
+      note: s.vnote.trim() || 'lab çizim tahtasında elle çizildi',
+      art
+    }
+  ]
+  s.vnote = ''
+  glyphBoard.value?.clear()
+  glyphArt.value = ''
+}
+
+const removeVariant = (id) => { variants.value = variants.value.filter((v) => v.id !== id) }
+
+/** Kütüphanedeki ya da çizilmiş bir biçimi tahtaya al — üzerinde oynamak için. */
+function variantToBoard(cells) {
+  glyphBoard.value?.load(toAscii(cells).split('\n'))
+  glyphArt.value = toAscii(cells)
+}
+
+/** Her harf için: kütüphanede kaç biçim var, kaç tane de sen çizdin. */
+const letterCounts = computed(() =>
+  CHARSET.map((ch) => ({
+    ch,
+    lib: (variantsOf(ch) ?? []).length,
+    mine: variants.value.filter((v) => v.char === ch).length
+  }))
+)
+
+function exportVariants() {
+  exported.value = JSON.stringify(
+    {
+      _note: 'Lab\'de çizilen harf varyantları. tools/glyphs.extra.json içindeki "ascii" dizisine eklenir, sonra npm run glyphs:build.',
+      ascii: variants.value.map((v) => ({
+        char: v.char,
+        source: v.source,
+        note: v.note,
+        art: v.art
+      }))
+    },
+    null,
+    2
+  )
+  navigator.clipboard?.writeText(exported.value).catch(() => {})
+}
+
 function drawnIndex(d) {
   const same = drawn.value.filter((x) => x.chars === d.chars)
   return same.length > 1 ? same.indexOf(d) + 1 : null
@@ -655,6 +765,68 @@ function clearAll() {
         </div>
       </section>
 
+      <section id="varyant" class="panel">
+        <h2 class="section-head">
+          <span>Harf varyantları</span>
+          <span class="dim mono">
+            {{ libVariants.length }} kütüphanede · {{ myVariants.length }} yeni
+          </span>
+        </h2>
+        <p class="note">
+          Çift ve üçlü denemeleri bir yere kadar: kütüphanede o harfin uygun
+          biçimi yoksa hiçbir yerleşim kurtarmaz. Burada <b>tek harfin</b> yeni
+          varyantını çiziyorsun. Harfin kendi açık ağzı (n'in altı, u'nun üstü)
+          delik saymaz — tek zorunluluk köşeden birleşme olmaması ve bandı
+          baştan sona doldurması. Mevcut bir biçme tıklayıp üzerinde oynayabilirsin.
+        </p>
+
+        <div class="chips letters">
+          <button
+            v-for="l in letterCounts"
+            :key="l.ch"
+            class="chip mono"
+            :class="{ on: l.ch === s.vletter, star: l.mine > 0 }"
+            :title="`${l.lib} kütüphanede${l.mine ? ` · ${l.mine} yeni` : ''}`"
+            @click="s.vletter = l.ch"
+          >{{ l.ch }}<em>{{ l.lib + l.mine }}</em></button>
+        </div>
+
+        <h3 class="sub-head">Kütüphanedeki biçimler — '{{ s.vletter }}'</h3>
+        <div class="varlist">
+          <figure v-for="v in libVariants" :key="v.id">
+            <button class="plain" :title="`${v.id} · tahtaya al`" @click="variantToBoard(v.cells)">
+              <GridArt :cells="v.cells" :band-height="s.bandHeight" :cell="12" />
+            </button>
+            <figcaption class="mono">{{ v.w }}×{{ v.h }}<em v-if="v.master">usta</em></figcaption>
+          </figure>
+          <p v-if="!libVariants.length" class="note">bu harfin kütüphanede biçimi yok</p>
+        </div>
+
+        <h3 class="sub-head">Yeni varyant çiz</h3>
+        <label class="field">
+          <span class="label">not (ne için gerekti)</span>
+          <input v-model="s.vnote" class="mono vnote" placeholder="dem, rde, had için dar göbekli d" />
+        </label>
+        <PixelCanvas
+          ref="glyphBoard"
+          mode="glyph"
+          nameless
+          :band-height="s.bandHeight"
+          :width="4"
+          :blocked="variantBlocked"
+          @change="onGlyphDraw"
+          @save="saveVariant"
+        />
+
+        <div v-if="myVariants.length" class="varlist mine">
+          <figure v-for="v in myVariants" :key="v.id">
+            <GridArt :cells="fromAscii(v.art.join('\n'))" :band-height="s.bandHeight" :cell="12" />
+            <figcaption class="mono">{{ v.source.split('.').pop() }}</figcaption>
+            <button class="ghost tiny" @click="removeVariant(v.id)">sil</button>
+          </figure>
+        </div>
+      </section>
+
       <section id="tahta" class="panel">
         <h2 class="section-head">
           <span>Çizim tahtası</span>
@@ -758,6 +930,7 @@ function clearAll() {
           <button class="solid" @click="exportJson">çift kararları</button>
           <button class="solid" @click="exportLabels">blok etiketleri</button>
           <button class="solid" @click="exportDrawn">çizimler</button>
+          <button class="solid" @click="exportVariants">harf varyantları</button>
           <button class="ghost" @click="clearAll">çift kararlarını sil</button>
         </div>
         <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
@@ -1216,6 +1389,62 @@ figcaption em {
 }
 
 /* --- çizim listesi ------------------------------------------------------ */
+
+/* Varyant şeridi: biçimler yan yana, altında ölçüsü. Tıklanabilir olanı
+   çerçeve değil imleç belli eder — çerçeve ızgarayı bulandırıyor. */
+.varlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 2);
+  margin-bottom: calc(var(--u) * 2);
+}
+.varlist figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.varlist figcaption {
+  color: var(--ink-mute);
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+}
+.varlist figcaption em {
+  font-style: normal;
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.varlist .plain {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: copy;
+  display: block;
+}
+.varlist .plain:hover {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+.chips.letters {
+  margin-bottom: calc(var(--u) * 2);
+}
+.vnote {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--paper-pure);
+  font-family: var(--mono);
+  font-size: var(--t-data);
+}
+.vnote:focus {
+  outline: 0;
+  border-color: var(--signal);
+}
 
 .drawnlist {
   display: flex;
