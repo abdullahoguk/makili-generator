@@ -60,6 +60,7 @@ src/engine/   grid → glyphs → derive → justify → render
 | `fit.js` | bant/boşluk denetimi, iki harfin yerleşimi, kenetlenme ve yuvalanma arama |
 | `sequence.js` | kelimeyi bütün olarak dizen demet araması |
 | `align.js` | ustanın bloklarını satır metniyle hizalayan DP |
+| `decisions.js` | elle verilmiş çift kararlarını çözücüye bağlar |
 | `render/svg.js` | paint / corner / weight eksenleri, presetler |
 | `export.js` | SVG indirme, canvas üzerinden PNG |
 
@@ -94,8 +95,28 @@ puanlar. Hangisinin doğru olduğu insan kararıdır; lab o kararı kaydeder.
 - **kaynaşma** — harfler birbirine değer; 1 birim kuralını deldiği için
   varsayılan kapalı, istisna olarak açılır
 
-Kararlar `localStorage`'da birikir, JSON olarak dışa aktarılıp
-`tools/pair-decisions.json` olarak kaydedilir ve çözücüyü besler.
+### Karar semantiği
+
+```
+★ prefer   bu çiftte her zaman bu yerleşim
+✓ ok       kullanılabilir; çiftte ok varsa çözücü YALNIZ onlar arasından seçer
+  işaretsiz karar verilmemiş; hiç ok yoksa motor kendi puanıyla seçer
+✗ no       asla
+```
+
+Bu sıra pratik bir gerekçeye dayanıyor: her çiftte "olmaz"lar çoğunluk, tek tek
+işaretlemek anlamsız. Birkaç iyiyi işaretlemek yetiyor.
+
+Kararlar `localStorage`'da biriker, JSON olarak dışa aktarılıp
+`tools/pair-decisions.json` ve `src/data/pair-decisions.json` olarak kaydedilir.
+`node tools/analyze-decisions.mjs` onları denetler: geçersiz kayıt, hiç onay
+almamış biçim, çözümsüz çift.
+
+### Glif kimlikleri biçimden türer
+
+`a.e9mkh` gibi. Konuma dayalı kimlik (`a.1`) kırılgandı: kütüphaneden bir biçim
+çıkınca sonrakilerin numarası kayıyor ve ona atıfta bulunan kararlar sessizce
+yanlış glifi gösteriyordu. Biçim özeti bu bağı sabitler.
 
 **Kuyruk.** 29 harfin 841 çiftini gezmeye gerek yok: kuyruk, verilen metinde
 fiilen geçen çiftleri sıklık sırasına göre listeler (örnek şiirde 44 çift) ve

@@ -1,36 +1,31 @@
 {
   "_note": "Belirsiz satırların elle çözümü. Anahtar: <set>.<row>.<variant>. Belirsiz olmayan satırlar extract tarafından otomatik etiketlenir. Boş dize = kütüphaneye alma.",
-
   "_evidence": {
     "aksan düzeni": "sources/hakbir normal.png içindeki 'gönül' kelimesi: ö ve ü, gövdenin üstünde AYRI İKİ NOKTA ile yazılıyor, gövde 7 satıra sıkışıyor (nokta 1 + boşluk 1 + gövde 7 = 9). 'i' ile aynı mantık. Sedilla (ç) ise altta boyun + bar, yine 2 satır.",
     "s satırı": "v3/v4/v5 sedilla taşımıyor — bunlar ş değil, 4 birim genişliğinde s varyantları.",
-    "g satırı": "Hiçbir varyantta ğ şapkası yok; beşi de g."
+    "g satırı": "Hiçbir varyantta ğ şapkası yok; beşi de g.",
+    "d satırı": "letters.3.3 bir harf değil, 1x7 düz çubuk. Satır konumuna bakarak 'd' sanılmıştı; yükseklik türetmesiyle 1x9'a uzayıp 'ı' ile aynı görünüyordu. Çift kararlarında hiç 'olur' almadı. Kütüphaneye alınmıyor."
   },
-
   "_unresolved": {
     "letters.20": "Alfabetik olarak u ile y arasında; 'u + sağ üst kol' biçiminde. ü mü v mi belirsiz — afişteki ü noktalı olduğuna göre bu başka bir şey. Onay gelene dek kütüphaneye alınmıyor."
   },
-
   "letters.2.0": "c",
   "letters.2.1": "c",
   "letters.2.2": "ç",
-
   "letters.6.0": "g",
   "letters.6.1": "g",
   "letters.6.2": "g",
   "letters.6.3": "g",
   "letters.6.4": "g",
-
   "letters.8.0": "ı",
   "letters.8.1": "i",
-
   "letters.17.0": "s",
   "letters.17.1": "s",
   "letters.17.2": "s",
   "letters.17.3": "s",
   "letters.17.4": "s",
   "letters.17.5": "s",
-
   "letters.20.0": "",
-  "letters.20.1": ""
+  "letters.20.1": "",
+  "letters.3.3": ""
 }

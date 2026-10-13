@@ -10,6 +10,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import GridArt from './GridArt.vue'
 import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
 import { layoutWord } from '../engine/sequence.js'
+import { hasDecisions, unsolvedPairs } from '../engine/decisions.js'
 import { CHARSET, variantsOf } from '../engine/glyphs.js'
 import { fromAscii } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
@@ -75,7 +76,10 @@ const queue = computed(() => {
       right: [...k][1],
       n,
       decided: Boolean(decisions[k] && Object.keys(decisions[k]).length),
-      preferred: Object.values(decisions[k] ?? {}).some((v) => v.verdict === 'prefer')
+      preferred: Object.values(decisions[k] ?? {}).some((v) => v.verdict === 'prefer'),
+      // Depoya işlenmiş kararlar (tools/pair-decisions.json)
+      saved: hasDecisions([...k][0], [...k][1]),
+      unsolved: unsolvedPairs.has(k)
     }))
     .sort((a, b) => b.n - a.n || a.key.localeCompare(b.key))
 })
@@ -379,8 +383,9 @@ function clearAll() {
         </h2>
         <p class="note">
           Bütün harf çiftlerini gezmene gerek yok — aşağıdaki metinde fiilen
-          geçen çiftler, sıklık sırasına göre. Metni değiştirince kuyruk da
-          değişir.
+          geçen çiftler, sıklık sırasına göre. <b class="good">Yeşil</b> olanların
+          kararı depoya işlendi; <b class="bad">kesik kırmızı</b> olanların mevcut
+          biçimlerle çözümü yok, yeni glif gerekiyor.
         </p>
         <textarea v-model="s.corpus" class="corpus mono" rows="4" spellcheck="false" />
         <button class="solid wide" @click="nextUndecided">sonraki karar verilmemiş →</button>
@@ -389,8 +394,14 @@ function clearAll() {
             v-for="q in queue"
             :key="q.key"
             class="chip mono"
-            :class="{ on: q.key === pairKey, done: q.decided, star: q.preferred }"
-            :title="`${q.n} kez geçiyor`"
+            :class="{
+              on: q.key === pairKey,
+              done: q.decided,
+              star: q.preferred,
+              saved: q.saved,
+              unsolved: q.unsolved
+            }"
+            :title="`${q.n} kez geçiyor${q.saved ? ' · kayıtlı karar var' : ''}${q.unsolved ? ' · çözümsüz' : ''}`"
             @click="goto(q)"
           >
             {{ q.key }}<em>{{ q.n }}</em>
@@ -843,6 +854,21 @@ select:focus,
   outline: 2px solid var(--signal);
   outline-offset: 1px;
 }
+/* Depoya işlenmiş karar: kalıcı, lab'de tekrar işaretlemeye gerek yok. */
+.chip.saved {
+  background: #e8f0e8;
+  border-color: #2f6b3a;
+}
+.chip.saved.done {
+  background: var(--ink);
+  color: var(--paper);
+}
+/* Mevcut biçimlerle çözümü olmayan çift — yeni glif gerekiyor. */
+.chip.unsolved {
+  border-color: var(--signal);
+  border-style: dashed;
+  color: var(--signal);
+}
 .wordout {
   display: flex;
   flex-wrap: wrap;
@@ -922,6 +948,9 @@ figcaption {
 }
 .bad {
   color: var(--signal);
+}
+.good {
+  color: #2f6b3a;
 }
 .lbl {
   width: 100%;

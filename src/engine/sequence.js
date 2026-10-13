@@ -12,7 +12,15 @@
 
 import { bbox, key, toSet, cornerTouches } from './grid.js'
 import { has } from './glyphs.js'
-import { bandVariants, scoreBlock, clearance, NORMAL_GAP, BAND_HEIGHT } from './fit.js'
+import {
+  bandVariants,
+  pairPlacements,
+  scoreBlock,
+  clearance,
+  NORMAL_GAP,
+  BAND_HEIGHT
+} from './fit.js'
+import { applyDecisions, hasDecisions } from './decisions.js'
 
 /** Varsayılan demet genişliği. Büyütmek sonucu iyileştirir, yavaşlatır. */
 export const BEAM = 48
@@ -24,10 +32,44 @@ const DEFAULTS = {
   allowNesting: true,
   allowContact: false,
   requiredClearance: 1,
-  strict: true
+  strict: true,
+  // Lab'de verilmiş çift kararlarına uy. Kapatmak arama uzayını açar.
+  useDecisions: true
 }
 
 const range = (a, b) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) => a + i)
+
+/**
+ * Onaylanmış çift yerleşimleri; sağ glifin hücreleri sol glifin kökenine göre.
+ * Sonuç önbelleklenir — dizi çözücü aynı çifti çok kez sorar.
+ */
+const stepCache = new Map()
+
+function approvedSteps(a, b, o) {
+  const key = `${a}${b}|${o.bandHeight}|${o.maxInterlock}|${o.allowNesting}|${o.allowContact}|${o.strict}`
+  const hit = stepCache.get(key)
+  if (hit) return hit
+
+  const all = pairPlacements(a, b, {
+    bandHeight: o.bandHeight,
+    allowNesting: o.allowNesting,
+    allowContact: o.allowContact,
+    maxInterlock: o.maxInterlock,
+    strict: o.strict,
+    limit: 400
+  })
+  const steps = applyDecisions(a, b, all, o.bandHeight).map((p) => ({
+    advance: p.advance,
+    left: p.left,
+    right: {
+      ...p.right,
+      // place() sağ glifi zaten konumlamıştı; sol glifin kökenine göre al.
+      cells: p.cells.slice(p.leftCount)
+    }
+  }))
+  stepCache.set(key, steps)
+  return steps
+}
 
 /**
  * Yeni glifin birikmiş mürekkebe göre geçerliliği.
@@ -100,10 +142,48 @@ export function layoutWord(word, options = {}) {
 
   for (let i = 1; i < chars.length; i++) {
     const char = chars[i]
+    const prev = chars[i - 1]
+
+    // Bu çift için onaylanmış yerleşimler varsa yalnız onlar denenir.
+    // Kararlar (sol varyant, sağ varyant, ilerleme, hizalar) dörtlüsünü
+    // sabitlediği için arama o çiftte tek bir dala iner.
+    const approved =
+      o.useDecisions && hasDecisions(prev, char)
+        ? approvedSteps(prev, char, o)
+        : null
+
     const variants = bandVariants(char, o.bandHeight)
     const next = []
 
     for (const state of beam) {
+      if (approved) {
+        for (const step of approved) {
+          const last = state.placed[state.placed.length - 1]
+          if (last.char !== prev || last.id !== step.left.id || last.top !== step.left.top) continue
+          const cells = step.right.cells.map(([x, y]) => [x + last.x, y])
+          const merged = admits(state.cells, state.set, cells, o)
+          if (!merged) continue
+          next.push({
+            cells: merged,
+            set: toSet(merged),
+            placed: [
+              ...state.placed,
+              {
+                char,
+                id: step.right.id,
+                x: last.x + step.advance,
+                top: step.right.top,
+                w: step.right.w,
+                h: step.right.h,
+                cells
+              }
+            ],
+            right: Math.max(state.right, last.x + step.advance + step.right.w)
+          })
+        }
+        continue
+      }
+
       for (const v of variants) {
         const b = bbox(v.cells)
         const tops = o.allowNesting

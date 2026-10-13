@@ -5,7 +5,7 @@
   "glyphs": {
     "a": [
       {
-        "id": "a.0",
+        "id": "a.unv33",
         "source": "afiş:a",
         "master": true,
         "w": 3,
@@ -95,7 +95,7 @@
         ]
       },
       {
-        "id": "a.1",
+        "id": "a.e9mkh",
         "source": "letters.0.0",
         "w": 3,
         "h": 9,
@@ -184,7 +184,7 @@
         ]
       },
       {
-        "id": "a.2",
+        "id": "a.l9n3m",
         "source": "letters.0.1",
         "w": 3,
         "h": 9,
@@ -273,7 +273,7 @@
         ]
       },
       {
-        "id": "a.3",
+        "id": "a.wdbp7",
         "source": "letters.0.2",
         "w": 3,
         "h": 9,
@@ -346,7 +346,7 @@
         ]
       },
       {
-        "id": "a.4",
+        "id": "a.e6ufz",
         "source": "letters.0.3",
         "w": 3,
         "h": 9,
@@ -429,7 +429,7 @@
     ],
     "b": [
       {
-        "id": "b.0",
+        "id": "b.xir4p",
         "source": "afiş:b",
         "master": true,
         "w": 3,
@@ -523,7 +523,7 @@
         ]
       },
       {
-        "id": "b.1",
+        "id": "b.h8568",
         "source": "letters.1.0",
         "w": 3,
         "h": 9,
@@ -594,7 +594,7 @@
     ],
     "c": [
       {
-        "id": "c.0",
+        "id": "c.6j9d1",
         "source": "letters.2.1",
         "w": 3,
         "h": 5,
@@ -647,7 +647,7 @@
         ]
       },
       {
-        "id": "c.1",
+        "id": "c.tjfhb",
         "source": "letters.2.0",
         "w": 3,
         "h": 9,
@@ -734,7 +734,7 @@
     ],
     "ç": [
       {
-        "id": "ç.0",
+        "id": "ç.3f0zn",
         "source": "letters.2.2",
         "w": 3,
         "h": 9,
@@ -821,44 +821,7 @@
     ],
     "d": [
       {
-        "id": "d.0",
-        "source": "letters.3.3",
-        "w": 1,
-        "h": 7,
-        "baseline": 7,
-        "cells": [
-          [
-            0,
-            0
-          ],
-          [
-            0,
-            1
-          ],
-          [
-            0,
-            2
-          ],
-          [
-            0,
-            3
-          ],
-          [
-            0,
-            4
-          ],
-          [
-            0,
-            5
-          ],
-          [
-            0,
-            6
-          ]
-        ]
-      },
-      {
-        "id": "d.1",
+        "id": "d.48kdq",
         "source": "letters.3.0",
         "w": 3,
         "h": 9,
@@ -927,7 +890,7 @@
         ]
       },
       {
-        "id": "d.2",
+        "id": "d.coso1",
         "source": "letters.3.1",
         "w": 4,
         "h": 9,
@@ -1024,7 +987,7 @@
         ]
       },
       {
-        "id": "d.3",
+        "id": "d.ys576",
         "source": "letters.3.2",
         "w": 5,
         "h": 9,
@@ -1123,7 +1086,7 @@
     ],
     "e": [
       {
-        "id": "e.0",
+        "id": "e.8rndf",
         "source": "afiş:e",
         "master": true,
         "w": 3,
@@ -1213,7 +1176,7 @@
         ]
       },
       {
-        "id": "e.1",
+        "id": "e.ldn37",
         "source": "afiş:e",
         "master": true,
         "w": 3,
@@ -1303,7 +1266,7 @@
         ]
       },
       {
-        "id": "e.2",
+        "id": "e.7zoed",
         "source": "letters.4.0",
         "w": 3,
         "h": 9,
@@ -1392,7 +1355,7 @@
         ]
       },
       {
-        "id": "e.3",
+        "id": "e.f9iq8",
         "source": "letters.4.1",
         "w": 3,
         "h": 9,
@@ -1477,7 +1440,7 @@
         ]
       },
       {
-        "id": "e.4",
+        "id": "e.uow5i",
         "source": "letters.4.2",
         "w": 3,
         "h": 9,
@@ -1564,7 +1527,7 @@
     ],
     "f": [
       {
-        "id": "f.0",
+        "id": "f.l5vku",
         "source": "letters.5.1",
         "w": 3,
         "h": 9,
@@ -1629,7 +1592,7 @@
         ]
       },
       {
-        "id": "f.1",
+        "id": "f.n6yoo",
         "source": "letters.5.0",
         "w": 4,
         "h": 9,
@@ -1700,7 +1663,7 @@
     ],
     "g": [
       {
-        "id": "g.0",
+        "id": "g.ip8yn",
         "source": "afiş:g",
         "master": true,
         "w": 3,
@@ -1790,7 +1753,7 @@
         ]
       },
       {
-        "id": "g.1",
+        "id": "g.94cqp",
         "source": "afiş:g",
         "master": true,
         "w": 3,
@@ -1880,7 +1843,7 @@
         ]
       },
       {
-        "id": "g.2",
+        "id": "g.71s24",
         "source": "letters.6.1",
         "w": 3,
         "h": 6,
@@ -1945,7 +1908,7 @@
         ]
       },
       {
-        "id": "g.3",
+        "id": "g.ayag8",
         "source": "letters.6.2",
         "w": 4,
         "h": 9,
@@ -2038,7 +2001,7 @@
         ]
       },
       {
-        "id": "g.4",
+        "id": "g.jar6v",
         "source": "letters.6.3",
         "w": 5,
         "h": 9,
@@ -2163,7 +2126,7 @@
         ]
       },
       {
-        "id": "g.5",
+        "id": "g.dgoe5",
         "source": "letters.6.4",
         "w": 5,
         "h": 9,
@@ -2274,7 +2237,7 @@
     ],
     "ğ": [
       {
-        "id": "ğ.0",
+        "id": "ğ.9md10",
         "source": "extra:ğ.short",
         "proposed": true,
         "note": "ÖNERİ — kısa g + şapka",
@@ -2345,7 +2308,7 @@
         ]
       },
       {
-        "id": "ğ.1",
+        "id": "ğ.15bdq",
         "source": "extra:ğ.tall",
         "proposed": true,
         "note": "ÖNERİ — g (7 satıra sıkışmış) + düz bar şapka",
@@ -2434,7 +2397,7 @@
     ],
     "h": [
       {
-        "id": "h.0",
+        "id": "h.gvxzu",
         "source": "afiş:h",
         "master": true,
         "w": 3,
@@ -2520,7 +2483,7 @@
         ]
       },
       {
-        "id": "h.1",
+        "id": "h.d8n7n",
         "source": "letters.7.0",
         "w": 3,
         "h": 9,
@@ -2585,7 +2548,7 @@
         ]
       },
       {
-        "id": "h.2",
+        "id": "h.n4b91",
         "source": "letters.7.1",
         "w": 3,
         "h": 9,
@@ -2672,7 +2635,7 @@
     ],
     "ı": [
       {
-        "id": "ı.0",
+        "id": "ı.33ayb",
         "source": "letters.8.0",
         "w": 1,
         "h": 9,
@@ -2719,7 +2682,7 @@
     ],
     "i": [
       {
-        "id": "i.0",
+        "id": "i.f6o1c",
         "source": "afiş:i",
         "master": true,
         "w": 1,
@@ -2761,7 +2724,7 @@
         ]
       },
       {
-        "id": "i.1",
+        "id": "i.do417",
         "source": "letters.8.1",
         "w": 1,
         "h": 6,
@@ -2792,7 +2755,7 @@
     ],
     "j": [
       {
-        "id": "j.0",
+        "id": "j.f57nu",
         "source": "letters.9.1",
         "w": 3,
         "h": 6,
@@ -2833,7 +2796,7 @@
         ]
       },
       {
-        "id": "j.1",
+        "id": "j.7y8oe",
         "source": "letters.9.2",
         "w": 3,
         "h": 6,
@@ -2870,7 +2833,7 @@
         ]
       },
       {
-        "id": "j.2",
+        "id": "j.fkzg1",
         "source": "letters.9.0",
         "w": 3,
         "h": 9,
@@ -2933,7 +2896,7 @@
     ],
     "k": [
       {
-        "id": "k.0",
+        "id": "k.7z7b0",
         "source": "afiş:k",
         "master": true,
         "w": 3,
@@ -3019,7 +2982,7 @@
         ]
       },
       {
-        "id": "k.1",
+        "id": "k.gen0h",
         "source": "letters.10.1",
         "w": 3,
         "h": 6,
@@ -3080,7 +3043,7 @@
         ]
       },
       {
-        "id": "k.2",
+        "id": "k.9nhzt",
         "source": "letters.10.0",
         "w": 3,
         "h": 9,
@@ -3165,7 +3128,7 @@
         ]
       },
       {
-        "id": "k.3",
+        "id": "k.4e87u",
         "source": "letters.10.2",
         "w": 5,
         "h": 9,
@@ -3260,7 +3223,7 @@
     ],
     "l": [
       {
-        "id": "l.0",
+        "id": "l.c8nxi",
         "source": "letters.11.0",
         "w": 3,
         "h": 9,
@@ -3313,7 +3276,7 @@
         ]
       },
       {
-        "id": "l.1",
+        "id": "l.42vdw",
         "source": "letters.11.1",
         "w": 3,
         "h": 9,
@@ -3380,7 +3343,7 @@
     ],
     "m": [
       {
-        "id": "m.0",
+        "id": "m.6qxdr",
         "source": "afiş:m",
         "master": true,
         "w": 5,
@@ -3506,7 +3469,7 @@
         ]
       },
       {
-        "id": "m.1",
+        "id": "m.iuitd",
         "source": "letters.12.2",
         "w": 5,
         "h": 4,
@@ -3571,7 +3534,7 @@
         ]
       },
       {
-        "id": "m.2",
+        "id": "m.um9pb",
         "source": "letters.12.3",
         "w": 7,
         "h": 4,
@@ -3656,7 +3619,7 @@
         ]
       },
       {
-        "id": "m.3",
+        "id": "m.iyigy",
         "source": "letters.12.1",
         "w": 7,
         "h": 9,
@@ -3823,7 +3786,7 @@
     ],
     "n": [
       {
-        "id": "n.0",
+        "id": "n.94oha",
         "source": "afiş:n",
         "master": true,
         "w": 3,
@@ -3909,7 +3872,7 @@
         ]
       },
       {
-        "id": "n.1",
+        "id": "n.6gduf",
         "source": "afiş:n",
         "master": true,
         "w": 5,
@@ -4035,7 +3998,7 @@
         ]
       },
       {
-        "id": "n.2",
+        "id": "n.yd6m8",
         "source": "letters.13.2",
         "w": 3,
         "h": 4,
@@ -4080,7 +4043,7 @@
         ]
       },
       {
-        "id": "n.3",
+        "id": "n.m1qso",
         "source": "letters.13.3",
         "w": 5,
         "h": 4,
@@ -4147,7 +4110,7 @@
     ],
     "o": [
       {
-        "id": "o.0",
+        "id": "o.qckbt",
         "source": "afiş:o",
         "master": true,
         "w": 3,
@@ -4237,7 +4200,7 @@
         ]
       },
       {
-        "id": "o.1",
+        "id": "o.sofv2",
         "source": "letters.14.1",
         "w": 3,
         "h": 4,
@@ -4288,7 +4251,7 @@
     ],
     "ö": [
       {
-        "id": "ö.0",
+        "id": "ö.exbzt",
         "source": "afiş:ö",
         "master": true,
         "w": 3,
@@ -4370,7 +4333,7 @@
         ]
       },
       {
-        "id": "ö.1",
+        "id": "ö.dibxw",
         "source": "extra:ö.short",
         "note": "kısa o + umlaut",
         "w": 3,
@@ -4430,7 +4393,7 @@
     ],
     "p": [
       {
-        "id": "p.0",
+        "id": "p.e1gpd",
         "source": "letters.15.1",
         "w": 3,
         "h": 6,
@@ -4483,7 +4446,7 @@
         ]
       },
       {
-        "id": "p.1",
+        "id": "p.e52py",
         "source": "letters.15.0",
         "w": 3,
         "h": 9,
@@ -4554,7 +4517,7 @@
     ],
     "r": [
       {
-        "id": "r.0",
+        "id": "r.zqgv2",
         "source": "afiş:r",
         "master": true,
         "w": 3,
@@ -4644,7 +4607,7 @@
         ]
       },
       {
-        "id": "r.1",
+        "id": "r.g3nuv",
         "source": "afiş:r",
         "master": true,
         "w": 3,
@@ -4734,7 +4697,7 @@
         ]
       },
       {
-        "id": "r.2",
+        "id": "r.ufgkw",
         "source": "letters.16.1",
         "w": 3,
         "h": 6,
@@ -4779,7 +4742,7 @@
         ]
       },
       {
-        "id": "r.3",
+        "id": "r.59yyh",
         "source": "letters.16.2",
         "w": 3,
         "h": 6,
@@ -4822,7 +4785,7 @@
     ],
     "s": [
       {
-        "id": "s.0",
+        "id": "s.i1d9r",
         "source": "letters.17.2",
         "w": 3,
         "h": 5,
@@ -4867,7 +4830,7 @@
         ]
       },
       {
-        "id": "s.1",
+        "id": "s.z5x1t",
         "source": "letters.17.1",
         "w": 3,
         "h": 6,
@@ -4920,7 +4883,7 @@
         ]
       },
       {
-        "id": "s.2",
+        "id": "s.n67rq",
         "source": "letters.17.0",
         "w": 3,
         "h": 9,
@@ -4989,7 +4952,7 @@
         ]
       },
       {
-        "id": "s.3",
+        "id": "s.2gsuv",
         "source": "letters.17.3",
         "w": 4,
         "h": 9,
@@ -5064,7 +5027,7 @@
     ],
     "ş": [
       {
-        "id": "ş.0",
+        "id": "ş.lyeps",
         "source": "afiş:ş",
         "master": true,
         "w": 3,
@@ -5146,7 +5109,7 @@
         ]
       },
       {
-        "id": "ş.1",
+        "id": "ş.txthl",
         "source": "extra:ş.short",
         "proposed": true,
         "note": "ÖNERİ — kısa s + sedilla",
@@ -5205,7 +5168,7 @@
         ]
       },
       {
-        "id": "ş.2",
+        "id": "ş.p0lu9",
         "source": "extra:ş.tall",
         "proposed": true,
         "note": "ÖNERİ — s (7 satıra sıkışmış) + ç'nin sedilla mantığı: boyun + bar",
@@ -5286,7 +5249,7 @@
     ],
     "t": [
       {
-        "id": "t.0",
+        "id": "t.w0uke",
         "source": "letters.18.2",
         "w": 4,
         "h": 9,
@@ -5351,7 +5314,7 @@
         ]
       },
       {
-        "id": "t.1",
+        "id": "t.y4m8v",
         "source": "letters.18.0",
         "w": 5,
         "h": 9,
@@ -5414,7 +5377,7 @@
     ],
     "u": [
       {
-        "id": "u.0",
+        "id": "u.s47pl",
         "source": "letters.19.1",
         "w": 3,
         "h": 4,
@@ -5459,7 +5422,7 @@
         ]
       },
       {
-        "id": "u.1",
+        "id": "u.lqzom",
         "source": "letters.19.0",
         "w": 3,
         "h": 9,
@@ -5546,7 +5509,7 @@
     ],
     "ü": [
       {
-        "id": "ü.0",
+        "id": "ü.ab6n4",
         "source": "afiş:ü",
         "master": true,
         "w": 3,
@@ -5624,7 +5587,7 @@
         ]
       },
       {
-        "id": "ü.1",
+        "id": "ü.nat7p",
         "source": "extra:ü.short",
         "note": "kısa u + umlaut",
         "w": 3,
@@ -5680,7 +5643,7 @@
     ],
     "v": [
       {
-        "id": "v.0",
+        "id": "v.ge6d8",
         "source": "extra:v.short",
         "proposed": true,
         "note": "ÖNERİ — kısa v",
@@ -5735,7 +5698,7 @@
         ]
       },
       {
-        "id": "v.1",
+        "id": "v.uccz7",
         "source": "extra:v.tall",
         "proposed": true,
         "note": "ÖNERİ — kaynakta v yok. u'nun sol gövdesi kısaltılarak V'nin inişi ima edildi.",
@@ -5812,7 +5775,7 @@
     ],
     "y": [
       {
-        "id": "y.0",
+        "id": "y.vrx4c",
         "source": "afiş:y",
         "master": true,
         "w": 3,
@@ -5898,7 +5861,7 @@
         ]
       },
       {
-        "id": "y.1",
+        "id": "y.920e6",
         "source": "afiş:y",
         "master": true,
         "w": 3,
@@ -5984,7 +5947,7 @@
         ]
       },
       {
-        "id": "y.2",
+        "id": "y.pbi73",
         "source": "letters.21.1",
         "w": 3,
         "h": 6,
@@ -6047,7 +6010,7 @@
     ],
     "z": [
       {
-        "id": "z.0",
+        "id": "z.s1yql",
         "source": "letters.22.2",
         "w": 3,
         "h": 5,
@@ -6092,7 +6055,7 @@
         ]
       },
       {
-        "id": "z.1",
+        "id": "z.km8wr",
         "source": "letters.22.1",
         "w": 3,
         "h": 6,
@@ -6145,7 +6108,7 @@
         ]
       },
       {
-        "id": "z.2",
+        "id": "z.6m2ig",
         "source": "letters.22.0",
         "w": 3,
         "h": 9,
@@ -6214,7 +6177,7 @@
         ]
       },
       {
-        "id": "z.3",
+        "id": "z.sm86z",
         "source": "letters.22.3",
         "w": 9,
         "h": 9,

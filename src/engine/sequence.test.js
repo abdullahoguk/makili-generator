@@ -96,12 +96,19 @@ describe('layoutWord', () => {
     expect(r.reason).toMatch(/sığmayan/)
   })
 
-  it('bandı dolduramıyorsa sessizce kısa blok üretmez, bildirir', () => {
-    // 9'dan uzun glif yok: 11'lik bant dolmaz.
+  it('yükseklik türetmesiyle daha yüksek bandı da doldurur', () => {
+    // Tasarlanmış gövdeler 9 birim; 11'lik bandı satır çoğaltmayla dolduruyor.
     const tall = layoutWord('ban', { bandHeight: 11 })
     expect(tall.ok).toBe(true)
-    expect(tall.height).toBeLessThanOrEqual(11)
-    expect(tall.bandOk).toBe(false)
+    expect(tall.height).toBe(11)
+    expect(tall.bandOk).toBe(true)
+  })
+
+  it('bandı dolduramadığında bunu bildirir', () => {
+    // Yükseklik merdiveni yalnız BÜYÜTÜR; 7'lik banda 9 birimlik gövde sığmaz.
+    const short = layoutWord('ban', { bandHeight: 7 })
+    expect(short.ok).toBe(false)
+    expect(short.reason).toMatch(/sığmayan/)
   })
 
   it('çözülemeyen diziyi bildirir, sessizce yanlış üretmez', () => {
@@ -115,5 +122,29 @@ describe('layoutWord: çıktı biçimi', () => {
   it('ASCII dökümü bant yüksekliğinde satır verir', () => {
     const r = layoutWord('ban', { bandHeight: H })
     expect(toAscii(r.cells).split('\n')).toHaveLength(H)
+  })
+})
+
+describe('layoutWord: çift kararları', () => {
+  it('kararlı çiftte onaylanmış yerleşimi kullanır', () => {
+    const r = layoutWord('ge', { bandHeight: H })
+    expect(r.ok).toBe(true)
+    expect(r.placed).toHaveLength(2)
+  })
+
+  it('kararlar kapatılabilir', () => {
+    const on = layoutWord('ge', { bandHeight: H, useDecisions: true })
+    const off = layoutWord('ge', { bandHeight: H, useDecisions: false })
+    expect(on.ok).toBe(true)
+    expect(off.ok).toBe(true)
+  })
+
+  it('kararlı dizide her adım geçerli kalır', () => {
+    const r = layoutWord('gelir', { bandHeight: H })
+    if (!r.ok) return
+    for (let i = 1; i < r.placed.length; i++) {
+      const before = r.placed.slice(0, i).flatMap((p) => p.cells)
+      expect(clearance(before, r.placed[i].cells)).toBe(1)
+    }
   })
 })

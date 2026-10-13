@@ -112,13 +112,36 @@ for (const [char, variants] of byChar) {
   byChar.set(char, [...seen.values()])
 }
 
+/**
+ * Varyant kimliği BİÇİMDEN türetilir, sırasından değil.
+ *
+ * Konuma dayalı kimlik ('d.3') kırılgan: kütüphaneden bir biçim çıkınca
+ * sonrakilerin numarası kayıyor ve ona atıfta bulunan çift kararları sessizce
+ * yanlış glifi gösteriyor. Biçim özeti bu bağı sabitler — aynı hücre kümesi
+ * her zaman aynı kimliği alır, kütüphanede kaç varyant olduğundan bağımsız.
+ */
+function shapeId(char, cells) {
+  const sig = cells.map(([x, y]) => `${x},${y}`).sort().join('|')
+  let h = 0x811c9dc5
+  for (let i = 0; i < sig.length; i++) {
+    h ^= sig.charCodeAt(i)
+    h = Math.imul(h, 0x01000193) >>> 0
+  }
+  return `${char}.${h.toString(36).padStart(7, '0').slice(-5)}`
+}
+
 // Her harfin varyantları genişliğe göre sıralı; ilk varyant varsayılan.
 const glyphs = {}
 for (const [char, variants] of byChar) {
   if (!variants.length) continue
   // Afişten doğrulanmış biçimler önce — varsayılan varyant oradan seçilsin.
   variants.sort((a, b) => Number(Boolean(b.master)) - Number(Boolean(a.master)) || a.w - b.w || a.h - b.h)
-  glyphs[char] = variants.map((v, i) => ({ id: `${char}.${i}`, ...v }))
+  glyphs[char] = variants.map((v) => ({ id: shapeId(char, v.cells), ...v }))
+
+  const ids = new Set(glyphs[char].map((v) => v.id))
+  if (ids.size !== glyphs[char].length) {
+    throw new Error(`'${char}' için kimlik çakışması — biçim özeti çarpıştı`)
+  }
 }
 
 const missing = CHARSET.filter((c) => !glyphs[c])

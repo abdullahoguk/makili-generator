@@ -1,0 +1,219 @@
+{
+  "note": "Çift kararları — lab'de elle verildi. Kimlikler biçim özetine taşındı (konumsal kimlikler kırılgandı). 'ok' kayıtları birebir saklı; 'no' kayıtları çift bazında özetlendi (sayı + tümüReddedildi).",
+  "semantics": {
+    "prefer": "Bu çiftte her zaman bu yerleşim kullanılır.",
+    "ok": "Kullanılabilir. Çiftte ok varsa çözücü yalnız onların arasından seçer.",
+    "unmarked": "Karar verilmemiş. Hiç ok yoksa çözücü kendi puanıyla seçer.",
+    "no": "Asla kullanılmaz."
+  },
+  "key": ["left", "right", "advance", "leftTop", "rightTop"],
+  "bandHeight": 9,
+  "ok": {
+    "ai": [
+      ["a.e9mkh", "i.do417", 4, 0, 0]
+    ],
+    "ab": [
+      ["a.e9mkh", "b.h8568", 4, 0, 0],
+      ["a.e6ufz", "b.h8568", 4, 0, 0],
+      ["a.unv33", "b.h8568", 4, 0, 0]
+    ],
+    "ac": [
+      ["a.e9mkh", "c.tjfhb", 4, 0, 0],
+      ["a.e6ufz", "c.tjfhb", 4, 0, 0],
+      ["a.unv33", "c.tjfhb", 4, 0, 0]
+    ],
+    "ak": [
+      ["a.unv33", "k.7z7b0", 4, 0, 0],
+      ["a.unv33", "k.9nhzt", 4, 0, 0],
+      ["a.l9n3m", "k.9nhzt", 4, 0, 0],
+      ["a.l9n3m", "k.7z7b0", 4, 0, 0],
+      ["a.e9mkh", "k.7z7b0", 4, 0, 0],
+      ["a.e9mkh", "k.9nhzt", 4, 0, 0]
+    ],
+    "an": [
+      ["a.unv33", "n.94oha", 4, 0, 0],
+      ["a.l9n3m", "n.94oha", 4, 0, 0],
+      ["a.e9mkh", "n.94oha", 4, 0, 0],
+      ["a.unv33", "n.6gduf", 4, 0, 0],
+      ["a.l9n3m", "n.6gduf", 4, 0, 0],
+      ["a.e9mkh", "n.6gduf", 4, 0, 0]
+    ],
+    "de": [
+      ["d.ys576", "e.ldn37", 6, 0, 0],
+      ["d.ys576", "e.7zoed", 6, 0, 0],
+      ["d.ys576", "e.8rndf", 6, 0, 0],
+      ["d.ys576", "e.f9iq8", 6, 0, 0]
+    ],
+    "do": [
+      ["d.ys576", "o.qckbt", 6, 0, 0]
+    ],
+    "en": [
+      ["e.ldn37", "n.yd6m8^1", 4, 0, 4],
+      ["e.8rndf", "n.yd6m8^1", 4, 0, 0],
+      ["e.7zoed", "n.yd6m8", 4, 0, 0]
+    ],
+    "ge": [
+      ["g.94cqp", "e.8rndf", 4, 0, 0],
+      ["g.94cqp", "e.7zoed", 4, 0, 0],
+      ["g.94cqp", "e.ldn37", 4, 0, 0],
+      ["g.94cqp", "e.f9iq8", 4, 0, 0],
+      ["g.94cqp", "e.uow5i", 4, 0, 0],
+      ["g.ip8yn", "e.8rndf", 4, 0, 0],
+      ["g.ip8yn", "e.ldn37", 4, 0, 0],
+      ["g.ip8yn", "e.7zoed", 4, 0, 0],
+      ["g.ip8yn", "e.f9iq8", 4, 0, 0],
+      ["g.ip8yn", "e.uow5i", 4, 0, 0],
+      ["g.71s24^3", "e.8rndf", 4, 0, 0],
+      ["g.71s24^3", "e.ldn37", 4, 0, 0],
+      ["g.71s24^3", "e.7zoed", 4, 0, 0],
+      ["g.71s24^3", "e.f9iq8", 4, 0, 0],
+      ["g.71s24^3", "e.uow5i", 4, 0, 0]
+    ],
+    "gi": [
+      ["g.94cqp", "i.f6o1c", 4, 0, 0],
+      ["g.ip8yn", "i.f6o1c", 4, 0, 0],
+      ["g.jar6v", "i.f6o1c", 6, 0, 0]
+    ],
+    "gö": [
+      ["g.94cqp", "ö.exbzt", 4, 0, 0],
+      ["g.ip8yn", "ö.exbzt", 4, 0, 0],
+      ["g.jar6v", "ö.exbzt", 6, 0, 0],
+      ["g.jar6v", "ö.dibxw^1", 6, 0, 2]
+    ],
+    "ha": [
+      ["h.gvxzu", "a.l9n3m", 4, 0, 0],
+      ["h.n4b91", "a.l9n3m", 4, 0, 0]
+    ],
+    "ib": [
+      ["i.f6o1c", "b.xir4p", 2, 0, 0]
+    ],
+    "ir": [
+      ["i.f6o1c", "r.zqgv2", 2, 0, 0],
+      ["i.f6o1c", "r.g3nuv", 2, 0, 0],
+      ["i.f6o1c", "r.ufgkw^3", 2, 0, 0],
+      ["i.f6o1c", "r.59yyh^3", 2, 0, 0]
+    ],
+    "li": [
+      ["l.c8nxi", "i.do417^1", 2, 0, 0]
+    ],
+    "me": [
+      ["m.6qxdr", "e.8rndf", 6, 0, 0],
+      ["m.6qxdr", "e.ldn37", 6, 0, 0],
+      ["m.6qxdr", "e.7zoed", 6, 0, 0],
+      ["m.6qxdr", "e.f9iq8", 6, 0, 0],
+      ["m.6qxdr", "e.uow5i", 6, 0, 0],
+      ["m.um9pb^5", "e.8rndf", 8, 0, 0],
+      ["m.um9pb^5", "e.ldn37", 8, 0, 0],
+      ["m.um9pb^5", "e.7zoed", 8, 0, 0],
+      ["m.um9pb^5", "e.f9iq8", 8, 0, 0],
+      ["m.um9pb^5", "e.uow5i", 8, 0, 0]
+    ],
+    "mg": [
+      ["m.6qxdr", "g.jar6v", 6, 0, 0],
+      ["m.um9pb^5", "g.jar6v", 8, 0, 0],
+      ["m.6qxdr", "g.dgoe5", 6, 0, 0]
+    ],
+    "na": [
+      ["n.94oha", "a.l9n3m", 4, 0, 0],
+      ["n.6gduf", "a.l9n3m", 6, 0, 0]
+    ],
+    "nh": [
+      ["n.94oha", "h.gvxzu", 4, 0, 0],
+      ["n.94oha", "h.n4b91", 4, 0, 0],
+      ["n.6gduf", "h.gvxzu", 6, 0, 0],
+      ["n.6gduf", "h.n4b91", 6, 0, 0],
+      ["n.6gduf", "h.d8n7n", 6, 0, 0]
+    ],
+    "no": [
+      ["n.94oha", "o.qckbt", 4, 0, 0],
+      ["n.6gduf", "o.qckbt", 6, 0, 0],
+      ["n.yd6m8^3", "o.qckbt", 4, 0, 0],
+      ["n.yd6m8^2", "o.qckbt", 4, 3, 0],
+      ["n.94oha", "o.sofv2^2", 4, 0, 3],
+      ["n.yd6m8^4", "o.sofv2^2", 4, 1, 0]
+    ],
+    "nü": [
+      ["n.94oha", "ü.ab6n4", 4, 0, 0],
+      ["n.6gduf", "ü.ab6n4", 6, 0, 0]
+    ],
+    "ol": [
+      ["o.qckbt", "l.42vdw", 4, 0, 0],
+      ["o.qckbt", "l.c8nxi", 4, 0, 0]
+    ],
+    "ön": [
+      ["ö.exbzt", "n.94oha", 4, 0, 0],
+      ["ö.exbzt", "n.6gduf", 4, 0, 0]
+    ],
+    "rg": [
+      ["r.59yyh", "g.71s24^1", 2, 0, 2],
+      ["r.ufgkw", "g.71s24", 2, 0, 3]
+    ],
+    "ur": [
+      ["u.s47pl^5", "r.zqgv2", 4, 0, 0],
+      ["u.s47pl^5", "r.g3nuv", 4, 0, 0],
+      ["u.s47pl^5", "r.ufgkw^3", 4, 0, 0],
+      ["u.s47pl^5", "r.59yyh^3", 4, 0, 0]
+    ],
+    "ül": [
+      ["ü.ab6n4", "l.42vdw", 4, 0, 0],
+      ["ü.ab6n4", "l.c8nxi", 4, 0, 0]
+    ],
+    "ve": [
+      ["v.uccz7", "e.8rndf", 4, 0, 0],
+      ["v.uccz7", "e.7zoed", 4, 0, 0],
+      ["v.uccz7", "e.ldn37", 4, 0, 0]
+    ],
+    "ya": [
+      ["y.vrx4c", "a.l9n3m", 4, 0, 0],
+      ["y.920e6", "a.l9n3m", 4, 0, 0]
+    ],
+    "ye": [
+      ["y.vrx4c", "e.8rndf", 4, 0, 0],
+      ["y.vrx4c", "e.ldn37", 4, 0, 0],
+      ["y.vrx4c", "e.7zoed", 4, 0, 0],
+      ["y.vrx4c", "e.f9iq8", 4, 0, 0],
+      ["y.920e6", "e.8rndf", 4, 0, 0],
+      ["y.920e6", "e.ldn37", 4, 0, 0],
+      ["y.920e6", "e.7zoed", 4, 0, 0],
+      ["y.920e6", "e.f9iq8", 4, 0, 0],
+      ["y.920e6", "e.uow5i", 4, 0, 0],
+      ["y.pbi73^3", "e.8rndf", 4, 0, 0]
+    ],
+    "yr": [
+      ["y.vrx4c", "r.zqgv2", 4, 0, 0],
+      ["y.920e6", "r.zqgv2", 4, 0, 0],
+      ["y.vrx4c", "r.g3nuv", 4, 0, 0],
+      ["y.920e6", "r.g3nuv", 4, 0, 0]
+    ]
+  },
+  "rejectedCounts": {
+    "ab": 7,
+    "ac": 19,
+    "ad": 30,
+    "ak": 7,
+    "an": 76,
+    "de": 41,
+    "di": 2,
+    "em": 15,
+    "ge": 45,
+    "ir": 56,
+    "li": 1,
+    "lu": 5,
+    "mg": 22,
+    "rd": 4,
+    "rş": 2,
+    "ry": 1,
+    "ur": 86,
+    "ol": 39,
+    "ye": 1
+  },
+  "allRejected": [
+    "ad",
+    "di",
+    "em",
+    "lu",
+    "rd",
+    "rş",
+    "ry"
+  ]
+}
