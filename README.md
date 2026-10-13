@@ -292,6 +292,35 @@ kütüphane değişse de aynı biçmi tutar. İki güvenlik ağı var:
 
 Bir harfin bütün biçimleri çıkarılırsa build hata verip durur.
 
+### Komşunun doldurması beklenen hücreler
+
+Bir biçimin içinde kalan boşluk iki türlüdür: harfin **kendi açık ağzı**
+(öyle kalacak) ya da cümle akışında **komşusunun kapatması gereken** yer.
+İkisi ölçüyle ayırt edilemez — tasarımcı bilir. Lab'de biçim tahtaya alınır,
+**komşu doldursun** katmanına geçilir ve o hücreler tek tek işaretlenir.
+İşaretli hücre mürekkep değil: boş ama boş kalmamalı, o yüzden çapraz
+çizikle gösterilir ve mürekkeple aynı hücreye konamaz.
+
+Kayıt `tools/glyph-fills.json`'a gider, biçim kimliğine bağlıdır.
+
+Faydası çift denemelerinde görünür: `l`'nin sağ boşluğu işaretlenince
+`l + i` yerleşim kartları **işaretli 4/5 doldu** diye yazar. Yalnız
+kenetlenmiş yerleşimler bunu yapabilir — normal açıklıkta komşu, biçimin
+kendi kutusunun içine giremez. İşaretleme bu yüzden aynı zamanda
+"burada kenetlenme gerekiyor" demenin yolu.
+
+İşaretler biçim kimliğine bağlı olduğundan türetilmiş (genişletilmiş)
+biçimlere taşınmaz: sütun çoğaltma koordinatları kaydırır, taşımak yanlış
+yere işaret koymak olur.
+
+### Kararları budamak
+
+Bir biçim kütüphaneden çıkarıldığında ona atıfta bulunan onaylı yerleşimler
+sessizce işlemez hale gelir. `node tools/prune-decisions.mjs` bunları bulur,
+`--write` ile temizler. Türetilmiş kimlikler (`n.yd6m8^1`) kütüphanede
+durmaz, çalışma anında üretilir — araç tabana bakar, yoksa bütün türetilmiş
+kararları yok sanıp siler.
+
 ### Referansı yeniden ölçmek
 
 ```bash

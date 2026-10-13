@@ -10,6 +10,9 @@ const props = defineProps({
   cell: { type: Number, default: 10 },
   // Sağ glifin hücreleri ayrı renkte gösterilsin diye
   split: { type: Number, default: null },
+  // Komşunun doldurması BEKLENEN hücreler: boş ama boş kalmamalı.
+  // Mürekkep değil, işaret — çapraz tarama ile çizilir.
+  marks: { type: Array, default: () => [] },
   grid: { type: Boolean, default: true }
 })
 
@@ -22,6 +25,13 @@ const rects = computed(() =>
     x: (x - box.value.x) * props.cell,
     y: y * props.cell,
     right: props.split != null && i >= props.split
+  }))
+)
+
+const markRects = computed(() =>
+  props.marks.map(([x, y]) => ({
+    x: (x - box.value.x) * props.cell,
+    y: y * props.cell
   }))
 )
 </script>
@@ -63,6 +73,13 @@ const rects = computed(() =>
       :height="cell"
       :class="{ right: r.right }"
     />
+    <g class="mark">
+      <template v-for="(m, i) in markRects" :key="'m' + i">
+        <rect :x="m.x" :y="m.y" :width="cell" :height="cell" class="mbox" />
+        <line :x1="m.x" :y1="m.y" :x2="m.x + cell" :y2="m.y + cell" />
+        <line :x1="m.x + cell" :y1="m.y" :x2="m.x" :y2="m.y + cell" />
+      </template>
+    </g>
   </svg>
 </template>
 
@@ -84,5 +101,15 @@ rect.right {
   stroke: rgba(17, 17, 16, 0.45);
   stroke-width: 1;
   stroke-dasharray: 3 3;
+}
+/* Beklenen dolgu: mürekkebin yokluğunu gösterdiği için dolu değil, çizik. */
+.mark line {
+  stroke: var(--signal);
+  stroke-width: 1.5;
+}
+.mark .mbox {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 1;
 }
 </style>

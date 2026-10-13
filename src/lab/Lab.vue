@@ -23,6 +23,7 @@ const STORE_LABELS = 'makili.block-labels.v1'
 const STORE_DRAWN = 'makili.drawn-blocks.v1'
 const STORE_VARIANTS = 'makili.glyph-variants.v1'
 const STORE_REJECTS = 'makili.glyph-rejects.v1'
+const STORE_FILLS = 'makili.glyph-fills.v1'
 
 const s = reactive({
   left: 'l',
@@ -254,7 +255,7 @@ const variantBlocked = computed(() => {
   return ''
 })
 
-function saveVariant({ art }) {
+function saveVariant({ art, expect = [] }) {
   const char = s.vletter
   const n = variants.value.filter((v) => v.char === char).length + 1
   variants.value = [
@@ -265,6 +266,7 @@ function saveVariant({ art }) {
       source: `extra:${char}.el${n}`,
       note: s.vnote.trim() || 'lab çizim tahtasında elle çizildi',
       short: s.vshort || undefined,
+      expect: expect.length ? expect : undefined,
       art
     }
   ]
@@ -276,9 +278,11 @@ function saveVariant({ art }) {
 const removeVariant = (id) => { variants.value = variants.value.filter((v) => v.id !== id) }
 
 /** Kütüphanedeki ya da çizilmiş bir biçimi tahtaya al — üzerinde oynamak için. */
-function variantToBoard(cells) {
-  glyphBoard.value?.load(toAscii(cells).split('\n'))
+function variantToBoard(v) {
+  const cells = v.cells ?? v
+  glyphBoard.value?.load(toAscii(cells).split('\n'), v.id ? fillOf(v.id) : [])
   glyphArt.value = toAscii(cells)
+  loadedId.value = v.id ?? null
 }
 
 /** Her harf için: kütüphanede kaç biçim var, kaç tane de sen çizdin. */
@@ -338,6 +342,78 @@ function decisionsUsing(id) {
   return [...new Set(hits)]
 }
 
+// ---- komşunun doldurması beklenen hücreler -----------------------------
+//
+// Bir biçimin içinde kalan boşluk iki türlü olabilir: harfin kendi açık ağzı
+// (öyle kalacak) ya da cümle akışında komşusunun kapatması gereken yer. İkisi
+// ölçüyle ayırt edilemez — tasarımcı bilir. Burada işaretleniyor.
+//
+// Kayıt biçim kimliğine bağlı, hücreler biçimin kendi kutusuna göre.
+
+const fills = ref(loadFills())
+
+function loadFills() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_FILLS) ?? '[]')
+  } catch {
+    return []
+  }
+}
+watch(fills, (v) => {
+  try { localStorage.setItem(STORE_FILLS, JSON.stringify(v)) } catch { /* yok say */ }
+}, { deep: true })
+
+const fillOf = (id) => fills.value.find((f) => f.id === id)?.cells ?? []
+
+/** Tahtadaki işaretleri, o an yüklü olan kütüphane biçmine bağla. */
+const loadedId = ref(null)
+
+function saveFill(cells) {
+  const id = loadedId.value
+  if (!id) return
+  const rest = fills.value.filter((f) => f.id !== id)
+  fills.value = cells.length
+    ? [...rest, { id, char: s.vletter, cells, note: s.vnote.trim() || '' }]
+    : rest
+  s.vnote = ''
+}
+
+/**
+ * Bir yerleşimde, SOL biçimin işaretli hücrelerinden kaçı doldu?
+ *
+ * İşaretler biçimin kendi kutusuna göre tutuluyor; yerleşimde sol biçim
+ * nereye oturduysa oraya taşınıp blokta mürekkep var mı diye bakılıyor.
+ * Dolan hücre komşusunun gövdesi ya da uzantısıyla kapanmış demektir —
+ * işaretlemenin asıl sınaması bu.
+ *
+ * Yalnız kenetlenme bunu yapabilir: normal açıklıkta komşu, biçimin kendi
+ * kutusunun içine giremez.
+ */
+function fillCheck(p) {
+  const marks = fillOf(p.left.id)
+  if (!marks.length) return null
+  const leftCells = p.cells.slice(0, p.leftCount)
+  const b = bbox(leftCells)
+  const ink = new Set(p.cells.map(([x, y]) => `${x},${y}`))
+  let filled = 0
+  for (const [mx, my] of marks) {
+    if (ink.has(`${b.x + mx},${b.y + my}`)) filled++
+  }
+  return { filled, total: marks.length }
+}
+
+function exportFills() {
+  exported.value = JSON.stringify(
+    {
+      _note: 'Komşunun doldurması beklenen hücreler. tools/glyph-fills.json olarak kaydet.',
+      fills: fills.value
+    },
+    null,
+    2
+  )
+  navigator.clipboard?.writeText(exported.value).catch(() => {})
+}
+
 function exportRejects() {
   exported.value = JSON.stringify(
     {
@@ -359,6 +435,7 @@ function exportVariants() {
         source: v.source,
         note: v.note,
         ...(v.short ? { short: true } : {}),
+        ...(v.expect ? { expect: v.expect } : {}),
         art: v.art
       }))
     },
@@ -784,6 +861,9 @@ function clearAll() {
               <span v-if="p.cleanGap" class="dim" title="arada tam bir birim boş sütun">temiz</span>
               <span v-if="p.facingWorst > 1" class="warn" :title="`karşılıklı kenarda ${p.facingWorst} birim boşluk`">boşluk {{ p.facingWorst }}</span>
             </p>
+            <p v-if="fillCheck(p)" class="fillcheck mono" :class="{ good: fillCheck(p).filled === fillCheck(p).total }">
+              işaretli {{ fillCheck(p).filled }}/{{ fillCheck(p).total }} doldu
+            </p>
             <p class="ids mono dim">{{ p.left.id }} · {{ p.right.id }}</p>
             <div class="verdict">
               <button :class="{ on: verdictOf(p) === 'prefer' }" title="tercih" @click="mark(p, 'prefer')">★</button>
@@ -862,14 +942,25 @@ function clearAll() {
           yanlış harfe etiketlenmiş. İşaretlediklerin dışa aktarılıp
           <span class="mono">tools/glyph-rejects.json</span>'a kaydedilir,
           build onları kütüphaneye hiç almaz.
+          <br />
+          Biçimi tahtaya alıp <b>komşu doldursun</b> katmanına geçersen,
+          içinde boş kalan ama <b>komşusunun kapatması gereken</b> hücreleri
+          tek tek işaretleyebilirsin. Çarpı işaretli hücreler aşağıdaki
+          listede de görünür.
         </p>
         <div class="varlist">
           <figure v-for="v in libVariants" :key="v.id" :class="{ out: isRejected(v.id) }">
-            <button class="plain" :title="`${v.id} · tahtaya al`" @click="variantToBoard(v.cells)">
-              <GridArt :cells="v.cells" :band-height="s.bandHeight" :cell="12" />
+            <button class="plain" :title="`${v.id} · tahtaya al`" @click="variantToBoard(v)">
+              <GridArt
+                :cells="v.cells"
+                :marks="fillOf(v.id)"
+                :band-height="s.bandHeight"
+                :cell="12"
+              />
             </button>
             <figcaption class="mono">
               {{ v.w }}×{{ v.h }}<em v-if="v.master">usta</em>
+              <em v-if="fillOf(v.id).length" class="fill">{{ fillOf(v.id).length }}✕</em>
             </figcaption>
             <button
               class="ghost tiny"
@@ -918,6 +1009,13 @@ function clearAll() {
           @change="onGlyphDraw"
           @save="saveVariant"
         />
+
+        <p v-if="loadedId" class="note fillrow">
+          Tahtada <span class="mono">{{ loadedId }}</span> yüklü.
+          <button class="ghost tiny" @click="saveFill(glyphBoard?.expectCells ?? [])">
+            işaretleri bu biçme kaydet
+          </button>
+        </p>
 
         <div v-if="myVariants.length" class="varlist mine">
           <figure v-for="v in myVariants" :key="v.id">
@@ -1033,6 +1131,7 @@ function clearAll() {
           <button class="solid" @click="exportDrawn">çizimler</button>
           <button class="solid" @click="exportVariants">harf varyantları</button>
           <button class="solid" @click="exportRejects">çıkarılacak biçimler</button>
+          <button class="solid" @click="exportFills">beklenen dolgular</button>
           <button class="ghost" @click="clearAll">çift kararlarını sil</button>
         </div>
         <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
@@ -1289,6 +1388,15 @@ select:focus,
   border: 1px solid var(--signal);
   color: var(--ink-mute);
 }
+.fillcheck {
+  margin: 0;
+  font-weight: 700;
+  color: var(--signal);
+}
+.fillcheck.good {
+  color: var(--ink);
+}
+
 .cards {
   display: flex;
   flex-wrap: wrap;
@@ -1512,6 +1620,9 @@ figcaption em {
   display: flex;
   gap: 5px;
   align-items: baseline;
+}
+.varlist figcaption em.fill {
+  color: var(--signal);
 }
 .varlist figcaption em {
   font-style: normal;

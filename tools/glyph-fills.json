@@ -1,0 +1,9 @@
+{
+  "_note": "Harf biçimlerinde KOMŞUNUN doldurması beklenen hücreler. Biçimin kendi boşluğu ama boş kalmaması gereken yer: önceki ya da sonraki harfin gövdesi veya uzantısı buraya girecek. Lab'deki Harf varyantları panelinden işaretlenir.",
+  "_semantics": {
+    "id": "biçim kimliği (a.unv33) — türetilmişlerde taban kimlik geçerli",
+    "cells": "[x, y] çiftleri, biçimin kendi kutusunun sol üstüne göre",
+    "note": "neyin doldurması bekleniyor"
+  },
+  "fills": []
+}
