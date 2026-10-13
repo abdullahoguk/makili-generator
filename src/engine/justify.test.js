@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { tokenize, lineWidth, naturalWidth, WORD_GAP, LETTER_GAP } from './layout.js'
-import { reachableWidths, commonWidths, solveLine, justify } from './justify.js'
+import { reachableWidths, commonWidths, solveLine, justify, compose } from './justify.js'
 
 describe('reachableWidths', () => {
   it('tek harf için harfin genişlik merdivenini verir', () => {
@@ -95,9 +95,13 @@ describe('justify', () => {
     expect(r.lines.every((l) => l.width === 30)).toBe(true)
   })
 
-  it('ulaşılamayan hedefte başarısız olur ve nedenini söyler', () => {
+  it('ulaşılamayan hedefte başarısız olmaz, boşluk bırakıp bildirir', () => {
+    // Eskiden burada hata veriyordu. Artık genişlik MÜMKÜN OLDUĞUNCA
+    // eşitleniyor; yetişemeyen satır kendi en geniş halinde kalıp artan
+    // payını bildiriyor.
     const r = justify('ı\nolur', { maxGlyphWidth: 9 })
-    expect(r.ok).toBe(false)
+    expect(r.ok).toBe(true)
+    expect(r.slack).toBeGreaterThan(0)
     expect(r.warnings.join(' ')).toMatch(/ulaş/i)
   })
 
@@ -147,5 +151,39 @@ describe('justify: false — hizalama kapalı', () => {
   it('kapalıyken bile sabitlemeye uyar', () => {
     const r = justify('bana', { justify: false, pinsByLine: { 0: { 0: 6 } } })
     expect(r.lines[0].items[0].variant.w).toBe(6)
+  })
+})
+
+describe('justify: genişlik mümkün olduğunca eşit', () => {
+  it('ortak genişlik varsa hepsini tam o genişliğe getirir', () => {
+    const r = justify('bana\nolur')
+    expect(r.ok).toBe(true)
+    expect(r.lines.every((l) => l.slack === 0)).toBe(true)
+  })
+
+  it('ortak genişlik yoksa başarısız olmaz, boşluk bırakır', () => {
+    // 'ı' genişleyemez; uzun satırla ortak genişlik yok.
+    const r = justify('ı\nolurbana')
+    expect(r.ok).toBe(true)
+    expect(r.lines.some((l) => l.slack > 0)).toBe(true)
+  })
+
+  it('artan payı satır satır bildirir', () => {
+    const r = justify('ı\nolurbana')
+    expect(r.warnings.join(' ')).toMatch(/artan pay/i)
+    expect(r.slack).toBeGreaterThan(0)
+  })
+
+  it('hiçbir satır hedefi aşmaz', () => {
+    const r = justify('ı\nolurbana')
+    for (const l of r.lines) expect(l.width).toBeLessThanOrEqual(r.target)
+  })
+
+  it('kısa satır hedefin içine yaslanır', () => {
+    const left = compose('ı\nolurbana', { align: 'left' })
+    const right = compose('ı\nolurbana', { align: 'right' })
+    expect(left.width).toBe(right.width)
+    const minX = (c) => c.lines[0].x
+    expect(minX(right)).toBeGreaterThan(minX(left))
   })
 })

@@ -169,10 +169,23 @@ function toBoard(item) {
   document.getElementById('tahta')?.scrollIntoView({ behavior: 'smooth' })
 }
 
+/**
+ * Aynı kombinasyon için birden çok çizim tutulur — bir çiftin/üçlünün tek
+ * doğru biçimi yok, varyantları var. Yalnız birebir aynı çizim iki kez
+ * eklenmez.
+ */
 function saveDrawn(block) {
-  drawn.value = [...drawn.value.filter((d) => d.chars !== block.chars), block]
+  const art = block.art.join('\n')
+  if (drawn.value.some((d) => d.chars === block.chars && d.art.join('\n') === art)) return
+  drawn.value = [...drawn.value, { ...block, id: `${block.chars}-${Date.now().toString(36)}` }]
 }
-const removeDrawn = (chars) => { drawn.value = drawn.value.filter((d) => d.chars !== chars) }
+const removeDrawn = (id) => { drawn.value = drawn.value.filter((d) => d.id !== id) }
+
+/** Bir kombinasyonun kaçıncı çizimi — listede numaralandırmak için. */
+function drawnIndex(d) {
+  const same = drawn.value.filter((x) => x.chars === d.chars)
+  return same.length > 1 ? same.indexOf(d) + 1 : null
+}
 
 function exportDrawn() {
   exported.value = JSON.stringify(
@@ -186,6 +199,20 @@ function exportDrawn() {
 function goto(q) {
   s.left = q.left
   s.right = q.right
+}
+
+/**
+ * Blok kurmakta zorlanan harfler (tools/problem-letters.mjs ile ölçüldü):
+ * uzun ince kuyrukları var, yanlarında geniş boşluk bırakıyorlar. Bir tanesine
+ * tıklayınca kuyruk o harfin bütün komşularıyla dolar.
+ */
+const PROBLEM_LETTERS = ['f', 't', 'p', 'v', 's', 'l', 'j']
+
+function focusLetter(ch) {
+  // Harfin her komşuyla hem sol hem sağ olduğu bir metin kur.
+  s.corpus = CHARSET.map((o) => `${ch}${o} ${o}${ch}`).join('\n')
+  s.left = ch
+  s.right = CHARSET[0]
 }
 
 function nextUndecided() {
@@ -484,6 +511,16 @@ function clearAll() {
           işlendi, <b>kalın çerçeveli</b> olanları bu oturumda işaretledin,
           <s>üstü çizili</s> olanların mevcut biçimlerle çözümü yok.
         </p>
+        <div class="focus">
+          <span class="label">sorunlu harf</span>
+          <button
+            v-for="ch in PROBLEM_LETTERS"
+            :key="ch"
+            class="chip mono"
+            :title="`${ch} harfinin bütün komşularını kuyruğa al`"
+            @click="focusLetter(ch)"
+          >{{ ch }}</button>
+        </div>
         <textarea v-model="s.corpus" class="corpus mono" rows="4" spellcheck="false" />
         <button class="solid wide" @click="nextUndecided">sonraki karar verilmemiş →</button>
         <div class="chips">
@@ -591,12 +628,16 @@ function clearAll() {
       <section id="tahta" class="panel">
         <h2 class="section-head">
           <span>Çizim tahtası</span>
-          <span class="dim mono">{{ drawn.length }} çizim</span>
+          <span class="dim mono">
+            {{ drawn.length }} çizim · {{ new Set(drawn.map((d) => d.chars)).size }} kombinasyon
+          </span>
         </h2>
         <p class="note">
           Motorun bulamadığı biçimi kendin ver. Sürükleyerek boya, tekrar
           tıklayarak sil. Kurallar çizerken denetleniyor — köşe teması, bant
           doldurma, geniş delik. Altına hangi harf(ler) olduğunu yaz ve kaydet.
+          <b>Aynı kombinasyona birden çok çizim verebilirsin</b> — biri ötekinin
+          üzerine yazmaz, varyant olarak biriker.
         </p>
         <PixelCanvas
           ref="board"
@@ -606,10 +647,12 @@ function clearAll() {
         />
 
         <div v-if="drawn.length" class="drawnlist">
-          <figure v-for="d in drawn" :key="d.chars">
+          <figure v-for="d in drawn" :key="d.id">
             <GridArt :cells="fromAscii(d.art.join('\n'))" :band-height="s.bandHeight" :cell="11" />
-            <figcaption class="mono">{{ d.chars }}</figcaption>
-            <button class="ghost tiny" @click="removeDrawn(d.chars)">sil</button>
+            <figcaption class="mono">
+              {{ d.chars }}<em v-if="drawnIndex(d)">{{ drawnIndex(d) }}</em>
+            </figcaption>
+            <button class="ghost tiny" @click="removeDrawn(d.id)">sil</button>
           </figure>
         </div>
       </section>
@@ -872,6 +915,16 @@ select:focus,
   margin-bottom: var(--u);
   line-height: 1.6;
 }
+.focus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: var(--u);
+}
+.focus .label {
+  margin-right: 4px;
+}
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -1069,6 +1122,10 @@ figcaption {
   align-items: center;
   gap: 1px;
   font-size: 9px;
+}
+figcaption em {
+  font-style: normal;
+  color: var(--signal);
 }
 .bad {
   color: var(--signal);

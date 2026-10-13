@@ -98,6 +98,15 @@ export function commonWidths(lines, options = {}) {
 }
 
 /**
+ * Satırın hedefi aşmayan en büyük ulaşılabilir genişliği.
+ * Tam hedefe yetişemeyen satırlar buraya kadar gider, kalanı boşluk olur.
+ */
+export function bestWidthUpTo(tokens, target, options = {}) {
+  const reach = [...reachableWidths(tokens, options)].filter((w) => w <= target)
+  return reach.length ? Math.max(...reach) : null
+}
+
+/**
  * Hedef genişliği tam tutturan en ucuz varyant atamasını bulur.
  * @returns glif dizisi, ya da hedefe ulaşılamıyorsa null
  */
@@ -214,59 +223,60 @@ export function justify(text, options = {}) {
   }
 
   const candidates = commonWidths(content, opts)
+  const widest = Math.max(...content.map(naturalWidth))
 
-  if (!candidates.length) {
-    const naturals = content.map(naturalWidth)
-    const widest = Math.max(...naturals)
-    content.forEach((tokens, i) => {
-        const reach = reachableWidths(tokens, { ...opts, pins: opts.pinsByLine?.[i] })
-      const max = Math.max(...reach)
-      if (max < widest) {
-        warnings.push(
-          `${i + 1}. satır en fazla ${max} birime ulaşabiliyor, en geniş satır ${widest} birim. ` +
-            `Genişleyemeyen harfler: ${stuckChars(tokens, opts).join(' ') || '—'}`
-        )
-      }
-    })
-    if (!warnings.length) {
-      warnings.push('Satırların ulaşabildiği genişlikler kesişmiyor; ortak bir hedef yok.')
-    }
-    return { ok: false, target: null, lines: [], candidates: [], warnings }
-  }
-
-  // Hedef: verilmişse o, yoksa en geniş doğal genişliğe en yakın ortak değer.
+  // Hedef: verilmişse o; ortak genişlik varsa en geniş doğal genişliğe en
+  // yakını; yoksa doğrudan en geniş doğal genişlik. Son durumda satırlar
+  // yetişebildiği kadar yaklaşır, kalanı boşluk olarak bildirilir.
   let target = opts.target
   if (target == null) {
-    const widest = Math.max(...content.map(naturalWidth))
-    target = candidates.reduce((best, w) =>
-      Math.abs(w - widest) < Math.abs(best - widest) ? w : best
-    )
-  } else if (!candidates.includes(target)) {
-    return {
-      ok: false,
-      target,
-      lines: [],
-      candidates,
-      warnings: [`${target} birim ulaşılabilir değil. Geçerli genişlikler: ${candidates.join(', ')}`]
-    }
+    target = candidates.length
+      ? candidates.reduce((best, w) => (Math.abs(w - widest) < Math.abs(best - widest) ? w : best))
+      : widest
   }
 
   const lines = []
   for (const [li, tokens] of content.entries()) {
-    const chosen = solveLine(tokens, target, { ...opts, pins: opts.pinsByLine?.[li] })
+    const pins = opts.pinsByLine?.[li]
+    let width = target
+    let chosen = solveLine(tokens, target, { ...opts, pins })
+
     if (!chosen) {
-      return {
-        ok: false,
-        target,
-        lines: [],
-        candidates,
-        warnings: [`${lines.length + 1}. satır ${target} birime tam oturmuyor.`]
+      // Tam hedefe yetişemiyor: hedefi aşmayan en büyük genişliğe git.
+      const fallback = bestWidthUpTo(tokens, target, { ...opts, pins })
+      if (fallback == null) {
+        warnings.push(
+          `${li + 1}. satır ${target} birime sığmıyor; en dar hali bile daha geniş. ` +
+            `Genişleyemeyen harfler: ${stuckChars(tokens, opts).join(' ') || '—'}`
+        )
+        return { ok: false, target, lines: [], candidates, warnings }
+      }
+      width = fallback
+      chosen = solveLine(tokens, fallback, { ...opts, pins })
+      if (!chosen) {
+        warnings.push(`${li + 1}. satır çözülemedi.`)
+        return { ok: false, target, lines: [], candidates, warnings }
       }
     }
-    lines.push({ ...layoutLine(tokens, chosen), tokens })
+
+    const line = { ...layoutLine(tokens, chosen), tokens }
+    line.slack = target - line.width
+    lines.push(line)
   }
 
-  return { ok: true, target, lines, candidates, warnings }
+  const short = lines.filter((l) => l.slack > 0)
+  if (short.length) {
+    warnings.push(
+      `${short.length} satır hedefe tam ulaşamadı. Artan pay: ` +
+        lines
+          .map((l, i) => (l.slack ? `${i + 1}. satır ${l.slack}` : null))
+          .filter(Boolean)
+          .join(', ') +
+        '. Hizalamayı seç ya da boşluğa dekoratif blok koy.'
+    )
+  }
+
+  return { ok: true, target, lines, candidates, warnings, slack: short.length }
 }
 
 /** Genişlik merdiveni tek basamaklı olan harfler — hizalamayı kilitleyenler. */
@@ -288,7 +298,8 @@ export function compose(text, options = {}) {
   const r = justify(text, options)
   if (!r.ok) return { ...r, cells: [], width: 0, height: 0, resolution: 1 }
 
-  const s = stack(r.lines, options)
+  // Satırlar hedefin içine yaslanır; hedef, en geniş satırdan büyük olabilir.
+  const s = stack(r.lines, { ...options, width: r.target })
   const weight = options.weight ?? 1
   if (weight === 1) return { ...r, ...s, resolution: 1 }
 

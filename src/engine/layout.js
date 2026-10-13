@@ -110,9 +110,14 @@ export function toCells(line) {
   return cells
 }
 
-/** Birden çok satırı dikey olarak istifler; her satır kendi x ofsetiyle. */
-export function stack(lines, { align = 'left', lineGap = LINE_GAP } = {}) {
-  const width = Math.max(...lines.map((l) => l.width))
+/**
+ * Birden çok satırı dikey olarak istifler; her satır kendi x ofsetiyle.
+ *
+ * `width` verilirse satırlar onun içine yaslanır — hedef genişliğe tam
+ * ulaşamayan satırların artan payı böyle görünür hale gelir.
+ */
+export function stack(lines, { align = 'left', lineGap = LINE_GAP, width: forced = null } = {}) {
+  const width = forced ?? Math.max(...lines.map((l) => l.width))
   const cells = []
   let y = 0
   const placed = []

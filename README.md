@@ -26,6 +26,13 @@ doldurduğu sürece. `l` + `i` bunun tipik örneği.
 Boşluklar sabit olduğu için satırları aynı genişliğe getirmenin tek yolu harf
 genişliklerini değiştirmektir — projenin asıl problemi bu.
 
+**Genişlik eşitliği mümkün olduğunca sağlanır.** Bütün satırların ulaşabildiği
+ortak bir genişlik varsa hepsi tam ona getirilir. Yoksa hedef en geniş satırın
+doğal genişliği olur; yetişemeyen satır kendi en büyük ulaşılabilir
+genişliğinde kalır ve artan pay `slack` olarak bildirilir. O boşluğu sağa,
+sola ya da ortaya yaslamak — veya dekoratif bir blokla doldurmak — sanatçının
+kararıdır. Motor boşluğu gizlemez, ölçüp gösterir.
+
 Kanonik glif hücresi **3 × 9**, ama bant yüksekliği tasarım genelinde
 değiştirilebilir. Aksanlar gövdenin üstünde ayrı duran işaretler
 (`ö`, `ü`, `i`) ya da altında boyun + bar (`ç`); ikisi de 2 satır yer kaplar,
@@ -200,6 +207,17 @@ düşülür — ölçülen, yan yana gelmenin ÜRETTİĞİ fazladan boşluktur.
 Düzeltmenin etkisi: çözümü olmayan çift 29'dan 0'a, delikli çift 10'dan 0'a,
 tutan üçlü 10'dan 61'e.
 
+### Blok kurmakta zorlanan harfler
+
+`node tools/problem-letters.mjs` her harfi ölçer: bandı dolduran en yoğun
+varyantının doluluğu, tek başına bıraktığı geniş boşluk, komşularıyla
+kurduğu çiftlerde kalan ortalama delik.
+
+En sorunlu altı: **f, t, p, v, s, l** (ardından `j`). Hepsinin uzun ince bir
+kuyruğu var ve yanında geniş boşluk bırakıyor; `t` en kötüsü (doluluk 0.39,
+kendi deliği 14). Lab'deki kuyruk panelinde bu harflere tek tıkla
+odaklanılabilir — harfin bütün komşuları kuyruğa düşer.
+
 ### Elle çizilen bloklar
 
 `tools/drawn-blocks.json` — lab'deki çizim tahtasından gelen üçlüler.
@@ -207,6 +225,9 @@ tutan üçlü 10'dan 61'e.
 hangi gliflerden kurulduğunu geri-izlemeyle çözer. Çözülenlerin ardışık
 çiftleri onaylı karar olarak `pair-decisions.json`'a eklenir; çözülemeyenler
 kütüphanede eksik olan biçimi gösterir.
+
+Aynı kombinasyona birden çok çizim verilebilir — bir çiftin tek doğru biçimi
+yok, varyantları var. Yalnız birebir aynı çizim iki kez eklenmez.
 
 ### Referansı yeniden ölçmek
 
