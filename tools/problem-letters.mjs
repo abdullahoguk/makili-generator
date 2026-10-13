@@ -9,6 +9,7 @@
 //
 // Her harf için ölçülenler:
 //
+//   bant        harfin bandı baştan sona dolduran varyantı var mı
 //   doluluk     harfin kapladığı hücre / kutusunun alanı
 //   kendi deliği tek başına bıraktığı iki hücre kalınlığındaki boşluk
 //   ortalama    o harfle kurulan çiftlerde kalan fazladan delik
@@ -49,14 +50,25 @@ for (const ch of letters) {
   let pairs = 0
   let dead = 0
   let excess = 0
+  const worstPairs = []
   for (const other of CHARSET) {
     for (const [x, y] of [[ch, other], [other, ch]]) {
       const list = pairPlacements(x, y, { bandHeight: BAND, limit: 60 })
       pairs++
-      if (!list.length) dead++
-      else excess += list[0].excessWide ?? 0
+      if (!list.length) {
+        dead++
+        worstPairs.push({ pair: `${x}${y}`, excess: Infinity })
+      } else {
+        const e = list[0].excessWide ?? 0
+        excess += e
+        if (e > 0) worstPairs.push({ pair: `${x}${y}`, excess: e })
+      }
     }
   }
+  worstPairs.sort((a, b) => b.excess - a.excess)
+  // Aynı çift iki yönden de gelebilir (ll gibi); bir kez yeter.
+  const seenPair = new Set()
+  const uniqWorst = worstPairs.filter((t) => !seenPair.has(t.pair) && seenPair.add(t.pair))
 
   rows.push({
     ch,
@@ -68,6 +80,7 @@ for (const ch of letters) {
     dead,
     pairs,
     avgExcess: excess / Math.max(1, pairs - dead),
+    worstPairs: uniqWorst,
     art: toAscii(best.cells)
   })
 }
@@ -75,25 +88,58 @@ for (const ch of letters) {
 const scored = rows.filter((r) => !r.missing)
 scored.sort((a, b) => b.dead - a.dead || b.avgExcess - a.avgExcess || a.density - b.density)
 
-console.log('harf  var  en  doluluk  kendi  çözümsüz  ort.delik')
+console.log('harf  var  en  bant  doluluk  kendi  çözümsüz  ort.delik')
 for (const r of scored) {
   console.log(
     `${r.ch.padEnd(5)} ${String(r.variants).padStart(3)} ${String(r.w).padStart(3)}` +
+      `  ${(r.fullBand ? ' ✓' : ' ✗').padStart(4)}` +
       `  ${r.density.toFixed(2).padStart(7)}  ${String(r.own).padStart(5)}` +
       `  ${`${r.dead}/${r.pairs}`.padStart(8)}  ${r.avgExcess.toFixed(2).padStart(9)}`
   )
 }
 
+// Bandı dolduramayan harf tek başına blok kuramaz: üstünde ya da altında
+// mutlaka boşluk kalır, komşusu ya da bir uzantı onu kapatmak zorundadır.
+const short = scored.filter((r) => !r.fullBand)
+if (short.length) {
+  console.log(`\nBANDI DOLDURAMAYAN (${short.length}): ${short.map((r) => r.ch).join(' ')}`)
+  console.log('Bu harfler tek başına blok kuramaz; komşusu ya da bir uzantı boşluğu kapatmalı.')
+}
+
 const missing = rows.filter((r) => r.missing)
 if (missing.length) console.log(`\nbanda sığmayan: ${missing.map((r) => r.ch).join(' ')}`)
 
-const worst = scored.filter((r) => r.dead > 0 || r.avgExcess > 0.5 || r.density < 0.42)
+const worst = scored.filter(
+  (r) => r.dead > 0 || !r.fullBand || r.avgExcess > 1 || r.density < 0.42
+)
 console.log(`\n=== SORUNLU HARFLER (${worst.length})`)
-console.log('Ölçüt: çözümsüz komşusu olan, ortalama deliği yüksek ya da doluluğu 0.42 altında.')
+console.log(
+  'Ölçüt: çözümsüz komşusu olan, bandı dolduramayan, ortalama deliği 1 üstü\n' +
+    'ya da doluluğu 0.42 altında.'
+)
 for (const r of worst) {
   console.log(
     `\n--- '${r.ch}'  doluluk ${r.density.toFixed(2)}  kendi deliği ${r.own}` +
       `  çözümsüz komşu ${r.dead}  ort.delik ${r.avgExcess.toFixed(2)}`
   )
   console.log(r.art.split('\n').map((l) => '    ' + l).join('\n'))
+  // Çizim kuyruğu: en çok delik bırakan komşular. Önce bunlar çizilsin.
+  const top = r.worstPairs.slice(0, 12)
+  if (top.length) {
+    console.log(
+      `    en kötü komşular: ` +
+        top
+          .map((t) => `${t.pair}${t.excess === Infinity ? '(çözümsüz)' : `(${t.excess})`}`)
+          .join('  ')
+    )
+  }
 }
+
+// Bütün sorunlu harflerin en kötü çiftleri, tek kuyruk — lab'de sırayla çizilsin.
+const queue = []
+for (const r of worst) for (const t of r.worstPairs.slice(0, 12)) queue.push(t)
+queue.sort((a, b) => b.excess - a.excess)
+const seen = new Set()
+const uniq = queue.filter((t) => !seen.has(t.pair) && seen.add(t.pair))
+console.log(`\n=== ÇİZİM KUYRUĞU (${uniq.length}) — en çok delik bırakan çiftler önce`)
+console.log(uniq.slice(0, 60).map((t) => t.pair).join(' '))

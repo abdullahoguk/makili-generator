@@ -215,8 +215,14 @@ kurduğu çiftlerde kalan ortalama delik.
 
 En sorunlu altı: **f, t, p, v, s, l** (ardından `j`). Hepsinin uzun ince bir
 kuyruğu var ve yanında geniş boşluk bırakıyor; `t` en kötüsü (doluluk 0.39,
-kendi deliği 14). Lab'deki kuyruk panelinde bu harflere tek tıkla
-odaklanılabilir — harfin bütün komşuları kuyruğa düşer.
+kendi deliği 14). Sorun yükseklik değil biçim: 29 harfin hepsinin bandı
+baştan sona dolduran bir varyantı var, ama bu altısı bandı doldururken
+yanında kapanmamış bir oyuk bırakıyor.
+
+Araç ayrıca bir **çizim kuyruğu** basar: en çok delik bırakan çiftler önce
+(`ft fz at tb tç çt dt te…`). Lab'deki kuyruk panelinde bu harflere tek
+tıkla odaklanılabilir — harfin bütün komşuları kuyruğa düşer ve sıralama
+sıklık yerine kalan deliğe göre olur, en kötüsünden başlanır.
 
 ### Elle çizilen bloklar
 

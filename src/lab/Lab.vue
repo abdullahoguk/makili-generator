@@ -62,6 +62,14 @@ const pairKey = computed(() => `${s.left}${s.right}`)
 
 // ---- çift kuyruğu -------------------------------------------------------
 
+/**
+ * Sorunlu bir harfe odaklanıldığında çiftler sıklığa göre değil, KALAN DELİĞE
+ * göre sıralanır: en kötüsü başta. Odaklı metinde her çift bir kez geçtiği
+ * için sıklık hiçbir şey ayırt etmiyor, oysa denemeye en çok delik bırakandan
+ * başlamak gerekiyor. Map boşken sıralama yine sıklığa düşer.
+ */
+const focusVoid = ref(new Map())
+
 /** Metinde fiilen geçen harf çiftleri, sıklığa göre. */
 const queue = computed(() => {
   const counts = new Map()
@@ -82,9 +90,13 @@ const queue = computed(() => {
       preferred: Object.values(decisions[k] ?? {}).some((v) => v.verdict === 'prefer'),
       // Depoya işlenmiş kararlar (tools/pair-decisions.json)
       saved: hasDecisions([...k][0], [...k][1]),
-      unsolved: unsolvedPairs.has(k)
+      unsolved: unsolvedPairs.has(k),
+      void: focusVoid.value.get(k) ?? null
     }))
-    .sort((a, b) => b.n - a.n || a.key.localeCompare(b.key))
+    .sort(
+      (a, b) =>
+        (b.void ?? -1) - (a.void ?? -1) || b.n - a.n || a.key.localeCompare(b.key)
+    )
 })
 
 const queueStats = computed(() => ({
@@ -211,8 +223,23 @@ const PROBLEM_LETTERS = ['f', 't', 'p', 'v', 's', 'l', 'j']
 function focusLetter(ch) {
   // Harfin her komşuyla hem sol hem sağ olduğu bir metin kur.
   s.corpus = CHARSET.map((o) => `${ch}${o} ${o}${ch}`).join('\n')
-  s.left = ch
-  s.right = CHARSET[0]
+
+  // Her çifti ölç: en iyi yerleşiminde bile kalan fazladan delik. Çözümsüz
+  // çift en başa gider (Infinity yerine büyük sayı — sıralama için yeter).
+  const m = new Map()
+  for (const other of CHARSET) {
+    for (const [x, y] of [[ch, other], [other, ch]]) {
+      const list = pairPlacements(x, y, { bandHeight: s.bandHeight, limit: 40 })
+      m.set(`${x}${y}`, list.length ? (list[0].excessWide ?? 0) : 999)
+    }
+  }
+  focusVoid.value = m
+
+  // En kötü çiftin kendisine geç — harf solda mı sağda mı, çift ne diyorsa.
+  const first = [...m].sort((a, b) => b[1] - a[1])[0]
+  const worst = first ? [...first[0]] : [ch, CHARSET[0]]
+  s.left = worst[0]
+  s.right = worst[1]
 }
 
 function nextUndecided() {
@@ -510,6 +537,9 @@ function clearAll() {
           geçen çiftler, sıklık sırasına göre. <b>Dolu</b> olanların kararı depoya
           işlendi, <b>kalın çerçeveli</b> olanları bu oturumda işaretledin,
           <s>üstü çizili</s> olanların mevcut biçimlerle çözümü yok.
+          Sorunlu bir harfe tıklarsan kuyruk o harfin bütün komşularıyla dolar
+          ve sıralama <b>kalan deliğe</b> göre olur — en kötüsü başta, rakam da
+          o delik.
         </p>
         <div class="focus">
           <span class="label">sorunlu harf</span>
@@ -535,10 +565,10 @@ function clearAll() {
               saved: q.saved,
               unsolved: q.unsolved
             }"
-            :title="`${q.n} kez geçiyor${q.saved ? ' · kayıtlı karar var' : ''}${q.unsolved ? ' · çözümsüz' : ''}`"
+            :title="`${q.void != null ? `kalan delik ${q.void}` : `${q.n} kez geçiyor`}${q.saved ? ' · kayıtlı karar var' : ''}${q.unsolved ? ' · çözümsüz' : ''}`"
             @click="goto(q)"
           >
-            {{ q.key }}<em>{{ q.n }}</em>
+            {{ q.key }}<em>{{ q.void != null ? q.void : q.n }}</em>
           </button>
         </div>
       </section>
