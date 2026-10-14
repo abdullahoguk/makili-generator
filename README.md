@@ -274,6 +274,38 @@ npm run glyphs:build
 Build ASCII'yi hücrelere çevirir, değişmezlere karşı doğrular ve içerik
 hash'inden kimlik üretir (`extra:d.el1` → `d.5nvpv`).
 
+### Türetme neyi genişletebilir
+
+Sütun çoğaltma uzun süre her sütuna uygulanıyordu ve **boşluğu da iki katına
+çıkarıyordu**: `a` bir birim genişleyince sayacı 2 hücre oluyordu.
+
+```
+###        ####
+#.#        #..#
+..#   →    ...#
+###        ####
+```
+
+Değişmez kural, boşluğun BİR YÖNDE tam bir birim kalması. İki yönde birden
+değil: ustanın `o` sayacı 1 birim geniş ama 7 birim uzun, `g`'nin alt kanalı
+3 birim uzun ama 1 birim kalın. Kesin karşılığı: **boş 2×2 kare olmayacak**.
+
+Tek istisna yanı boydan boya açık biçimler — `r` 4w, `t` 7w, `z` 9w. Orayı
+komşu harf ya da uzantısı doldurur, usta da bu biçimleri böyle çizmiş. Ölçü
+bu yüzden "cep bir kenara değiyor mu" değil, hücre hücre yatay erişim:
+hücrenin satırı kenara kadar boş olmalı. `c`'nin çentikli sayacı tek
+satırdan değiyor — doldurulamaz, genişletilemez.
+
+Sonuç: `a b c ç e f h ı i j k n o ö p s ş u ü y` genişlemiyor (sayaçları
+kapalı), `d g ğ l m r t v z` genişliyor. Genişlik çeşitliliğinin asıl
+kaynağı artık **elle çizilen varyantlar**.
+
+Dikeyde kısıt yok: satır çoğaltma hiçbir boşluğu genişletmez, yalnız uzatır.
+
+`node tools/check-glyphs.mjs` kütüphaneyi ve bütün türetmeleri bu kurala
+karşı tarar (225 biçim, 0 kusur). Aynı değişmez `derive.test.js` içinde de
+sınanıyor.
+
 ### Hatalı biçmi kütüphaneden çıkarmak
 
 Kaynak çizimden (`letters.svg`) gelen her biçim doğru değil: bazıları hatalı,
