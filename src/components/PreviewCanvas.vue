@@ -43,6 +43,7 @@ const hits = computed(() => {
         gi,
         char: it.char,
         w: it.variant.w,
+        id: it.variant.id,
         pinned: props.pinsByLine?.[li]?.[gi] != null,
         derived: !!it.variant.derived,
         x: ox + it.x + props.padding,

@@ -33,7 +33,7 @@ export function useComposition() {
     // hizalama
     justifyOn: true,
     target: null, // null = motor seçsin
-    pinsByLine: {}, // { satır: { harfSırası: genişlik } }
+    pinsByLine: {}, // { satır: { harfSırası: { w, id } } }
 
     showGrid: true
   })
@@ -86,11 +86,13 @@ export function useComposition() {
     return item ?? null
   }
 
-  function pin(lineIndex, glyphIndex, width) {
+  function pin(lineIndex, glyphIndex, width, id = null) {
     const byLine = { ...state.pinsByLine }
     const row = { ...(byLine[lineIndex] ?? {}) }
     if (width == null) delete row[glyphIndex]
-    else row[glyphIndex] = width
+    // Genişlik değil BİÇİM sabitlenir: aynı genişlikte birden çok biçim var,
+    // yalnız genişlik sabitlenirse çözücü başkasını seçebiliyordu.
+    else row[glyphIndex] = { w: width, id }
     if (Object.keys(row).length) byLine[lineIndex] = row
     else delete byLine[lineIndex]
     state.pinsByLine = byLine

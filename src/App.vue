@@ -16,9 +16,16 @@ function onPick(hit) {
     picked.value && picked.value.li === hit.li && picked.value.gi === hit.gi ? null : hit
 }
 
-function onPin({ li, gi, width }) {
-  pin(li, gi, width)
-  if (picked.value) picked.value = { ...picked.value, w: width ?? picked.value.w, pinned: width != null }
+function onPin({ li, gi, width, id }) {
+  pin(li, gi, width, id)
+  if (picked.value) {
+    picked.value = {
+      ...picked.value,
+      w: width ?? picked.value.w,
+      id: id ?? picked.value.id,
+      pinned: width != null
+    }
+  }
 }
 </script>
 

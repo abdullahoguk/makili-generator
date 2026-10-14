@@ -8,24 +8,30 @@ import { bbox } from './grid.js'
 
 describe('reachableWidths', () => {
   it('tek harf için harfin genişlik merdivenini verir', () => {
-    const r = reachableWidths(tokenize('o'), { maxGlyphWidth: 6 })
+    // 'l' esner: boşluğu her satırda sağa açık. 'o' esnemez, sayacı kapalı.
+    const r = reachableWidths(tokenize('l'), { maxGlyphWidth: 6 })
     expect([...r].sort((a, b) => a - b)).toEqual([3, 4, 5, 6])
   })
 
   it('sabit boşlukları toplama katar', () => {
     // iki harf + 1 birim harf arası
-    const r = reachableWidths(tokenize('oo'), { maxGlyphWidth: 4 })
+    const r = reachableWidths(tokenize('ll'), { maxGlyphWidth: 4 })
     expect(Math.min(...r)).toBe(3 + LETTER_GAP + 3)
     expect(Math.max(...r)).toBe(4 + LETTER_GAP + 4)
   })
 
   it('kelime arası boşluğu sabit tutar', () => {
-    const r = reachableWidths(tokenize('o o'), { maxGlyphWidth: 3 })
+    const r = reachableWidths(tokenize('l l'), { maxGlyphWidth: 3 })
     expect([...r]).toEqual([3 + WORD_GAP + 3])
   })
 
   it('genişleyemeyen harf tek genişlik verir', () => {
     expect([...reachableWidths(tokenize('ı'), { maxGlyphWidth: 9 })]).toEqual([1])
+  })
+
+  it('kapalı sayaçlı harf genişleyemez', () => {
+    // 'o'nun sayacı çevrili: genişletmek onu 2 hücre yapardı.
+    expect([...reachableWidths(tokenize('o'), { maxGlyphWidth: 9 })]).toEqual([3])
   })
 
   it('boş satır için sıfır verir', () => {
@@ -35,7 +41,7 @@ describe('reachableWidths', () => {
 
 describe('commonWidths', () => {
   it('tüm satırların ulaşabildiği genişlikleri verir', () => {
-    const lines = ['oo', 'ooo'].map((t) => tokenize(t))
+    const lines = ['ll', 'lll'].map((t) => tokenize(t))
     const common = commonWidths(lines, { maxGlyphWidth: 9 })
     for (const w of common) {
       for (const l of lines) expect(reachableWidths(l, { maxGlyphWidth: 9 }).has(w)).toBe(true)
@@ -44,7 +50,7 @@ describe('commonWidths', () => {
   })
 
   it('her satırın doğal genişliğinden küçük hedef önermez', () => {
-    const lines = ['o', 'oooo'].map(tokenize)
+    const lines = ['l', 'llll'].map(tokenize)
     const common = commonWidths(lines, { maxGlyphWidth: 9 })
     const widest = Math.max(...lines.map(naturalWidth))
     expect(Math.min(...common)).toBeGreaterThanOrEqual(widest)
@@ -52,13 +58,13 @@ describe('commonWidths', () => {
 
   it('ulaşılamıyorsa boş döner', () => {
     // 'ı' genişleyemez, tek başına bir satır olarak başka satıra uyamaz
-    expect(commonWidths([tokenize('ı'), tokenize('ooo')], { maxGlyphWidth: 9 })).toEqual([])
+    expect(commonWidths([tokenize('ı'), tokenize('lll')], { maxGlyphWidth: 9 })).toEqual([])
   })
 })
 
 describe('solveLine', () => {
   it('hedef genişliği tam tutturur', () => {
-    const tokens = tokenize('oooo')
+    const tokens = tokenize('llll')
     const target = 20
     const chosen = solveLine(tokens, target, { maxGlyphWidth: 9 })
     expect(chosen).not.toBeNull()
@@ -70,11 +76,15 @@ describe('solveLine', () => {
   })
 
   it('genişlemeyi harflere dağıtır, tek harfi şişirmez', () => {
-    // 4 harfe 4 birim dağıtılacak: her harf 1 büyümeli, biri 4 değil.
-    const tokens = tokenize('oooo')
+    // 4 harfe 4 birim dağıtılacak. Karesel maliyet yüklenmeyi yayar; doku
+    // bedeli devreye girdiğinden dağılım birebir eşit olmak zorunda değil,
+    // ama tek harf bütün yükü almamalı.
+    const tokens = tokenize('llll')
     const natural = naturalWidth(tokens)
     const chosen = solveLine(tokens, natural + 4, { maxGlyphWidth: 9 })
-    expect(chosen.map((v) => v.w)).toEqual([4, 4, 4, 4])
+    const widths = chosen.map((v) => v.w)
+    expect(widths.reduce((a, b) => a + b, 0)).toBe(12 + 4)
+    expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(2)
   })
 
   it('doğal genişlikte hiç genişletme yapmaz', () => {
@@ -94,16 +104,17 @@ describe('justify', () => {
   })
 
   it('istenen hedef genişliği kullanır', () => {
-    const r = justify('bana\nolur', { target: 30 })
+    // İki satır da 18'e ulaşabiliyor: 'l' ve 'd' esner (lale 15-23, ldc 11-19).
+    const r = justify('lale\nldc', { target: 18 })
     expect(r.ok).toBe(true)
-    expect(r.lines.every((l) => l.width === 30)).toBe(true)
+    expect(r.lines.every((l) => l.width === 18)).toBe(true)
   })
 
   it('ulaşılamayan hedefte başarısız olmaz, boşluk bırakıp bildirir', () => {
     // Eskiden burada hata veriyordu. Artık genişlik MÜMKÜN OLDUĞUNCA
     // eşitleniyor; yetişemeyen satır kendi en geniş halinde kalıp artan
     // payını bildiriyor.
-    const r = justify('ı\nolur', { maxGlyphWidth: 9 })
+    const r = justify('ı\nlale', { maxGlyphWidth: 9 })
     expect(r.ok).toBe(true)
     expect(r.slack).toBeGreaterThan(0)
     expect(r.warnings.join(' ')).toMatch(/ulaş/i)
@@ -116,29 +127,32 @@ describe('justify', () => {
   })
 
   it('boşlukları asla esnetmez', () => {
-    const r = justify('ab cd\nolur bana')
+    // Satırın genişliği, harf genişlikleri + SABİT boşluklardan ibaret.
+    // Hedefe ulaşıp ulaşmaması ayrı mesele; boşluk hiçbir durumda esnemez.
+    const r = justify('al cd\nlale bana')
     expect(r.ok).toBe(true)
     for (const line of r.lines) {
-      expect(lineWidth(line.tokens, line.items.map((i) => i.variant.w))).toBe(r.target)
+      expect(lineWidth(line.tokens, line.items.map((i) => i.variant.w))).toBe(line.width)
     }
   })
 })
 
 describe('pins — elle sabitlenen harf genişlikleri', () => {
   it('sabitlenen harf o genişlikte kalır', () => {
-    const r = justify('bana\nolur', { pinsByLine: { 0: { 0: 6 } } })
+    // 'l' sabitlenebilir bir genişliğe esneyen harf.
+    const r = justify('lale\nbana', { pinsByLine: { 0: { 0: 6 } } })
     expect(r.ok).toBe(true)
     expect(r.lines[0].items[0].variant.w).toBe(6)
   })
 
   it('sabitleme ulaşılabilir genişlikleri daraltır', () => {
-    const wide = justify('bana\nolur')
-    const pinned = justify('bana\nolur', { pinsByLine: { 0: { 0: 6 } } })
+    const wide = justify('lale\nbana')
+    const pinned = justify('lale\nbana', { pinsByLine: { 0: { 0: 6 } } })
     expect(pinned.candidates.length).toBeLessThan(wide.candidates.length)
   })
 
   it('sabitleme sonrası kalan harfler hedefi tutturur', () => {
-    const r = justify('bana\nolur', { pinsByLine: { 0: { 0: 5 } } })
+    const r = justify('lale\nbana', { pinsByLine: { 0: { 0: 5 } } })
     expect(r.ok).toBe(true)
     expect(new Set(r.lines.map((l) => l.width)).size).toBe(1)
   })
@@ -153,7 +167,7 @@ describe('justify: false — hizalama kapalı', () => {
   })
 
   it('kapalıyken bile sabitlemeye uyar', () => {
-    const r = justify('bana', { justify: false, pinsByLine: { 0: { 0: 6 } } })
+    const r = justify('lale', { justify: false, pinsByLine: { 0: { 0: 6 } } })
     expect(r.lines[0].items[0].variant.w).toBe(6)
   })
 })

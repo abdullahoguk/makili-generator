@@ -5,9 +5,12 @@ import {
   duplicableColumns,
   widen,
   widthLadder,
+  widthOptions,
   heighten,
   heightLadder
 } from './derive.js'
+import { bbox } from './grid.js'
+import library from '../data/glyphs.json' with { type: 'json' }
 
 const g = (...rows) => ({ cells: fromAscii(rows.join('\n')), w: rows[0].length, h: rows.length })
 const art = (cells) => toAscii(cells).split('\n')
@@ -22,9 +25,24 @@ describe('columnsOf', () => {
 })
 
 describe('duplicableColumns', () => {
-  it("'o' biçiminde yalnız iç sütunu çoğaltılabilir sayar", () => {
+  it("'o' gibi kapalı sayaçlı biçimde hiçbir sütun çoğaltılamaz", () => {
+    // Sayacı büyütmek "aralarda yalnız 1 birim boşluk" kuralını çiğner.
     const o = g('###', '#.#', '#.#', '###')
-    expect(duplicableColumns(o)).toEqual([1])
+    expect(duplicableColumns(o)).toEqual([])
+  })
+
+  it('yanı boydan boya açık biçimde çoğaltmaya izin verir', () => {
+    // Ustanın 'r' 4w biçimi: boşluk her satırda sağa açık, komşunun
+    // uzantısı girebilir.
+    const r = g('###', '#..', '#..', '#..')
+    expect(duplicableColumns(r)).toEqual([1, 2])
+  })
+
+  it('çentikli sayacı yana açık saymaz', () => {
+    // Tek satırdan kenara değen sayaç doldurulamaz: komşu yandan gelir,
+    // araya giren dolu hücre yolu keser.
+    const c = g('###', '#.#', '#..', '#.#', '###')
+    expect(duplicableColumns(c)).toEqual([])
   })
 
   it('tek başına dikey gövde oluşturan sütunu reddeder', () => {
@@ -40,14 +58,14 @@ describe('duplicableColumns', () => {
 })
 
 describe('widen', () => {
-  it("'o'yu bir birim genişletir, sayacı büyütür", () => {
+  it('kapalı sayacı büyütmez — genişletemiyorsa null döner', () => {
     const o = g('###', '#.#', '#.#', '###')
-    expect(art(widen(o, 1).cells)).toEqual(['####', '#..#', '#..#', '####'])
+    expect(widen(o, 1)).toBeNull()
   })
 
-  it('iki birim genişletir', () => {
-    const o = g('###', '#.#', '###')
-    expect(art(widen(o, 2).cells)).toEqual(['#####', '#...#', '#####'])
+  it('yana açık boşluğu genişletir', () => {
+    const r = g('###', '#..', '#..', '###')
+    expect(art(widen(r, 2).cells)).toEqual(['#####', '#....', '#....', '#####'])
   })
 
   it('çoğaltılabilir sütun yoksa null döner', () => {
@@ -71,20 +89,69 @@ describe('widen', () => {
     }
   })
 
-  it('genişletmeyi sütunlara dağıtır, hep aynısını şişirmez', () => {
-    // İki ayrı sayacı olan biçim: iki birim eklenince her sayaç bir büyür.
-    const two = g('#####', '#.#.#', '#####')
-    expect(art(widen(two, 2).cells)).toEqual(['#######', '#..#..#', '#######'])
+  it('genişletmeyi uygun sütunlara dağıtır, hep aynısını şişirmez', () => {
+    // Biri sağa biri sola açık iki boşluk: iki birim eklenince ikisi de büyür.
+    const two = g('#####', '#....', '#####', '....#', '#####')
+    expect(art(widen(two, 2).cells)).toEqual([
+      '#######',
+      '#......',
+      '#######',
+      '......#',
+      '#######'
+    ])
+  })
+
+  it('hiçbir türetme kapanmayan 2×2 boşluk üretmez', () => {
+    // Değişmez: boşluk BİR yönde 1 birim kalmalı. Boş 2×2 kare, boşluğun iki
+    // yönde birden iki birim olduğu yer demektir. Tek istisna kenara açık
+    // yanlar — orayı komşu doldurur.
+    //
+    // Bütün kütüphane, bütün genişlikler. Sütun çoğaltma eskiden 'a'nın
+    // sayacını 2 hücre yapıyordu; bu sınama onu bir daha geçirmez.
+    const bad = []
+    for (const [char, variants] of Object.entries(library.glyphs)) {
+      const tall = variants.filter((v) => v.h === variants[0].h)
+      for (const [, list] of widthOptions(tall.length ? tall : variants, 9)) {
+        for (const g of list) {
+          const b = bbox(g.cells)
+          const filled = new Set(g.cells.map(([x, y]) => `${x - b.x},${y - b.y}`))
+          // satırı boyunca kenara erişen hücreler: komşu doldurabilir
+          const open = new Set()
+          for (let y = 0; y < b.h; y++) {
+            let L = 0
+            while (L < b.w && !filled.has(`${L},${y}`)) L++
+            let R = b.w - 1
+            while (R >= 0 && !filled.has(`${R},${y}`)) R--
+            for (let x = 0; x < L; x++) open.add(`${x},${y}`)
+            for (let x = R + 1; x < b.w; x++) open.add(`${x},${y}`)
+          }
+          for (let y = 0; y + 1 < b.h; y++) {
+            for (let x = 0; x + 1 < b.w; x++) {
+              const quad = [`${x},${y}`, `${x + 1},${y}`, `${x},${y + 1}`, `${x + 1},${y + 1}`]
+              if (quad.some((k) => filled.has(k))) continue
+              if (quad.every((k) => open.has(k))) continue
+              bad.push(`${char} ${g.id ?? g.source} ${g.w}×${g.h} @${x},${y}`)
+            }
+          }
+        }
+      }
+    }
+    expect(bad).toEqual([])
   })
 })
 
 describe('widthLadder', () => {
   it('taban genişlikten hedefe kadar her genişliği verir', () => {
-    const o = g('###', '#.#', '###')
-    const ladder = widthLadder(o, 6)
+    const r = g('###', '#..', '#..', '###')
+    const ladder = widthLadder(r, 6)
     expect([...ladder.keys()]).toEqual([3, 4, 5, 6])
-    expect(ladder.get(3)).toBe(o)
+    expect(ladder.get(3)).toBe(r)
     expect(ladder.get(5).w).toBe(5)
+  })
+
+  it('kapalı sayaçlı biçim için yalnız kendi genişliğini verir', () => {
+    const o = g('###', '#.#', '###')
+    expect([...widthLadder(o, 6).keys()]).toEqual([3])
   })
 
   it('genişletilemeyen biçim için yalnız kendi genişliğini verir', () => {
@@ -107,7 +174,8 @@ describe('heighten / heightLadder', () => {
     )
   })
 
-  it("'o' biçimini dikeyde büyütür", () => {
+  it("'o' biçimini dikeyde büyütür — sayaç 1 birim geniş kalır", () => {
+    // Dikeyde uzamak kurala aykırı değil: ustanın 'o' sayacı 1 geniş, 7 uzun.
     const o = g('###', '#.#', '###')
     expect(art(heighten(o, 2).cells)).toEqual(['###', '#.#', '#.#', '#.#', '###'])
   })

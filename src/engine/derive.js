@@ -7,8 +7,22 @@
 // Sütun çoğaltma seçilmesinin nedeni: bir sütunun kopyası yanına eklendiğinde
 // köşe teması yasağı yapısal olarak korunur. İki özdeş komşu sütun arasında
 // çapraz bir çift oluşsa bile paylaşılan kenar komşusu zorunlu olarak doludur.
-// Bağlılık da aynı nedenle korunur. Dolayısıyla tek denetlenecek şey estetik:
-// hangi sütunun çoğaltılacağı.
+// Bağlılık da aynı nedenle korunur.
+//
+// Ama korunmayan bir şey var: BOŞLUK GENİŞLİĞİ. İçinde boş hücre olan bir
+// sütun çoğaltılınca o boşluk da iki katına çıkar. 'a'yı bir birim
+// genişletmek sayaçlarını 2 hücre yapıyordu:
+//
+//     ###        ####
+//     #.#        #..#
+//     ..#   →    ...#
+//     ###        ####
+//
+// Bu "aralarda yalnız 1 birim boşluk" kuralını çiğniyor. Ayrım şurada:
+// bir boşluk ancak SOLA ya da SAĞA açıksa komşu harf veya uzantısı onu
+// doldurabilir — genişlemesinin sakıncası yoktur. Kapalı sayaçlar ve yalnız
+// üstten/alttan açık boşluklar doldurulamaz; satırın üstünde ve altında
+// komşu yoktur. Onlar tam 1 birim kalmak zorunda.
 
 import { bbox } from './grid.js'
 
@@ -20,16 +34,64 @@ export function columnsOf(glyph) {
 }
 
 /**
+ * Boş hücrelerden hangileri KOMŞU TARAFINDAN DOLDURULABİLİR?
+ *
+ * Komşu harf yandan gelir. Bir boş hücreye ulaşabilmesi için o hücrenin
+ * satırının kenara kadar boş olması gerekir — araya giren tek bir dolu hücre
+ * yolu keser. Ölçü bu yüzden cebin "bir kenara değiyor mu" sorusu değil,
+ * hücre hücre yatay erişim.
+ *
+ * Fark ustanın biçimlerinde görünür:
+ *
+ *   r 4w        c 5w (türetilmiş, hatalı)
+ *   ####        #####
+ *   #...        #...#
+ *   #...        #....   <- yalnız bu satırdan kenara değiyor
+ *   #...        #...#
+ *
+ * r'nin boşluğu her satırda sağa açık; komşunun uzantısı girebilir, usta da
+ * bu biçimi böyle çizmiş. c'nin içi ise çentikli bir sayaç: tek satırdan
+ * değiyor, geri kalanı kapalı. Cep ölçüsüyle bakınca ikisi de "yana açık"
+ * görünüyordu — bu yüzden c yanlışlıkla genişletilebiliyordu.
+ *
+ * @returns {Set<string>} "x,y" anahtarları, glifin kendi kutusuna göre
+ */
+export function fillableVoid(glyph) {
+  const b = bbox(glyph.cells)
+  const filled = new Set(glyph.cells.map(([x, y]) => `${x - b.x},${y - b.y}`))
+  const out = new Set()
+
+  for (let y = 0; y < b.h; y++) {
+    // Soldan ve sağdan ne kadar boş gidiliyor?
+    let left = 0
+    while (left < b.w && !filled.has(`${left},${y}`)) left++
+    let right = b.w - 1
+    while (right >= 0 && !filled.has(`${right},${y}`)) right--
+    for (let x = 0; x < left; x++) out.add(`${x},${y}`)
+    for (let x = right + 1; x < b.w; x++) out.add(`${x},${y}`)
+  }
+  return out
+}
+
+/**
  * Çoğaltılabilir sütunlar.
  *
- * Bir sütun ancak kendi başına dikey bir gövde oluşturmuyorsa çoğaltılabilir:
- * dolu olduğu her satırda yatay komşularından en az biri de dolu olmalı.
- * Aksi halde kopyası gövdeyi iki kat kalınlaştırır ve ağırlık ekseni bozulur.
+ * İki koşul:
  *
- * Boş sütunlar da çoğaltılmaz — harfler arası boşluğu büyütmüş olurdu.
+ *   1. Sütun kendi başına dikey bir gövde oluşturmamalı — dolu olduğu her
+ *      satırda yatay komşularından en az biri de dolu olmalı. Aksi halde
+ *      kopyası gövdeyi iki kat kalınlaştırır, ağırlık ekseni bozulur.
+ *
+ *   2. Sütunun boş hücreleri yalnız DOLDURULABİLİR ceplerde olmalı. Kapalı
+ *      sayaçtan ya da üstten/alttan açık bir boşluktan geçen sütun
+ *      çoğaltılırsa o boşluk 2 hücre olur ve bir daha kapanmaz.
+ *
+ * Boş sütunlar hiç çoğaltılmaz — harfler arası boşluğu büyütmüş olurdu.
  */
-export function duplicableColumns(glyph) {
+export function duplicableColumns(glyph, { requireFillable = true } = {}) {
   const cols = columnsOf(glyph)
+  const b = bbox(glyph.cells)
+  const fillable = requireFillable ? fillableVoid(glyph) : null
   const out = []
   for (let c = 0; c < cols.length; c++) {
     if (cols[c].size === 0) continue
@@ -38,6 +100,14 @@ export function duplicableColumns(glyph) {
     let ok = true
     for (const y of cols[c]) {
       if (!left?.has(y) && !right?.has(y)) { ok = false; break }
+    }
+    if (!ok) continue
+    // Sütunun boş hücreleri komşunun ulaşabileceği yerde mi?
+    if (fillable) {
+      for (let y = 0; y < b.h; y++) {
+        if (cols[c].has(y + b.y)) continue
+        if (!fillable.has(`${c - b.x},${y}`)) { ok = false; break }
+      }
     }
     if (ok) out.push(c)
   }
@@ -50,9 +120,9 @@ export function duplicableColumns(glyph) {
  *
  * @returns yeni glif, ya da genişletilemiyorsa null
  */
-export function widen(glyph, n) {
+export function widen(glyph, n, opts) {
   if (n <= 0) return glyph
-  const targets = duplicableColumns(glyph)
+  const targets = duplicableColumns(glyph, opts)
   if (!targets.length) return null
 
   // Sütun başına kaç kopya: soldan sağa eşit dağıt.
@@ -161,9 +231,16 @@ const transpose = (glyph) => ({
   cells: glyph.cells.map(([x, y]) => [y, x])
 })
 
-/** Çoğaltılabilir satırlar — kendi başına yatay çubuk oluşturmayanlar. */
+/**
+ * Çoğaltılabilir satırlar — kendi başına yatay çubuk oluşturmayanlar.
+ *
+ * Burada doldurulabilirlik ARANMAZ, çünkü kural simetrik değil: satır
+ * çoğaltma hiçbir boşluğu GENİŞLETMEZ, yalnız uzatır. Ustanın 'o' harfinin
+ * sayacı 1 birim geniş ama 7 birim uzun — dikeyde uzamak kurala aykırı
+ * değil, yatayda genişlemek aykırı. Kısıt bu yüzden yalnız sütunlara ait.
+ */
 export function duplicableRows(glyph) {
-  return duplicableColumns(transpose(glyph))
+  return duplicableColumns(transpose(glyph), { requireFillable: false })
 }
 
 /**
@@ -172,7 +249,9 @@ export function duplicableRows(glyph) {
  */
 export function heighten(glyph, n) {
   if (n <= 0) return glyph
-  const t = widen(transpose(glyph), n)
+  // Devrik üzerinde genişletme, ama doldurulabilirlik kısıtı olmadan —
+  // gerekçesi duplicableRows'ta.
+  const t = widen(transpose(glyph), n, { requireFillable: false })
   if (!t) return null
   const back = transpose(t)
   return {

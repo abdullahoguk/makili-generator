@@ -3,7 +3,7 @@
 // kalan satırı yeniden dengelemeye zorlar.
 import { computed } from 'vue'
 import { variantsOf, defaultVariant } from '../engine/glyphs.js'
-import { widthMap } from '../engine/derive.js'
+import { widthOptions } from '../engine/derive.js'
 
 const props = defineProps({
   pick: { type: Object, default: null }, // { li, gi, char, w, pinned }
@@ -11,15 +11,21 @@ const props = defineProps({
 })
 const emit = defineEmits(['pin', 'close'])
 
+// Çözücünün gördüğü BÜTÜN biçimler — her genişlikte birden çok olabilir.
+// Eskiden genişlik başına tek biçim gösteriliyordu; çözücü ise aynı
+// genişlikteki biçimler arasından dokuya göre seçtiği için tıklanan biçim
+// ile tuvale düşen biçim farklı olabiliyordu.
 const variants = computed(() => {
   if (!props.pick) return []
   const all = variantsOf(props.pick.char) ?? []
   const def = defaultVariant(props.pick.char)
   const tall = all.filter((v) => v.h === def.h)
-  const map = widthMap(tall.length ? tall : all, props.maxGlyphWidth)
-  return [...map.entries()]
-    .sort((a, b) => a[0] - b[0])
-    .map(([w, g]) => ({ w, g, on: w === props.pick.w }))
+  const map = widthOptions(tall.length ? tall : all, props.maxGlyphWidth)
+  const out = []
+  for (const [w, list] of [...map.entries()].sort((a, b) => a[0] - b[0])) {
+    for (const g of list) out.push({ w, g, on: g.id === props.pick.id })
+  }
+  return out
 })
 
 const S = 7
@@ -43,12 +49,12 @@ const box = (g) => `0 0 ${g.w * S} ${g.h * S}`
     <div class="strip">
       <button
         v-for="v in variants"
-        :key="v.w"
+        :key="v.g.id ?? `${v.w}-${v.g.cells.length}`"
         type="button"
         class="v"
         :class="{ on: v.on, derived: !!v.g.derived }"
         :title="v.g.derived ? `${v.w} birim — türetilmiş` : `${v.w} birim — tasarlanmış`"
-        @click="emit('pin', { li: pick.li, gi: pick.gi, width: v.w })"
+        @click="emit('pin', { li: pick.li, gi: pick.gi, width: v.w, id: v.g.id })"
       >
         <svg :viewBox="box(v.g)" :style="{ height: '52px' }" aria-hidden="true">
           <path :d="pathFor(v.g)" />
@@ -60,7 +66,8 @@ const box = (g) => `0 0 ${g.w * S} ${g.h * S}`
     <footer>
       <p class="note">
         Nokta ile işaretli varyantlar sütun çoğaltmayla türetildi.
-        Bir genişliği sabitlersen çözücü kalan harfleri yeniden dengeler.
+        Bir biçmi sabitlersen tuvale tam o biçim düşer; çözücü kalan
+        harfleri yeniden dengeler.
       </p>
       <button
         v-if="pick.pinned"

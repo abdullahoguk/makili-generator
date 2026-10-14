@@ -33,7 +33,10 @@ export const DEFAULTS = {
   // arasında seçerken asıl ayırt edici tam o kendi boşluğu: 'a'nın 3 birimlik
   // 11 biçiminden hangisi daha sık dokuyorsa o. Ayrı terim olmasının sebebi
   // bu; ağırlığı daha düşük, yoksa harf kimliğini bastırır.
-  densityCost: 0.35
+  //
+  // 0.7 taramayla seçildi: bunun altında delik artıyor, üstünde hiçbir şey
+  // değişmiyor. Sütun çoğaltma daraldıktan sonra eşik 0.35'ten buraya kaydı.
+  densityCost: 0.7
 }
 
 // ---------------------------------------------------------------- doku
@@ -120,14 +123,23 @@ function optionsFor(char, index, opts) {
   const map = widthsFor(char, opts)
   const pin = opts.pins?.[index]
   if (pin == null) return map
-  const list = map.get(pin)
-  // Sabitlenen GENİŞLİK; o genişlikteki biçimler arasından seçim çözücüde
-  // kalır, komşusuna göre karar verilsin.
-  return list ? new Map([[pin, list]]) : map
+
+  // Sabitleme iki biçimde gelir: yalnız genişlik (sayı) ya da genişlik +
+  // biçim kimliği. Kimlik varsa TAM O BİÇİM kullanılır — aynı genişlikte
+  // birden çok biçim olduğu için yalnız genişliği sabitlemek yetmiyor,
+  // çözücü başkasını seçebiliyordu.
+  const w = typeof pin === 'object' ? pin.w : pin
+  const list = map.get(w)
+  if (!list) return map
+  if (typeof pin === 'object' && pin.id) {
+    const exact = list.find((g) => g.id === pin.id)
+    if (exact) return new Map([[w, [exact]]])
+  }
+  return new Map([[w, list]])
 }
 
 /** Bir harfin o anki seçeneklerinden ilki — varsayılan biçim. */
-const firstOf = (map, w) => map.get(w)?.[0] ?? null
+const firstOf = (map, w) => map.get(typeof w === 'object' ? w.w : w)?.[0] ?? null
 
 /** Satırın ulaşabildiği toplam genişlikler. */
 export function reachableWidths(tokens, options = {}) {
@@ -302,7 +314,14 @@ export function justify(text, options = {}) {
   }
 
   const candidates = commonWidths(content, opts)
-  const widest = Math.max(...content.map(naturalWidth))
+
+  // Her satırın ULAŞABİLDİĞİ en dar genişlik — sabitlemeler dahil. Doğal
+  // genişlik yetmiyor: bir harfi 6 birime sabitlemek satırın asgarisini
+  // yükseltir, hedef bunun altında seçilirse o satır hiçbir şeye sığmaz.
+  const floors = content.map((t, li) =>
+    Math.min(...reachableWidths(t, { ...opts, pins: opts.pinsByLine?.[li] }))
+  )
+  const widest = Math.max(...floors)
 
   // Hedef: verilmişse o; ortak genişlik varsa en geniş doğal genişliğe en
   // yakını; yoksa doğrudan en geniş doğal genişlik. Son durumda satırlar
