@@ -1,5 +1,6 @@
 // Glif kütüphanesine erişim.
 
+import { heighten } from './derive.js'
 import library from '../data/glyphs.json' with { type: 'json' }
 
 export const CHARSET = library.charset.split('')
@@ -22,6 +23,21 @@ export function defaultVariant(char) {
 export function variantById(id) {
   const char = id.split('.')[0]
   return variantsOf(char)?.find((v) => v.id === id) ?? null
+}
+
+/**
+ * Kimlikten glif: türetilmiş kimlikler (`i.do417^1`) de çözülür.
+ *
+ * Lab'de verilen kararlar türetilmiş biçimlere atıfta bulunabiliyor —
+ * ustanın 'li' kaynaşmasındaki i 1x7, kütüphanede ise 1x6 ve 1x9 var.
+ * Aradaki basamak satır çoğaltmayla üretiliyor ve kimliği `^1` alıyor.
+ */
+export function resolveId(id) {
+  const [base, lift] = String(id).split('^')
+  const g = variantById(base)
+  if (!g) return null
+  if (!lift) return g
+  return heighten(g, Number(lift))
 }
 
 /** Kütüphanede olmayan karakterler. */

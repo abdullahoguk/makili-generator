@@ -274,6 +274,51 @@ npm run glyphs:build
 Build ASCII'yi hücrelere çevirir, değişmezlere karşı doğrular ve içerik
 hash'inden kimlik üretir (`extra:d.el1` → `d.5nvpv`).
 
+### Kenetlenme
+
+Harf arası mesafe artık sabit değil, `advance` olarak modellendi: varsayılanı
+`sol.w + boşluk`, ama lab'de onaylanmış kenetli bir yerleşim varsa daha küçük
+olabilir. Ustanın `li` kaynaşmasında `i`, `l`'nin sütunlarına giriyor ve
+ilerleme 4 yerine 2 oluyor:
+
+```
+hedef 5        hedef 3
+#...#          #.#
+#....          #..
+#...#          #.#
+#...#          #.#
+#...#          #.#
+#.#.#          #.#
+#.#.#          #.#
+#.#.#          #..
+###.#          ###
+ l i           li (kenetli)
+```
+
+Dikey yer de serbest: kısa bir harf tabana oturabilir ya da üste asılabilir —
+`ai` çiftinde `i` üste asılı, çünkü üstünde boşluk kalmamalı.
+
+Üç şey bunu mümkün kıldı:
+
+1. **`layoutLine` birleşim alıyor.** Her ardışık çift için ilerleme ve dikey
+   yer verilebiliyor; verilmezse eski davranış.
+2. **Çözücünün durumu değişti.** Eskiden genişliklerin toplamıydı ve
+   boşluklar dışarıdan sabit ekleniyordu. Artık durum glifin **sol kenarı**:
+   kenetli ve normal durum aynı denklemle anlatılıyor, satır genişliği de
+   son glifin sol kenarı + genişliği.
+3. **Onaylı birleşimin istediği biçim havuza enjekte ediliyor.** Dizgi havuzu
+   tam boy gövdelerle sınırlı, oysa kenetlenmenin istediği biçim çoğu zaman
+   kısa (`li`deki `i` 1×7). O biçim havuzda olmadığı için onaylı kenetlenme
+   hiç ateşlenemiyordu. Havuzu gevşetmek yerine, yalnız onaylı bir
+   birleşimin adı geçen biçimler, yalnız geçtiği konuma ekleniyor.
+
+Motor kendi başına kenetlenmeye karar vermiyor — hangi çiftin iç içe
+geçebileceği tasarım kararı, lab'de onaylananlarla sınırlı. Şu an 125 onaylı
+yerleşimin 9'u özel (3'ü kenetli, kalanı tabandan kalkık).
+
+Varsayılan şiirde ölçülen etki: hedef genişlik 79 → **77**, geniş delik
+152 → **123**.
+
 ### Türetme neyi genişletebilir
 
 Sütun çoğaltma uzun süre her sütuna uygulanıyordu ve **boşluğu da iki katına

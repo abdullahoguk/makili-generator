@@ -12,9 +12,18 @@
 // Kesişim boşsa hiçbir kural esnetilmez; hangi satırın nereye ulaşamadığı
 // raporlanır.
 
-import { variantsOf, defaultVariant } from './glyphs.js'
+import { variantsOf, defaultVariant, resolveId } from './glyphs.js'
 import { widthOptions } from './derive.js'
-import { tokenize, layoutLine, naturalWidth, stack, LETTER_GAP, WORD_GAP } from './layout.js'
+import {
+  tokenize,
+  layoutLine,
+  naturalWidth,
+  stack,
+  spaceFlags,
+  LETTER_GAP,
+  WORD_GAP
+} from './layout.js'
+import { joinsFor, rowsFor } from './decisions.js'
 import { thickenStack, weightToAmount } from './render/weight.js'
 import { scoreBlock, intrinsicVoid, BAND_HEIGHT } from './fit.js'
 import { bbox } from './grid.js'
@@ -26,6 +35,11 @@ export const DEFAULTS = {
   // Komşu iki harfin yan yana gelmesinden doğan fazladan deliğin birim
   // bedeli. 0 = eski davranış (yalnız genişliğe bak). 1 birimlik delik, bir
   // harfi 1 birim germekle aynı bedelde.
+  //
+  // 1.5'i de denedim: iki metinde deliği ~%6 azaltıyor ama genişlemeyi son
+  // harfe yığıyor (llll 19 birime 3,3,3,7 diye bölünüyor). Satır sonundaki
+  // açık yanı kapatacak komşu olmadığı için orada boşluk bedava görünüyor.
+  // Dağılımın yayılması daha önemli; 1'de kalındı.
   voidCost: 1,
   // Biçimin KENDİ boşluğunun birim bedeli. Eşleşme bedeli her glifin kendi
   // ağzını düşer — iki harfi yan yana koymanın ürettiği fazlalığı ölçmek
@@ -34,8 +48,10 @@ export const DEFAULTS = {
   // 11 biçiminden hangisi daha sık dokuyorsa o. Ayrı terim olmasının sebebi
   // bu; ağırlığı daha düşük, yoksa harf kimliğini bastırır.
   //
-  // 0.7 taramayla seçildi: bunun altında delik artıyor, üstünde hiçbir şey
-  // değişmiyor. Sütun çoğaltma daraldıktan sonra eşik 0.35'ten buraya kaydı.
+  // Tarama ile 0.7. Üstü (1, 1.5) ölçülen deliği bir metinde ~%5 azaltıyor
+  // ama genişlemeyi tek harfe yığıyor: 'llll' 19 birime 3,3,3,7 diye
+  // bölünüyor. Bir harfi devleştirmek görünür bir kusur, ölçülen o kadarlık
+  // fark değil — dağılımın yayılması yeğlendi.
   densityCost: 0.7
 }
 
@@ -56,6 +72,7 @@ const voidCache = new Map()
 export function ownVoid(glyph, bandHeight = BAND_HEIGHT) {
   return intrinsicVoid(glyph.cells, bandHeight, glyph.id).wide
 }
+
 
 export function pairVoid(left, right, bandHeight = BAND_HEIGHT) {
   if (!left || !right) return 0
@@ -101,6 +118,70 @@ function widthsFor(char, opts) {
   return map
 }
 
+/**
+ * İki glif arasındaki olası İLERLEMELER: soldan sağa kaç birim gidilir.
+ *
+ * Varsayılan sol.w + boşluk. Buna ek olarak, lab'de onaylanmış kenetli ya da
+ * tabandan kalkık bir yerleşim varsa onun ilerlemesi de seçenektir — 'li'de
+ * 2 birim, çünkü i, l'nin sütunlarına giriyor.
+ *
+ * Yalnız ONAYLI yerleşimler kullanılıyor. Motor kendi başına kenetlenmeye
+ * karar vermiyor: hangi çiftin iç içe geçebileceği tasarım kararı, lab'de
+ * verilmiş olanlarla sınırlı.
+ */
+const joinCache = new Map()
+
+function advanceOptions(leftChar, rightChar, left, right, afterSpace) {
+  const fallback = left.w + (afterSpace ? WORD_GAP : LETTER_GAP)
+  const k = `${leftChar}${rightChar}|${left.id}|${right.id}|${afterSpace ? 'w' : 'l'}`
+  const hit = joinCache.get(k)
+  if (hit) return hit
+
+  // Varsayılan yerleşimden farkı olmayan onaylı satırlar eklenmez: aynı şeyi
+  // iki kez denemek hem boşuna hem de 'kenetli birleşim' sayımını şişirir.
+  const natLeft = BAND_HEIGHT - left.h
+  const natRight = BAND_HEIGHT - right.h
+  const out = [{ advance: fallback, leftTop: null, rightTop: null, approved: false }]
+  for (const j of joinsFor(`${leftChar}${rightChar}`, left.id, right.id)) {
+    const same = j.advance === fallback && j.leftTop === natLeft && j.rightTop === natRight
+    if (same) continue
+    out.push({ ...j, approved: true })
+  }
+  joinCache.set(k, out)
+  return out
+}
+
+/**
+ * Onaylı birleşimlerin ATIFTA BULUNDUĞU biçimleri aday havuzuna ekler.
+ *
+ * Gerek şu: dizgi havuzu tam boy gövdelerle sınırlı ('kısa varyantlar
+ * dizgiyi bozuyor'), oysa kenetlenmenin gerektirdiği biçim çoğu zaman kısa
+ * ya da yükseklik türetmesi — ustanın 'li' kaynaşmasındaki i 1x7. O biçim
+ * havuzda olmadığı için onaylı kenetlenme hiç ateşlenemiyordu.
+ *
+ * Çözüm, havuzu gevşetmek değil: yalnız ONAYLI bir birleşimin adı geçen
+ * biçimleri, yalnız geçtiği konuma eklemek. Kısa biçim başıboş dolaşamaz,
+ * ancak kendisi için onaylanmış komşulukta kullanılabilir.
+ *
+ * @returns {Array<Map<number, object[]>>} konum -> genişlik -> biçimler
+ */
+function injectionsFor(chars) {
+  const out = chars.map(() => new Map())
+  const add = (i, g) => {
+    if (!g) return
+    const list = out[i].get(g.w) ?? []
+    if (!list.some((x) => x.id === g.id)) list.push(g)
+    out[i].set(g.w, list)
+  }
+  for (let i = 1; i < chars.length; i++) {
+    for (const row of rowsFor(`${chars[i - 1].char}${chars[i].char}`)) {
+      add(i - 1, resolveId(row[0]))
+      add(i, resolveId(row[1]))
+    }
+  }
+  return out
+}
+
 /** Satırın sabit boşluk toplamı — varyant seçiminden bağımsız. */
 function gapTotal(tokens) {
   let gaps = 0
@@ -120,7 +201,19 @@ const glyphsOf = (tokens) => tokens.filter((t) => t.type === 'glyph')
  * sabitlenmiştir — kullanıcı elle seçtiğinde çözücü ona dokunmaz.
  */
 function optionsFor(char, index, opts) {
-  const map = widthsFor(char, opts)
+  let map = widthsFor(char, opts)
+
+  // Onaylı birleşimlerin istediği biçimler — yalnız bu konumda.
+  const inject = opts.injected?.[index]
+  if (inject?.size) {
+    map = new Map([...map].map(([w, list]) => [w, [...list]]))
+    for (const [w, list] of inject) {
+      const cur = map.get(w) ?? []
+      for (const g of list) if (!cur.some((x) => x.id === g.id)) cur.push(g)
+      map.set(w, cur)
+    }
+  }
+
   const pin = opts.pins?.[index]
   if (pin == null) return map
 
@@ -145,15 +238,38 @@ const firstOf = (map, w) => map.get(typeof w === 'object' ? w.w : w)?.[0] ?? nul
 export function reachableWidths(tokens, options = {}) {
   const opts = { ...DEFAULTS, ...options }
   const chars = glyphsOf(tokens)
-  let sums = new Set([0])
-  for (const [i, t] of chars.entries()) {
-    const widths = [...optionsFor(t.char, i, opts).keys()]
-    const next = new Set()
-    for (const s of sums) for (const w of widths) next.add(s + w)
-    sums = next
+  if (!chars.length) return new Set([0])
+  const space = spaceFlags(tokens)
+  opts.injected = opts.injected ?? injectionsFor(chars)
+
+  // Durum: (glifin sol kenarı, seçilen biçim). Kenetlenme ilerlemeyi
+  // değiştirdiği için genişlik artık yalnız genişliklerin toplamı değil.
+  let states = new Map()
+  for (const [w, list] of optionsFor(chars[0].char, 0, opts)) {
+    for (const g of list) states.set(`0|${g.id}`, { x: 0, g })
   }
-  const gaps = gapTotal(tokens)
-  return new Set([...sums].map((s) => s + gaps))
+
+  for (let i = 1; i < chars.length; i++) {
+    const map = optionsFor(chars[i].char, i, opts)
+    const next = new Map()
+    for (const st of states.values()) {
+      for (const [, list] of map) {
+        for (const g of list) {
+          for (const j of advanceOptions(chars[i - 1].char, chars[i].char, st.g, g, space[i])) {
+            const x = st.x + j.advance
+            const k = `${x}|${g.id}`
+            if (!next.has(k)) next.set(k, { x, g })
+          }
+        }
+      }
+    }
+    states = next
+    if (!states.size) return new Set()
+  }
+
+  const out = new Set()
+  for (const st of states.values()) out.add(st.x + st.g.w)
+  return out
 }
 
 /** Tüm satırların ortaklaşa ulaşabildiği genişlikler, küçükten büyüğe. */
@@ -182,41 +298,73 @@ export function bestWidthUpTo(tokens, target, options = {}) {
 export function solveLine(tokens, target, options = {}) {
   const opts = { ...DEFAULTS, ...options }
   const chars = glyphsOf(tokens)
-  const goal = target - gapTotal(tokens)
-  if (goal < 0) return null
-  if (!chars.length) return goal === 0 ? [] : null
+  opts.injected = opts.injected ?? injectionsFor(chars)
+  if (!chars.length) return target === 0 ? Object.assign([], { joins: [] }) : null
 
   const maps = chars.map((t, i) => optionsFor(t.char, i, opts))
   const bases = maps.map((m) => Math.min(...m.keys()))
   const band = opts.bandHeight ?? BAND_HEIGHT
   const voidCost = opts.voidCost ?? DEFAULTS.voidCost
   const densityCost = opts.densityCost ?? DEFAULTS.densityCost
+  const space = spaceFlags(tokens)
 
-  // Durum artık yalnız ulaşılan genişlik değil, SON SEÇİLEN BİÇİM de.
-  // Doku bedeli komşuluğa bağlı olduğu için önceki harfin hangi biçimde
-  // olduğunu bilmeden sonraki harfin bedeli hesaplanamaz.
+  // Durum: (glifin SOL KENARI, seçilen biçim).
   //
-  // Anahtar: `${ulaşılanGenişlik}|${glifKimliği}`.
-  let dp = new Map([['0|', { cost: 0, sum: 0, from: null, glyph: null }]])
+  // Eskiden genişliklerin toplamıydı ve boşluklar dışarıdan sabit ekleniyordu.
+  // Kenetlenme ilerlemeyi değiştirdiği için bu artık geçerli değil: 'li'de
+  // i, l'nin sütunlarına giriyor ve ilerleme 4 yerine 2 oluyor. Sol kenarı
+  // taşımak hem kenetli hem normal durumu aynı denklemle anlatıyor.
+  //
+  // Satır genişliği = son glifin sol kenarı + genişliği.
+  let dp = new Map()
+  for (const [w, list] of maps[0]) {
+    for (const glyph of list) {
+      const c = stretchCost(w - bases[0], glyph) + densityCost * ownVoid(glyph, band)
+      const k = `0|${glyph.id}`
+      const cur = dp.get(k)
+      if (!cur || c < cur.cost) dp.set(k, { cost: c, x: 0, glyph, from: null, join: null })
+    }
+  }
   const layers = [dp]
 
-  for (let i = 0; i < chars.length; i++) {
-    const remainingMin = bases.slice(i + 1).reduce((a, b) => a + b, 0)
+  for (let i = 1; i < chars.length; i++) {
+    // Kalan harfler en dar hallerinde bile ne kadar yer ister?
+    //
+    // ALT sınır olmalı, yoksa geçerli dallar budanır: kenetlenme ilerlemeyi
+    // 1 birime kadar indirebiliyor, dolayısıyla kalan her harf en az 1 birim
+    // ilerletir, son harf de kendi en dar genişliğini ekler.
+    const rest = chars.length - 1 - i
+    const remainingMin = rest + bases[chars.length - 1]
     const next = new Map()
-    for (const [prevKey, state] of dp) {
+
+    for (const [prevKey, st] of dp) {
       for (const [w, list] of maps[i]) {
-        const s = state.sum + w
-        if (s + remainingMin > goal) continue // bu daldan hedefe yetişilemez
         const stretch = stretchCost(w - bases[i], list[0])
         for (const glyph of list) {
-          const c =
-            state.cost +
+          const base =
+            st.cost +
             stretch +
-            voidCost * pairVoid(state.glyph, glyph, band) +
+            voidCost * pairVoid(st.glyph, glyph, band) +
             densityCost * ownVoid(glyph, band)
-          const k = `${s}|${glyph.id}`
-          const cur = next.get(k)
-          if (!cur || c < cur.cost) next.set(k, { cost: c, sum: s, from: prevKey, glyph })
+
+          for (const j of advanceOptions(
+            chars[i - 1].char,
+            chars[i].char,
+            st.glyph,
+            glyph,
+            space[i]
+          )) {
+            const x = st.x + j.advance
+            if (x + remainingMin > target) continue
+            // Onaylı kenetlenme küçük bir indirim alır: ustanın fiilen
+            // kullandığı biçim, motorun kendi bulduğuna yeğlenir.
+            const c = base - (j.approved ? 0.5 : 0)
+            const k = `${x}|${glyph.id}`
+            const cur = next.get(k)
+            if (!cur || c < cur.cost) {
+              next.set(k, { cost: c, x, glyph, from: prevKey, join: j.approved ? j : null })
+            }
+          }
         }
       }
     }
@@ -225,23 +373,27 @@ export function solveLine(tokens, target, options = {}) {
     if (!dp.size) return null
   }
 
-  // Hedefe ulaşanlar arasından en ucuzu.
+  // Hedefi tam tutturanlar arasından en ucuzu.
   let best = null
   let bestKey = null
   for (const [k, st] of dp) {
-    if (st.sum !== goal) continue
+    if (st.x + st.glyph.w !== target) continue
     if (!best || st.cost < best.cost) { best = st; bestKey = k }
   }
   if (!best) return null
 
   const out = []
+  const joins = []
   let key = bestKey
-  for (let i = chars.length; i > 0; i--) {
+  for (let i = chars.length - 1; i >= 0; i--) {
     const st = layers[i].get(key)
     out.unshift(st.glyph)
+    joins.unshift(st.join)
     key = st.from
   }
-  return out
+  // Birleşimler glif dizisine iliştirilir: layoutLine'ın ihtiyacı olan ikinci
+  // bilgi bu, ama çağıranların çoğu yalnız biçimlerle ilgileniyor.
+  return Object.assign(out, { joins })
 }
 
 /**
@@ -283,7 +435,7 @@ export function justify(text, options = {}) {
         const g = pin != null ? firstOf(optionsFor(t.char, i, { ...opts, pins }), pin) : null
         return g ?? defaultVariant(t.char)
       })
-      return { ...layoutLine(tokens, chosen), tokens }
+      return { ...layoutLine(tokens, chosen, chosen.joins), tokens }
     })
     return {
       ok: true,
@@ -303,7 +455,7 @@ export function justify(text, options = {}) {
       const g = pin != null ? firstOf(optionsFor(t.char, i, { ...opts, pins }), pin) : null
       return g ?? defaultVariant(t.char)
     })
-    const line = layoutLine(tokens, chosen)
+    const line = layoutLine(tokens, chosen, chosen.joins)
     return {
       ok: true,
       target: line.width,
@@ -357,7 +509,7 @@ export function justify(text, options = {}) {
       }
     }
 
-    const line = { ...layoutLine(tokens, chosen), tokens }
+    const line = { ...layoutLine(tokens, chosen, chosen.joins), tokens }
     line.slack = target - line.width
     lines.push(line)
   }

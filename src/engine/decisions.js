@@ -71,4 +71,43 @@ export function applyDecisions(a, b, placements, bandHeight = BAND) {
   })
 }
 
+/**
+ * Bir çift için onaylı BİRLEŞİMLER: iki glif kimliğinden, aralarındaki
+ * ilerleme ve dikey yerlere.
+ *
+ * Dizgi motorunun ihtiyacı bu: hangi yerleşimler serbest, hangi ilerlemeyle.
+ * Kimlikler tam eşleşir — türetilmiş biçim (taban^N) kendi kimliğiyle
+ * kaydedilmiştir, taban kimliğine düşmek yanlış geometri verir.
+ *
+ * @returns {Array<{advance, leftTop, rightTop, prefer}>}
+ */
+export function joinsFor(pair, leftId, rightId) {
+  const rows = []
+  for (const [kind, table] of [['ok', decisions.ok], ['prefer', decisions.prefer]]) {
+    for (const r of table?.[pair] ?? []) {
+      if (r[0] !== leftId || r[1] !== rightId) continue
+      rows.push({ advance: r[2], leftTop: r[3], rightTop: r[4], prefer: kind === 'prefer' })
+    }
+  }
+  // Aynı birleşim iki tablodan da gelebilir.
+  const seen = new Set()
+  return rows.filter((j) => {
+    const k = `${j.advance}|${j.leftTop}|${j.rightTop}`
+    if (seen.has(k)) return false
+    seen.add(k)
+    return true
+  })
+}
+
+/** Bir çift için bütün onaylı satırlar: [solId, sağId, ilerleme, solÜst, sağÜst] */
+export function rowsFor(pair) {
+  return [...(decisions.ok?.[pair] ?? []), ...(decisions.prefer?.[pair] ?? [])]
+}
+
+/** Kenetli ya da tabandan kalkık birleşimi olan çiftler. */
+export const specialPairs = new Set()
+for (const [pair, rows] of Object.entries(decisions.ok ?? {})) {
+  if (rows.length) specialPairs.add(pair)
+}
+
 export default decisions

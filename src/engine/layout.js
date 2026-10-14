@@ -4,6 +4,17 @@
 //   - harfler arası tam LETTER_GAP hücre
 //   - kelimeler arası tam WORD_GAP hücre
 // Dolayısıyla satır genişliğinin tek serbestlik derecesi varyant seçimidir.
+//
+// Bir istisna var: KENETLENME. Usta bazı çiftleri iç içe geçiriyor — 'li'de
+// i, l'nin iç boşluğuna giriyor; 'rg'de g, r'nin kucağına oturuyor. Orada
+// aradaki açıklık yine 1 birim, ama sağ harf sol harfin SÜTUNLARINA giriyor,
+// yani ilerleme sol.w + 1'den küçük oluyor.
+//
+// Bu yüzden harf arası mesafe `advance` olarak modellendi: varsayılanı
+// sol.w + boşluk, ama bir çift için onaylı kenetli yerleşim varsa daha
+// küçük olabilir. Harfin bant içindeki dikey yeri de aynı şekilde serbest:
+// kısa bir harf tabana oturabilir ya da üste asılabilir ('ai'de i üstte,
+// çünkü üstünde boşluk kalmamalı).
 
 import { defaultVariant, variantsOf, variantById, has } from './glyphs.js'
 
@@ -38,24 +49,41 @@ export function tokenize(line) {
 
 /**
  * Bir satırın toplam genişliği: glif genişlikleri + sabit boşluklar.
+ *
+ * `joins` verilirse i. glifin bir öncekine göre ilerlemesi oradan okunur
+ * (kenetlenme); verilmezse varsayılan sol.w + boşluk.
+ *
  * @param {number[]} widths seçilen varyant genişlikleri, sıra tokenlarla aynı
+ * @param {Array<{advance:number}|null>} [joins] i. eleman i-1 ile i arasını anlatır
  */
-export function lineWidth(tokens, widths) {
-  let w = 0
-  let i = 0
-  let prev = null
-  for (const t of tokens) {
-    if (t.type === 'space') {
-      w += WORD_GAP
-      prev = 'space'
-      continue
-    }
-    if (prev === 'glyph') w += LETTER_GAP
-    w += widths[i++]
-    prev = 'glyph'
+export function lineWidth(tokens, widths, joins = null) {
+  const glyphs = tokens.filter((t) => t.type === 'glyph')
+  if (!glyphs.length) return 0
+
+  // Boşluk hangi gliften önce geliyor: o birleşimde kelime arası kullanılır.
+  const afterSpace = spaceFlags(tokens)
+
+  let x = 0
+  for (let i = 1; i < widths.length; i++) {
+    const join = joins?.[i]
+    x += join?.advance ?? widths[i - 1] + (afterSpace[i] ? WORD_GAP : LETTER_GAP)
   }
-  return w
+  return x + widths[widths.length - 1]
 }
+
+/** i. glif bir boşluktan sonra mı geliyor? */
+function spaceFlags(tokens) {
+  const out = []
+  let pendingSpace = false
+  for (const t of tokens) {
+    if (t.type === 'space') { pendingSpace = true; continue }
+    out.push(pendingSpace)
+    pendingSpace = false
+  }
+  return out
+}
+
+export { spaceFlags }
 
 /** Satırın varsayılan varyantlarla doğal genişliği. */
 export function naturalWidth(tokens) {
@@ -67,38 +95,47 @@ export function naturalWidth(tokens) {
  * Seçilmiş varyantlarla satırı yerleştirir.
  * @returns {{ width, height, baseline, items: Array }}
  */
-export function layoutLine(tokens, chosen) {
+export function layoutLine(tokens, chosen, joins = null) {
   const items = []
+  const glyphs = tokens.filter((t) => t.type === 'glyph')
+  const afterSpace = spaceFlags(tokens)
+
   let x = 0
-  let i = 0
-  let prev = null
-  let maxAscent = 0
-  let maxDescent = 0
-
-  for (const t of tokens) {
-    if (t.type === 'space') {
-      x += WORD_GAP
-      prev = 'space'
-      continue
+  for (let i = 0; i < glyphs.length; i++) {
+    const v = chosen[i]
+    if (i > 0) {
+      const join = joins?.[i]
+      x += join?.advance ?? chosen[i - 1].w + (afterSpace[i] ? WORD_GAP : LETTER_GAP)
     }
-    if (prev === 'glyph') x += LETTER_GAP
-    const v = chosen[i++]
-    // Taban çizgisi hizası: glifin gövde altı satırın taban çizgisine oturur.
-    const ascent = v.baseline
-    const descent = v.h - v.baseline
-    if (ascent > maxAscent) maxAscent = ascent
-    if (descent > maxDescent) maxDescent = descent
-    items.push({ char: t.char, variant: v, x, ascent })
-    x += v.w
-    prev = 'glyph'
+    items.push({ char: glyphs[i].char, variant: v, x, join: joins?.[i] ?? null })
   }
 
-  // Hücreleri satır koordinatına taşı: taban çizgisi y = maxAscent.
+  // Dikey yer: varsayılan taban hizası, ama birleşim açıkça söylüyorsa o.
+  //
+  // `top` bant içindeki üst satır. Kenetli/yuvalı yerleşimlerde iki glifin
+  // de yeri birleşimde yazılı; biri bir öncekiyle, öbürü bir sonrakiyle
+  // belirlenebildiği için sonra gelen kazanır — yerleşim soldan sağa kurulur.
+  const band = Math.max(...chosen.map((v) => v.h))
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i]
+    it.top = band - it.variant.h
+    const join = joins?.[i]
+    if (join?.rightTop != null) it.top = join.rightTop
+    const next = joins?.[i + 1]
+    if (next?.leftTop != null) it.top = next.leftTop
+  }
+
+  const height = Math.max(...items.map((it) => it.top + it.variant.h), band)
   for (const it of items) {
-    it.y = maxAscent - it.ascent
+    it.y = it.top
+    it.ascent = it.variant.baseline
   }
 
-  return { width: x, height: maxAscent + maxDescent, baseline: maxAscent, items }
+  const width = items.length
+    ? Math.max(...items.map((it) => it.x + it.variant.w))
+    : 0
+
+  return { width, height, baseline: height, items, tokens }
 }
 
 /** Yerleşimi tek bir hücre kümesine düzleştirir. */
@@ -110,12 +147,6 @@ export function toCells(line) {
   return cells
 }
 
-/**
- * Birden çok satırı dikey olarak istifler; her satır kendi x ofsetiyle.
- *
- * `width` verilirse satırlar onun içine yaslanır — hedef genişliğe tam
- * ulaşamayan satırların artan payı böyle görünür hale gelir.
- */
 export function stack(lines, { align = 'left', lineGap = LINE_GAP, width: forced = null } = {}) {
   const width = forced ?? Math.max(...lines.map((l) => l.width))
   const cells = []
