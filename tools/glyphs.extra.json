@@ -1151,6 +1151,22 @@
         "#.#",
         "###"
       ]
+    },
+    {
+      "char": "l",
+      "source": "extra:l.blok1",
+      "note": "çözülemeyen bloklardan çıkarıldı (extract-missing.mjs)",
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
     }
   ]
 }
