@@ -18,6 +18,8 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import library from '../src/data/glyphs.json' with { type: 'json' }
+import { resolveId } from '../src/engine/glyphs.js'
+import { place, BAND_HEIGHT } from '../src/engine/fit.js'
 
 const FILES = ['tools/pair-decisions.json', 'src/data/pair-decisions.json']
 const write = process.argv.includes('--write')
@@ -37,16 +39,36 @@ const ok = {}
 
 for (const [pair, rows] of Object.entries(src.ok ?? {})) {
   const kept = rows.filter((r) => {
-    const good = exists(r[0]) && exists(r[1])
-    if (!good) dropped.push({ pair, row: r, missing: [r[0], r[1]].filter((id) => !exists(id)) })
-    return good
+    if (!exists(r[0]) || !exists(r[1])) {
+      dropped.push({ pair, row: r, missing: [r[0], r[1]].filter((id) => !exists(id)) })
+      return false
+    }
+    // Kimlikler duruyor ama yerleşim kurala uymuyor olabilir: kurallar
+    // keskinleştikçe eskiden onaylanmış bir yerleşim geçersizleşebiliyor.
+    // Dosyada durması yanıltıcı — karar varmış gibi görünür, çözücü ise
+    // o yerleşimi hiç üretmez.
+    const l = resolveId(r[0])
+    const rg = resolveId(r[1])
+    const p = place(l.cells, rg.cells, r[2], {
+      bandHeight: BAND_HEIGHT, leftTop: r[3], rightTop: r[4]
+    })
+    if (!p.ok) {
+      dropped.push({ pair, row: r, missing: [], reason: p.reason })
+      return false
+    }
+    return true
   })
   if (kept.length) ok[pair] = kept
   else emptied.push(pair)
 }
 
 console.log(`çift ${Object.keys(src.ok ?? {}).length}  ·  düşen satır ${dropped.length}  ·  kararsız kalan çift ${emptied.length}`)
-for (const d of dropped) console.log(`  ${d.pair}  [${d.row.join(' ')}]  yok: ${d.missing.join(' ')}`)
+for (const d of dropped) {
+  console.log(
+    `  ${d.pair}  [${d.row.join(' ')}]  ` +
+      (d.missing.length ? `yok: ${d.missing.join(' ')}` : `kurala aykırı: ${d.reason}`)
+  )
+}
 if (emptied.length) console.log(`\nbütün satırları düşenler: ${emptied.join(' ')}  — lab'de yeniden karara bağla`)
 
 if (!dropped.length) {

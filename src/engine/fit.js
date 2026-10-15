@@ -26,6 +26,16 @@ import { heightLadder, widthLadder } from './derive.js'
 export const NORMAL_GAP = 1
 
 /**
+ * Bir glifin üstünde/altındaki boşluğa HARF sığması için gereken en az
+ * yükseklik: 1 birim açıklık + en kısa harfin 3 satırı.
+ *
+ * Bu bir YASAK değil, ölçü. Yasak olan yalnız 1 satırlık boşluk (aşağıya
+ * bakın); 2-3 satır harf almaz ama tasarımın parçası olabilir — ustanın
+ * 'li' ve 'rg' kaynaşmalarında öyle.
+ */
+export const MIN_FILLABLE_GAP = 4
+
+/**
  * İki hücre kümesi arasındaki en yakın açıklık, hücre cinsinden.
  *
  * 0 = değiyorlar (kenardan ya da köşeden), 1 = aralarında tam bir hücre,
@@ -372,6 +382,24 @@ export function place(leftCells, rightCells, advance, opts = {}) {
       reason: gap > requiredClearance ? `açıklık ${gap} birim, 1 olmalı` : 'harfler çakışıyor',
       cells: [],
       width: 0
+    }
+  }
+
+  // Bir glifin üstünde ya da altında TAM BİR SATIR boşluk kalamaz.
+  //
+  // Oraya girecek ne varsa yandan gelir ve araya 1 birim açıklık ister.
+  // Boşluğun yüksekliğine göre:
+  //
+  //   1 satır  ölü — açıklıktan sonra yer kalmıyor, giren yapışır
+  //   2 satır  1 açıklık + 1 satırlık bir KOL: büyük t'nin kolu girebilir
+  //   3 satır  harf almaz ama kapalı cebin parçası olabilir
+  //   4+       1 açıklık + en kısa harf (3 satır): küçük c, n sığar
+  //
+  // Yasak bu yüzden yalnız tek satıra. Ustanın 'li' ve 'rg' kaynaşmaları
+  // 2-3 satırlık boşluk taşıyor; onları elemek yanlış olurdu.
+  for (const [dy, h] of [[lDy, lb.h], [rDy, rb.h]]) {
+    if (dy === 1 || bandHeight - (dy + h) === 1) {
+      return { ok: false, reason: 'üstte/altta doldurulamayan 1 satır boşluk', cells: [], width: 0 }
     }
   }
 

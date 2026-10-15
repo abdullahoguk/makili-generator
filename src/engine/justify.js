@@ -174,12 +174,23 @@ function advanceOptions(leftChar, rightChar, left, right, afterSpace) {
   // iki kez denemek hem boşuna hem de 'kenetli birleşim' sayımını şişirir.
   const natLeft = BAND_HEIGHT - left.h
   const natRight = BAND_HEIGHT - right.h
-  const out = [{ advance: fallback, leftTop: null, rightTop: null, approved: false }]
+  // Bir glifin üstünde/altında tam bir satır boşluk kalamaz — oraya kimse
+  // giremez. Dizgi place() çağırmadığı için kural burada da sınanıyor.
+  const badGap = (top, h) => top === 1 || BAND_HEIGHT - (top + h) === 1
+
+  const out = badGap(natLeft, left.h) || badGap(natRight, right.h)
+    ? []
+    : [{ advance: fallback, leftTop: null, rightTop: null, approved: false }]
+
   for (const j of joinsFor(`${leftChar}${rightChar}`, left.id, right.id)) {
     const same = j.advance === fallback && j.leftTop === natLeft && j.rightTop === natRight
     if (same) continue
+    if (badGap(j.leftTop, left.h) || badGap(j.rightTop, right.h)) continue
     out.push({ ...j, approved: true })
   }
+  // Hiçbir birleşim kalmadıysa varsayılanı geri koy: satır hiç kurulamazsa
+  // kural değil dizgi kırılır.
+  if (!out.length) out.push({ advance: fallback, leftTop: null, rightTop: null, approved: false })
   joinCache.set(k, out)
   return out
 }

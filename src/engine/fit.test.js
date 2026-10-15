@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import decisions from '../data/pair-decisions.json' with { type: 'json' }
+import { resolveId } from './glyphs.js'
 import { fromAscii, toAscii, cornerTouches } from './grid.js'
 import { bandFill, pockets, scoreBlock, place, pairPlacements, clearance, NORMAL_GAP, cavities, nestPlacements } from './fit.js'
 
@@ -341,6 +343,39 @@ describe('cavities / nestPlacements — boşluktan türetilen yuvalanma', () => 
         expect(cornerTouches(p.cells).length).toBe(0)
         expect(p.clearance).toBe(1)
         expect(scoreBlock(p.cells, 9).topGap).toBe(0)
+      }
+    }
+  })
+})
+
+describe('üstte/altta tek satır boşluk yasağı', () => {
+  // Boşluk ölçeği: 1 ölü · 2 kol alır · 4+ harf alır.
+  const stem = (h) => fromAscii(Array.from({ length: h }, () => '#').join('\n'))
+
+  it('tek satır boşluk bırakan yerleşimi reddeder', () => {
+    // 8 satırlık gövde 9'luk bantta: üstte ya da altta tam 1 satır kalır.
+    const p = place(stem(8), stem(9), 2, { bandHeight: 9, leftTop: 0, rightTop: 0 })
+    expect(p.ok).toBe(false)
+    expect(p.reason).toMatch(/1 satır/)
+  })
+
+  it('iki satır boşluğa izin verir — oraya bir kol girebilir', () => {
+    const p = place(stem(7), stem(9), 2, { bandHeight: 9, leftTop: 0, rightTop: 0 })
+    expect(p.ok).toBe(true)
+  })
+
+  it('bandı dolduran yerleşimi elemez', () => {
+    const p = place(stem(9), stem(9), 2, { bandHeight: 9, leftTop: 0, rightTop: 0 })
+    expect(p.ok).toBe(true)
+  })
+
+  it('onaylı yerleşimlerin hepsi kurala uyuyor', () => {
+    for (const [pair, rows] of Object.entries(decisions.ok)) {
+      for (const [L, R, adv, lt, rt] of rows) {
+        const l = resolveId(L)
+        const r = resolveId(R)
+        const p = place(l.cells, r.cells, adv, { bandHeight: 9, leftTop: lt, rightTop: rt })
+        expect(p.ok, `${pair} [${L} ${R}]: ${p.reason}`).toBe(true)
       }
     }
   })
