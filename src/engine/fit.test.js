@@ -1,14 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { fromAscii, toAscii } from './grid.js'
-import {
-  bandFill,
-  pockets,
-  scoreBlock,
-  place,
-  pairPlacements,
-  clearance,
-  NORMAL_GAP
-} from './fit.js'
+import { fromAscii, toAscii, cornerTouches } from './grid.js'
+import { bandFill, pockets, scoreBlock, place, pairPlacements, clearance, NORMAL_GAP, cavities, nestPlacements } from './fit.js'
 
 const G = (...rows) => fromAscii(rows.join('\n'))
 const H = 9
@@ -317,5 +309,39 @@ describe('wideVoid: kalınlık yerel ölçülür, sınırlayıcı kutuyla değil
     //  ##..##   üstte 2x2 boşluk, altında tek hücrelik kuyruk
     const s = scoreBlock(G('#..#', '#..#', '#.##', '####'), 4)
     expect(s.wideVoid).toBe(4)
+  })
+})
+
+describe('cavities / nestPlacements — boşluktan türetilen yuvalanma', () => {
+  it("kenara açık dikdörtgen boşlukları bulur", () => {
+    // 'l': sol gövde + alt çubuk. Sağa açık boşluk 8 satır boyunca 2 birim.
+    const l = fromAscii(['#..', '#..', '#..', '#..', '#..', '#..', '#..', '#..', '###'].join('\n'))
+    const cav = cavities(l, 'right')
+    expect(cav.length).toBeGreaterThan(0)
+    const tall = cav.reduce((m, c) => (c.h > m.h ? c : m))
+    expect(tall.h).toBe(8)
+    expect(tall.w).toBe(2)
+  })
+
+  it('kapalı sayaçlı biçimde kenara açık boşluk yoktur', () => {
+    const o = fromAscii(['###', '#.#', '#.#', '###'].join('\n'))
+    expect(cavities(o, 'right')).toEqual([])
+  })
+
+  it("'l' + 'i' yuvalanmasını kuralla üretir", () => {
+    // Ustanın 'li' kaynaşması: i, l'nin göbeğine giriyor.
+    const r = nestPlacements('l', 'i', { limit: 100 })
+    expect(r.length).toBeGreaterThan(0)
+    expect(r.every((p) => p.advance < p.normalAdvance || p.right.top !== 9 - p.right.h)).toBe(true)
+  })
+
+  it('ürettiği her yerleşim değişmezleri korur', () => {
+    for (const [a, b] of [['l', 'i'], ['l', 'n'], ['r', 'g']]) {
+      for (const p of nestPlacements(a, b, { limit: 40 })) {
+        expect(cornerTouches(p.cells).length).toBe(0)
+        expect(p.clearance).toBe(1)
+        expect(scoreBlock(p.cells, 9).topGap).toBe(0)
+      }
+    }
   })
 })

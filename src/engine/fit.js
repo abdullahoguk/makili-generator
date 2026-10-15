@@ -20,7 +20,7 @@
 
 import { toSet, key, bbox, cornerTouches, components } from './grid.js'
 import { variantsOf, defaultVariant } from './glyphs.js'
-import { heightLadder } from './derive.js'
+import { heightLadder, widthLadder } from './derive.js'
 
 /** Harfler arası nominal boşluk. Değişmez. */
 export const NORMAL_GAP = 1
@@ -598,4 +598,124 @@ function cost(placement, s, excess) {
     excess.left * 2 +
     placement.width
   )
+}
+
+// --------------------------------------------------------------- boşluk uydurma
+//
+// Çift çift onaylamak ölçeklenmiyor: 29 harf, 841 çift, her çiftte yüzlerce
+// yerleşim. Oysa ustanın yaptığı şey kuralla anlatılabilir — bir harfin
+// BOŞLUĞUNA komşunun uygun yükseklikteki versiyonu sığıyorsa oraya girer:
+//
+//   büyük L'nin alt çubuğu sonraki harfin altına uzanır, o harf 2 birim
+//   kısalıp üste yaslanarak L'nin göbeğine oturur;
+//   büyük t'nin üst kolları önceki ve sonraki harfin üstünü örter, onlar
+//   kısalıp tabana yaslanır;
+//   kuyruksuz büyük c'nin göbeğine küçük n sığar.
+//
+// Üçü de aynı ölçü: KENARA AÇIK bir dikdörtgen boşluk + içine 1 birim
+// açıklıkla sığan bir varyant. Bu yüzden yerleşimi aramak yerine boşluğun
+// geometrisinden TÜRETİYORUZ.
+
+/**
+ * Bir biçmin bir kenarına açık dikdörtgen boşlukları.
+ *
+ * side='right': her satırda sağdan içeri kaç hücre boş. Ardışık satır
+ * aralıklarının en dar ortak genişliği o aralığın kullanılabilir kutusudur.
+ *
+ * @returns {Array<{x, y, w, h}>} kutular, biçmin kendi kutusuna göre
+ */
+export function cavities(cells, side = 'right') {
+  const b = bbox(cells)
+  const filled = toSet(cells.map(([x, y]) => [x - b.x, y - b.y]))
+  const free = []
+  for (let y = 0; y < b.h; y++) {
+    let n = 0
+    if (side === 'right') {
+      let x = b.w - 1
+      while (x >= 0 && !filled.has(key(x, y))) { n++; x-- }
+    } else {
+      let x = 0
+      while (x < b.w && !filled.has(key(x, y))) { n++; x++ }
+    }
+    free.push(n)
+  }
+
+  const out = []
+  for (let y1 = 0; y1 < b.h; y1++) {
+    let w = Infinity
+    for (let y2 = y1; y2 < b.h; y2++) {
+      w = Math.min(w, free[y2])
+      if (w < 2) break // 1 birim açıklık + en az 1 birim glif
+      out.push({ x: side === 'right' ? b.w - w : 0, y: y1, w, h: y2 - y1 + 1 })
+    }
+  }
+  return out
+}
+
+/**
+ * İki harfin YUVALANMIŞ yerleşimleri — boşluk geometrisinden türetilmiş.
+ *
+ * Arama değil inşa: sol harfin sağa açık her kutusu için, sağ harfin o
+ * kutuya 1 birim açıklıkla sığan varyantları doğrudan yerleştirilir.
+ * Ardından place() değişmezleri sınar (köşe teması, açıklık, çakışma).
+ */
+export function nestPlacements(a, bChar, o = {}) {
+  const { bandHeight = BAND_HEIGHT, limit = 200, maxWidth = 9 } = o
+
+  // Sol harfin GENİŞLETİLMİŞ biçimleri de havuzda: ustanın 'L'sinde alt
+  // çubuk sonraki harfin genişliğine kadar uzuyor, yani boşluk büyüyor.
+  // Genişletme yalnız yanı açık biçimlerde yasal (derive.js), tam da bu
+  // durum.
+  const base = bandVariants(a, bandHeight)
+  const left = []
+  const seenLeft = new Set()
+  for (const v of base) {
+    for (const [, g] of widthLadder(v, maxWidth)) {
+      if (seenLeft.has(g.id ?? g)) continue
+      seenLeft.add(g.id ?? g)
+      left.push(g)
+    }
+  }
+  const right = bandVariants(bChar, bandHeight)
+  const out = []
+  const seen = new Set()
+
+  for (const lv of left) {
+    const lb = bbox(lv.cells)
+    const lTop = bandHeight - lb.h
+    for (const cav of cavities(lv.cells, 'right')) {
+      for (const rv of right) {
+        const rb = bbox(rv.cells)
+        // kutunun soluna 1 birim açıklık, sonra glif
+        if (rb.w > cav.w - 1) continue
+        if (rb.h > cav.h) continue
+        const advance = cav.x + 1
+        for (let dy = 0; dy + rb.h <= cav.h; dy++) {
+          const rightTop = lTop + cav.y + dy
+          if (rightTop + rb.h > bandHeight) continue
+          const p = place(lv.cells, rv.cells, advance, {
+            bandHeight,
+            leftTop: lTop,
+            rightTop
+          })
+          if (!p.ok) continue
+          const s = scoreBlock(p.cells, bandHeight)
+          if (s.topGap > 0) continue
+          const sig = p.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
+          if (seen.has(sig)) continue
+          seen.add(sig)
+          out.push({
+            ...p,
+            left: { char: a, id: lv.id, w: lb.w, h: lb.h, top: lTop },
+            right: { char: bChar, id: rv.id, w: rb.w, h: rb.h, top: rightTop },
+            nested: true,
+            wideVoid: s.wideVoid,
+            cavity: cav
+          })
+          if (out.length >= limit) return out
+        }
+      }
+    }
+  }
+  return out
 }
