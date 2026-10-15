@@ -570,12 +570,11 @@ export function justify(text, options = {}) {
   if (opts.justify === false) {
     const lines = content.map((tokens, li) => {
       const pins = opts.pinsByLine?.[li]
-      const chosen = glyphsOf(tokens).map((t, i) => {
-        const pin = pins?.[i]
-        const g = pin != null ? firstOf(optionsFor(t.char, i, { ...opts, pins }), pin) : null
-        return g ?? defaultVariant(t.char)
-      })
-      return { ...layoutLine(tokens, chosen, chosen.joins), tokens }
+      const line = naturalLine(tokens, { ...opts, pins })
+      if (line) return { ...line, tokens }
+      // Çözücü bir şey bulamazsa eski davranış: varsayılan biçimler.
+      const chosen = glyphsOf(tokens).map((t) => defaultVariant(t.char))
+      return { ...layoutLine(tokens, chosen, []), tokens }
     })
     return {
       ok: true,
@@ -590,12 +589,11 @@ export function justify(text, options = {}) {
   if (content.length === 1 && opts.target == null) {
     const tokens = content[0]
     const pins = opts.pinsByLine?.[0]
-    const chosen = glyphsOf(tokens).map((t, i) => {
-      const pin = pins?.[i]
-      const g = pin != null ? firstOf(optionsFor(t.char, i, { ...opts, pins }), pin) : null
-      return g ?? defaultVariant(t.char)
-    })
-    const line = layoutLine(tokens, chosen, chosen.joins)
+    let line = naturalLine(tokens, { ...opts, pins })
+    if (!line) {
+      const chosen = glyphsOf(tokens).map((t) => defaultVariant(t.char))
+      line = layoutLine(tokens, chosen, [])
+    }
     return {
       ok: true,
       target: line.width,
@@ -684,6 +682,42 @@ function stuckChars(tokens, opts) {
  * `weight` 1'den büyükse istif alt-hücre çözünürlüğüne taşınır ve her glif
  * tek tek kalınlaştırılır; dönen `resolution` renderSvg'ye verilmelidir.
  */
+/** Satırın gerçek deliği — yerleşmiş hücreler üzerinden. */
+function lineVoid(line, band) {
+  const cells = []
+  for (const it of line.items) {
+    const b = bbox(it.variant.cells)
+    for (const [x, y] of it.variant.cells) cells.push([x - b.x + it.x, y - b.y + it.y])
+  }
+  return scoreBlock(cells, band).wideVoid
+}
+
+/**
+ * Hedef genişlik dayatılmadan en iyi satır.
+ *
+ * Hizalama kapalıyken eskiden her harf için defaultVariant alınıyordu:
+ * ne biçim seçimi ne kenetlenme çalışıyordu, bu yüzden 'l' gibi göbekli
+ * harfler boşluklu kalıyordu. Artık ulaşılabilir en dar birkaç genişlik
+ * denenip deliği en az olan seçiliyor — hizalama açıkken hangi kural
+ * geçerliyse kapalıyken de aynısı geçerli.
+ */
+function naturalLine(tokens, opts) {
+  const band = opts.bandHeight ?? BAND_HEIGHT
+  // En dar birkaç genişlik yeter: kare kufi zaten sıkı dokuyu istiyor,
+  // hepsini denemek etkileşimli kullanım için fazla yavaş.
+  const widths = [...reachableWidths(tokens, opts)].sort((a, b) => a - b).slice(0, 12)
+  let best = null
+  for (const w of widths) {
+    const chosen = solveLine(tokens, w, opts)
+    if (!chosen) continue
+    const line = layoutLine(tokens, chosen, chosen.joins)
+    // Dar olana hafif eğilim: eşit delikte sıkı olan yeğlenir.
+    const score = lineVoid(line, band) + 0.05 * w
+    if (!best || score < best.score) best = { score, line }
+  }
+  return best?.line ?? null
+}
+
 export function compose(text, options = {}) {
   const r = justify(text, options)
   if (!r.ok) return { ...r, cells: [], width: 0, height: 0, resolution: 1 }

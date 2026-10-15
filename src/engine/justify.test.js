@@ -165,11 +165,16 @@ describe('pins — elle sabitlenen harf genişlikleri', () => {
 })
 
 describe('justify: false — hizalama kapalı', () => {
-  it('satırları doğal genişliğinde bırakır', () => {
+  it('satırları ortak bir hedefe GERMEZ, her biri kendi genişliğinde kalır', () => {
+    // Hizalama kapalıyken de biçim seçimi ve kenetlenme çalışır; bu yüzden
+    // satır, varsayılan biçimlerin toplamından DAR olabilir. Sözleşme
+    // "doğal genişlik" değil, "gerilmemiş genişlik".
     const r = justify('bana\nolur bana', { justify: false })
     expect(r.ok).toBe(true)
-    expect(r.lines[0].width).toBe(naturalWidth(tokenize('bana')))
-    expect(r.lines[1].width).toBe(naturalWidth(tokenize('olur bana')))
+    expect(r.lines[0].width).toBeLessThanOrEqual(naturalWidth(tokenize('bana')))
+    expect(r.lines[1].width).toBeLessThanOrEqual(naturalWidth(tokenize('olur bana')))
+    // Kısa satır uzun satıra kadar gerilmemiş olmalı.
+    expect(r.lines[0].width).toBeLessThan(r.lines[1].width)
   })
 
   it('kapalıyken bile sabitlemeye uyar', () => {
