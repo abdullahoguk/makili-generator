@@ -6,7 +6,7 @@
 // Kararlar localStorage'da tutulur, JSON olarak dışa aktarılıp
 // tools/pair-decisions.json'a kaydedilir ve oradan çözücüyü besler.
 
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import GridArt from './GridArt.vue'
 import PixelCanvas from './PixelCanvas.vue'
 import ExportPop from './ExportPop.vue'
@@ -215,12 +215,18 @@ watch(drawn, (v) => {
 }, { deep: true })
 
 /** Eksik bir n-gramı tahtaya aktar: varsa en iyi yerleşim başlangıç olsun. */
-function toBoard(item) {
+async function toBoard(item) {
   const art = item.best
     ? toAscii(item.best.cells).split('\n')
     : item.run?.ok
       ? toAscii(item.run.cells).split('\n')
       : Array.from({ length: s.bandHeight }, () => '.'.repeat(5))
+
+  // Tahta artık Çizim sekmesinde. Sekme değişmeden yüklemek, görünmeyen
+  // bir tahtaya çizim koymak demekti: tıklama hiçbir şey yapmıyor
+  // görünüyordu, scrollIntoView da gizli öğede sessizce boşa gidiyordu.
+  s.tab = 'cizim'
+  await nextTick()
   board.value?.load(art)
   board.value?.setLabel(item.k)
   document.getElementById('tahta')?.scrollIntoView({ behavior: 'smooth' })
@@ -1038,7 +1044,8 @@ function clearAll() {
           Metinde geçen ama çözülemeyen diziler. <b>yok</b> = motor hiç yerleşim
           üretemiyor · <b>reddedildi</b> = ürettiklerinin tümünü reddettin ·
           <b>delik</b> = en iyisinde bile geniş boşluk kalıyor · <b>bant</b> =
-          blok bandı doldurmuyor. Üzerine tıkla, aşağıdaki tahtaya düşsün.
+          blok bandı doldurmuyor. Üzerine tıkla — <b>Çizim</b> sekmesine geçip
+          tahtaya düşsün.
         </p>
 
         <h3 class="sub-head">Çift</h3>
@@ -1493,6 +1500,9 @@ h1 {
 .panel,
 .results {
   padding: calc(var(--u) * 3);
+  /* Sekme çubuğu yapışkan: scrollIntoView bölümü çubuğun ALTINA değil
+     üstüne getiriyor, başlık örtülü kalıyordu. */
+  scroll-margin-top: calc(var(--u) * 7);
 }
 .panel + .panel {
   border-top: 1px solid var(--rule-hair);
