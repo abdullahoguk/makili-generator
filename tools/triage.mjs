@@ -11,6 +11,7 @@
 // İnsanın bakması gereken yalnız sonuncusu — ve onlar genelde belirli
 // harflerde kümelenir, yani eksik olan karar değil BİÇİMDİR.
 
+import { writeFileSync } from 'node:fs'
 import { CHARSET } from '../src/engine/glyphs.js'
 import {
   bandVariants, place, scoreBlock, intrinsicVoid, nestPlacements, BAND_HEIGHT as H
@@ -67,3 +68,23 @@ for (const p of hard) {
 const top = [...byLetter].sort((x, y) => y[1] - x[1])
 console.log(`\nzor çiftlerde en çok geçen harfler: ${top.slice(0, 6).map(([c, k]) => `${c}:${k}`).join('  ')}`)
 console.log(`\nzor çiftler:\n  ${hard.join(' ')}`)
+
+// Lab kuyruğu bunu okusun: hangi çift karar istiyor, hangisi istemiyor.
+// Soru her seferinde aynıydı — "bunları işaretleyeyim mi?" — ve cevabı
+// hesaplanabilir bir şey.
+writeFileSync(
+  'src/data/pair-triage.json',
+  JSON.stringify(
+    {
+      _note:
+        'tools/triage.mjs üretir. clean = yan yana temiz çözülüyor, karar gerekmez. ' +
+        'nest = yalnız yuvalanmayla çözülüyor. hard = biçim ya da karar gerekiyor.',
+      clean,
+      nest,
+      hard
+    },
+    null,
+    2
+  ) + '\n'
+)
+console.log('\nyazıldı: src/data/pair-triage.json')

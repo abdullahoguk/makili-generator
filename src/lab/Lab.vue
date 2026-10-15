@@ -17,6 +17,7 @@ import { CHARSET, variantsOf } from '../engine/glyphs.js'
 import { fromAscii, toAscii, bbox } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
 import reference from '../data/reference.json'
+import triage from '../data/pair-triage.json'
 
 const STORE = 'makili.pair-decisions.v1'
 const STORE_LABELS = 'makili.block-labels.v1'
@@ -35,6 +36,7 @@ const s = reactive({
   strict: false,
   maxInterlock: 3,
   onlyUndecided: false,
+  onlyHard: false,
   // harf varyantı tahtası
   vletter: 'a',
   vnote: '',
@@ -67,6 +69,26 @@ watch(decisions, (d) => {
 
 const pairKey = computed(() => `${s.left}${s.right}`)
 
+/**
+ * Çiftin ayıklama durumu (tools/triage.mjs üretir).
+ *
+ *   clean  yan yana zaten temiz çözülüyor — işaretlemeye gerek yok
+ *   nest   yalnız yuvalanmayla çözülüyor — kural hallediyor
+ *   hard   biçim ya da karar gerekiyor — asıl bakılacak yer
+ *
+ * 841 çiftin 773'ü clean. Hepsini tek tek işaretlemek boşa emek; kuyruk
+ * bunu söylemeyince "bunları işaretleyeyim mi?" sorusu her seferinde
+ * yeniden doğuyordu.
+ */
+const triageSet = {
+  clean: new Set(triage.clean),
+  nest: new Set(triage.nest),
+  hard: new Set(triage.hard)
+}
+const triageOf = (k) =>
+  triageSet.hard.has(k) ? 'hard' : triageSet.nest.has(k) ? 'nest' : 'clean'
+const TRIAGE_LABEL = { clean: 'gerek yok', nest: 'yuvalanma', hard: 'karar gerek' }
+
 // ---- çift kuyruğu -------------------------------------------------------
 
 /**
@@ -98,8 +120,10 @@ const queue = computed(() => {
       // Depoya işlenmiş kararlar (tools/pair-decisions.json)
       saved: hasDecisions([...k][0], [...k][1]),
       unsolved: unsolvedPairs.has(k),
+      triage: triageOf(k),
       void: focusVoid.value.get(k) ?? null
     }))
+    .filter((q) => !s.onlyHard || q.triage === 'hard')
     .sort(
       (a, b) =>
         (b.void ?? -1) - (a.void ?? -1) || b.n - a.n || a.key.localeCompare(b.key)
@@ -841,6 +865,19 @@ function clearAll() {
           ve sıralama <b>kalan deliğe</b> göre olur — en kötüsü başta, rakam da
           o delik.
         </p>
+        <p class="note">
+          <b>Her çifti işaretlemene gerek yok.</b> 841 sıralı çiftin
+          {{ triage.clean.length }} tanesi yan yana zaten temiz çözülüyor,
+          {{ triage.nest.length }} tanesi yuvalanma kuralıyla hallediliyor.
+          Asıl bakılacak olan <b>{{ triage.hard.length }}</b> çift — altı
+          çizili olanlar. Bir çifti yine de işaretlemek istersen
+          <b>tercih (★)</b> koyman yeter.
+        </p>
+        <label class="check">
+          <input v-model="s.onlyHard" type="checkbox" />
+          <span>yalnız karar gereken çiftler ({{ triage.hard.length }})</span>
+        </label>
+
         <div class="focus">
           <span class="label">sorunlu harf</span>
           <button
@@ -860,12 +897,13 @@ function clearAll() {
             class="chip mono"
             :class="{
               on: q.key === pairKey,
+              hard: q.triage === 'hard',
               done: q.decided,
               star: q.preferred,
               saved: q.saved,
               unsolved: q.unsolved
             }"
-            :title="`${q.void != null ? `kalan delik ${q.void}` : `${q.n} kez geçiyor`}${q.saved ? ' · kayıtlı karar var' : ''}${q.unsolved ? ' · çözümsüz' : ''}`"
+            :title="`${TRIAGE_LABEL[q.triage]}${q.void != null ? ` · kalan delik ${q.void}` : ` · ${q.n} kez geçiyor`}${q.saved ? ' · kayıtlı karar var' : ''}${q.unsolved ? ' · çözümsüz' : ''}`"
             @click="goto(q)"
           >
             {{ q.key }}<em>{{ q.void != null ? q.void : q.n }}</em>
@@ -1421,6 +1459,9 @@ select:focus,
   font-weight: 700;
 }
 /* çözümsüz: üstü çizili */
+.chip.hard {
+  border-bottom: 2px solid var(--signal);
+}
 .chip.unsolved {
   text-decoration: line-through;
   color: var(--ink-mute);
