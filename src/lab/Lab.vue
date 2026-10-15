@@ -682,6 +682,55 @@ const variantCount = (c) => (variantsOf(c) ?? []).length
 // ---- dışa aktarma -------------------------------------------------------
 
 const exported = ref('')
+/**
+ * Eski kararları onarır: konuma dayalı glif kimliklerini bugünkü biçim
+ * kimlikleriyle değiştirir.
+ *
+ * Kararlar bir dönem 'a.1' gibi SIRAYA dayalı kimlikle kaydedilmişti.
+ * Kütüphaneden bir biçim çıkınca sonrakilerin numarası kayıyor ve karar
+ * sessizce başka glifi gösteriyordu; bu yüzden kimlikler biçim özetine
+ * (a.e9mkh) taşındı. localStorage'daki eski kayıtlar ise olduğu gibi kaldı
+ * ve dışa aktarıldığında kullanılamıyor.
+ *
+ * Kurtarma mümkün, çünkü kararın ANAHTARI yerleşimin hücre imzası: aynı
+ * imzayı bugünün yerleşimleri arasında arayıp kimlikleri oradan yazmak
+ * yetiyor. Geometri aynıysa karar da aynı kararadır.
+ */
+const repairReport = ref('')
+
+function repairDecisions() {
+  let fixed = 0
+  let already = 0
+  const lost = []
+  for (const [pair, byS] of Object.entries(decisions)) {
+    const chars = [...pair]
+    if (chars.length !== 2) continue
+    const list = pairPlacements(chars[0], chars[1], {
+      bandHeight: s.bandHeight,
+      allowInterlock: true,
+      allowNesting: true,
+      maxInterlock: 3,
+      limit: 4000
+    })
+    const bySig = new Map(list.map((p) => [sigOf(p), p]))
+    for (const [sig, rec] of Object.entries(byS)) {
+      const p = bySig.get(sig)
+      if (!p) { lost.push(pair); continue }
+      if (rec.left === p.left.id && rec.right === p.right.id) { already++; continue }
+      rec.left = p.left.id
+      rec.right = p.right.id
+      rec.advance = p.advance
+      rec.leftTop = p.left.top
+      rec.rightTop = p.right.top
+      fixed++
+    }
+  }
+  const lostPairs = [...new Set(lost)]
+  repairReport.value =
+    `onarılan ${fixed} · zaten güncel ${already} · eşleşmeyen ${lost.length}` +
+    (lostPairs.length ? ` (${lostPairs.join(' ')})` : '')
+}
+
 function exportJson() {
   exported.value = JSON.stringify(
     { note: 'Çift kararları — tools/pair-decisions.json olarak kaydet', decisions },
@@ -1127,6 +1176,7 @@ function clearAll() {
         <h2 class="section-head">Kararları dışa aktar</h2>
         <div class="export">
           <button class="solid" @click="exportJson">çift kararları</button>
+          <button class="ghost" title="eski (konuma dayalı) kimlikleri bugünkü biçim kimlikleriyle değiştir" @click="repairDecisions">kararları onar</button>
           <button class="solid" @click="exportLabels">blok etiketleri</button>
           <button class="solid" @click="exportDrawn">çizimler</button>
           <button class="solid" @click="exportVariants">harf varyantları</button>
@@ -1134,6 +1184,7 @@ function clearAll() {
           <button class="solid" @click="exportFills">beklenen dolgular</button>
           <button class="ghost" @click="clearAll">çift kararlarını sil</button>
         </div>
+        <p v-if="repairReport" class="note warn-note mono">{{ repairReport }}</p>
         <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
         <p class="note">
           Çıkan JSON'u <code>tools/pair-decisions.json</code> olarak kaydet;

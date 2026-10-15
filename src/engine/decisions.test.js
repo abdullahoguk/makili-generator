@@ -38,8 +38,14 @@ describe('applyDecisions', () => {
   })
 
   it('çözümsüz çiftleri bildirir', () => {
-    expect(unsolvedPairs.has('ad')).toBe(true)
+    // Belirli bir çifti sabitlemek yanlış: 'ad' bir zamanlar çözümsüzdü,
+    // sonra lab'de karara bağlandı ve listeden çıktı. Sınanan mekanizma —
+    // listedeki çift bildirilir, onaylı yerleşimi olan bildirilmez.
+    for (const pair of unsolvedPairs) {
+      expect(hasDecisions(...pair)).toBe(false)
+    }
     expect(unsolvedPairs.has('ge')).toBe(false)
+    expect(hasDecisions('g', 'e')).toBe(true)
   })
 
   it('hasDecisions karar varlığını söyler', () => {
