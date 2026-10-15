@@ -29,8 +29,8 @@ import { CHARSET } from '../src/engine/glyphs.js'
 const BAND = 9
 
 const DEFAULT_TEXT = `hak bir gönül verdi bana
-ha demeyen hayran olur
-bir dem gelir şad olur
+ha demeden hayran olur
+bir dem gelir şadan olur
 bir dem gelir giryan olur
 bir dem gelir İsa gibi
 ölmüşleri diri kılar

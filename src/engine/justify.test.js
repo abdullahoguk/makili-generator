@@ -88,7 +88,7 @@ describe('solveLine', () => {
     const chosen = solveLine(tokens, natural + 4, { maxGlyphWidth: 9 })
     expect(chosen.map((v) => v.w).reduce((a, b) => a + b, 0)).toBe(12 + 4)
 
-    const real = justify('bir dem gelir şad olur')
+    const real = justify('bir dem gelir şadan olur')
     const widths = real.lines[0].items.map((it) => it.variant.w)
     expect(Math.max(...widths)).toBeLessThanOrEqual(7)
   })
@@ -102,7 +102,7 @@ describe('solveLine', () => {
 
 describe('justify', () => {
   it('tüm satırları aynı genişliğe getirir', () => {
-    const r = justify('hak bir gönül verdi bana\nha demeyen hayran olur\nbir dem gelir giryan olur')
+    const r = justify('hak bir gönül verdi bana\nha demeden hayran olur\nbir dem gelir giryan olur')
     expect(r.ok).toBe(true)
     const widths = r.lines.map((l) => l.width)
     expect(new Set(widths).size).toBe(1)
@@ -234,7 +234,7 @@ describe('doku: aynı genişlikte biçim seçimi', () => {
   })
 
   it('doku bedeli açıkken satırda daha az delik kalır', () => {
-    const text = 'hak bir gönül verdi bana\nha demeyen hayran olur'
+    const text = 'hak bir gönül verdi bana\nha demeden hayran olur'
     const holes = (o) => {
       const r = compose(text, o)
       expect(r.ok).toBe(true)
@@ -256,7 +256,7 @@ describe('doku: aynı genişlikte biçim seçimi', () => {
   })
 
   it('doku bedeli hedef genişliği bozmaz', () => {
-    const r = compose('hak bir gönül verdi bana\nha demeyen hayran olur')
+    const r = compose('hak bir gönül verdi bana\nha demeden hayran olur')
     expect(r.ok).toBe(true)
     for (const l of r.lines) expect((l.line ?? l).width).toBe(r.target)
   })

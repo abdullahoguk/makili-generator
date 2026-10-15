@@ -45,8 +45,8 @@ const s = reactive({
   // Çift kuyruğu bu metinden çıkar: 841 çifti tek tek gezmek yerine
   // gerçekten geçen çiftlere, sıklık sırasına göre bakılır.
   corpus: `hak bir gönül verdi bana
-ha demeyen hayran olur
-bir dem gelir şad olur
+ha demeden hayran olur
+bir dem gelir şadan olur
 bir dem gelir giryan olur`
 })
 

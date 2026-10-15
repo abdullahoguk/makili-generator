@@ -6,8 +6,8 @@ import { renderSvg, PRESETS, DEFAULTS as STYLE_DEFAULTS } from '../engine/render
 import { unsupported } from '../engine/glyphs.js'
 
 const SAMPLE = `hak bir gönül verdi bana
-ha demeyen hayran olur
-bir dem gelir şad olur
+ha demeden hayran olur
+bir dem gelir şadan olur
 bir dem gelir giryan olur`
 
 export function useComposition() {

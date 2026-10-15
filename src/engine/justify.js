@@ -25,7 +25,7 @@ import {
 } from './layout.js'
 import { joinsFor, rowsFor } from './decisions.js'
 import { thickenStack, weightToAmount } from './render/weight.js'
-import { scoreBlock, intrinsicVoid, BAND_HEIGHT } from './fit.js'
+import { scoreBlock, intrinsicVoid, nestPlacements, BAND_HEIGHT } from './fit.js'
 import { bbox } from './grid.js'
 
 export const DEFAULTS = {
@@ -107,23 +107,56 @@ export function flankVoid(glyph, side, bandHeight = BAND_HEIGHT) {
   return n
 }
 
-export function pairVoid(left, right, bandHeight = BAND_HEIGHT) {
+/**
+ * İki glif yan yana konduğunda ARALARINDA kalan fazladan delik.
+ *
+ * `join` verilmezse ikisi de tabana yaslı, aralık 1 varsayılır. Kenetli ya da
+ * kalkık bir yerleşim bambaşka bir geometridir: eskiden burası birleşimi hiç
+ * görmediği için her kenetlenme tabana yaslı hâliyle fiyatlanıyordu — çözücü
+ * de bedeli yanlış bildiği yerleşimleri seçiyordu.
+ */
+/** Tek glifin, iki yanı duvarla kapatılmış hâlde bıraktığı delik. */
+const sealedCache = new Map()
+
+function sealedVoid(g, bandHeight, top) {
+  const k = `${g.id}|${bandHeight}|${top}`
+  const hit = sealedCache.get(k)
+  if (hit !== undefined) return hit
+  const b = bbox(g.cells)
+  const cells = g.cells.map(([x, y]) => [x - b.x + 1, y - b.y + top])
+  for (let y = 0; y < bandHeight; y++) cells.push([0, y], [b.w + 1, y])
+  const n = scoreBlock(cells, bandHeight).wideVoid
+  sealedCache.set(k, n)
+  return n
+}
+
+export function pairVoid(left, right, bandHeight = BAND_HEIGHT, join = null) {
   if (!left || !right) return 0
-  const k = `${left.id}|${right.id}|${bandHeight}`
+  const lb = bbox(left.cells)
+  const rb = bbox(right.cells)
+  const advance = join?.advance ?? lb.w + LETTER_GAP
+  const lTop = join?.leftTop ?? bandHeight - lb.h
+  const rTop = join?.rightTop ?? bandHeight - rb.h
+
+  const k = `${left.id}|${right.id}|${bandHeight}|${advance}|${lTop}|${rTop}`
   const hit = voidCache.get(k)
   if (hit !== undefined) return hit
 
-  const lb = bbox(left.cells)
-  const rb = bbox(right.cells)
-  const L = left.cells.map(([x, y]) => [x - lb.x, y - lb.y + (bandHeight - lb.h)])
-  const R = right.cells.map(([x, y]) => [
-    x - rb.x + lb.w + LETTER_GAP,
-    y - rb.y + (bandHeight - rb.h)
-  ])
-  const s = scoreBlock([...L, ...R], bandHeight)
-  const li = intrinsicVoid(left.cells, bandHeight, left.id)
-  const ri = intrinsicVoid(right.cells, bandHeight, right.id)
-  const out = Math.max(0, s.wideVoid - li.wide - ri.wide)
+  const L = left.cells.map(([x, y]) => [x - lb.x + 1, y - lb.y + lTop])
+  const R = right.cells.map(([x, y]) => [x - rb.x + advance + 1, y - rb.y + rTop])
+
+  // Yanlar DUVARLA kapatılarak ölçülür. Çift tek başına ölçüldüğünde kenarları
+  // açık görünür, scoreBlock da yana ulaşan boşluğu 'doldurulabilir' sayıp
+  // bedava geçer; oysa satır ortasında o yanı komşu harf kapatıyor. Kapatmadan
+  // ölçülünce kısa biçimler olduğundan ucuz görünüyordu.
+  const right0 = advance + Math.max(lb.w, rb.w) + 2
+  const wallR = Math.max(right0, 1 + advance + rb.w)
+  const walls = []
+  for (let y = 0; y < bandHeight; y++) walls.push([0, y], [wallR, y])
+  const s = scoreBlock([...walls, ...L, ...R], bandHeight)
+  const li = sealedVoid(left, bandHeight, lTop)
+  const ri = sealedVoid(right, bandHeight, rTop)
+  const out = Math.max(0, s.wideVoid - li - ri)
   voidCache.set(k, out)
   return out
 }
@@ -162,9 +195,40 @@ function widthsFor(char, opts) {
  * karar vermiyor: hangi çiftin iç içe geçebileceği tasarım kararı, lab'de
  * verilmiş olanlarla sınırlı.
  */
+/**
+ * Bir harf çifti için KURALLA türetilmiş yuvalanmalar.
+ *
+ * nestPlacements boşluğun geometrisinden üretiyor; burada yalnız deliksiz
+ * olanlar alınıp birleşim biçimine çevriliyor. Böylece 'l'nin göbeğine
+ * giren bir harf için önce lab'de onay vermek gerekmiyor — kural zaten
+ * geçerli bir yerleşim olduğunu söylüyor.
+ *
+ * Çift başına bir kez hesaplanıp saklanıyor; çözücü her geçişte yeniden
+ * üretemez, pahalı.
+ */
+const nestCache = new Map()
+
+function nestJoins(leftChar, rightChar, band) {
+  const k = `${leftChar}${rightChar}|${band}`
+  let m = nestCache.get(k)
+  if (m) return m
+  m = new Map()
+  for (const p of nestPlacements(leftChar, rightChar, { bandHeight: band, limit: 400 })) {
+    if (p.wideVoid !== 0) continue
+    const id = `${p.left.id}|${p.right.id}`
+    const list = m.get(id) ?? []
+    // Aynı biçim çifti için en fazla iki yuvalanma: DP'yi şişirmesin.
+    if (list.length >= 2) continue
+    list.push({ advance: p.advance, leftTop: p.left.top, rightTop: p.right.top })
+    m.set(id, list)
+  }
+  nestCache.set(k, m)
+  return m
+}
+
 const joinCache = new Map()
 
-function advanceOptions(leftChar, rightChar, left, right, afterSpace) {
+function advanceOptions(leftChar, rightChar, left, right, afterSpace, band = BAND_HEIGHT) {
   const fallback = left.w + (afterSpace ? WORD_GAP : LETTER_GAP)
   const k = `${leftChar}${rightChar}|${left.id}|${right.id}|${afterSpace ? 'w' : 'l'}`
   const hit = joinCache.get(k)
@@ -188,6 +252,14 @@ function advanceOptions(leftChar, rightChar, left, right, afterSpace) {
     if (badGap(j.leftTop, left.h) || badGap(j.rightTop, right.h)) continue
     out.push({ ...j, approved: true })
   }
+  // Kuralla türetilen yuvalanmalar: onay beklemeden kullanılabilir.
+  for (const j of nestJoins(leftChar, rightChar, band).get(`${left.id}|${right.id}`) ?? []) {
+    if (j.advance === fallback && j.leftTop === natLeft && j.rightTop === natRight) continue
+    if (badGap(j.leftTop, left.h) || badGap(j.rightTop, right.h)) continue
+    if (out.some((o) => o.advance === j.advance && o.leftTop === j.leftTop && o.rightTop === j.rightTop)) continue
+    out.push({ ...j, approved: false, nested: true })
+  }
+
   // Hiçbir birleşim kalmadıysa varsayılanı geri koy: satır hiç kurulamazsa
   // kural değil dizgi kırılır.
   if (!out.length) out.push({ advance: fallback, leftTop: null, rightTop: null, approved: false })
@@ -218,9 +290,21 @@ function injectionsFor(chars) {
     out[i].set(g.w, list)
   }
   for (let i = 1; i < chars.length; i++) {
-    for (const row of rowsFor(`${chars[i - 1].char}${chars[i].char}`)) {
+    const pair = `${chars[i - 1].char}${chars[i].char}`
+    for (const row of rowsFor(pair)) {
       add(i - 1, resolveId(row[0]))
       add(i, resolveId(row[1]))
+    }
+    // Kuralla türetilen kenetlenmeler de biçim ister. Bunların çoğu BANDI
+    // DOLDURMAYAN kısa biçimler — 'l'nin göbeğine giren alçak 'i' gibi — ve
+    // widthsFor onları tallOnly ile eliyor. Kısa biçimi havuza topluca açmak
+    // dokuyu bozuyor (deliği 255'ten 468'e çıkarıyor): tek başına duran kısa
+    // harf altında kapanmayan boşluk bırakıyor. O yüzden yalnız TEMİZ bir
+    // kenetlenmeye katılan biçim, yalnız o konumda açılıyor.
+    for (const [ids] of nestJoins(chars[i - 1].char, chars[i].char, BAND_HEIGHT)) {
+      const [leftId, rightId] = ids.split('|')
+      add(i - 1, resolveId(leftId))
+      add(i, resolveId(rightId))
     }
   }
   return out
@@ -299,7 +383,7 @@ export function reachableWidths(tokens, options = {}) {
     for (const st of states.values()) {
       for (const [, list] of map) {
         for (const g of list) {
-          for (const j of advanceOptions(chars[i - 1].char, chars[i].char, st.g, g, space[i])) {
+          for (const j of advanceOptions(chars[i - 1].char, chars[i].char, st.g, g, space[i], 9)) {
             const x = st.x + j.advance
             const k = `${x}|${g.id}`
             if (!next.has(k)) next.set(k, { x, g })
@@ -389,28 +473,33 @@ export function solveLine(tokens, target, options = {}) {
       for (const [w, list] of maps[i]) {
         const stretch = stretchCost(w - bases[i], list[0])
         for (const glyph of list) {
-          const base =
-            st.cost +
-            stretch +
-            voidCost * pairVoid(st.glyph, glyph, band) +
-            densityCost * ownVoid(glyph, band)
+          const base = st.cost + stretch + densityCost * ownVoid(glyph, band)
 
           for (const j of advanceOptions(
             chars[i - 1].char,
             chars[i].char,
             st.glyph,
             glyph,
-            space[i]
+            space[i],
+            band
           )) {
             const x = st.x + j.advance
             if (x + remainingMin > target) continue
+            // Delik bedeli birleşim BAŞINA ölçülür: aynı iki biçim, kenetli
+            // konduğunda bambaşka bir delik bırakır.
             // Onaylı kenetlenme küçük bir indirim alır: ustanın fiilen
             // kullandığı biçim, motorun kendi bulduğuna yeğlenir.
-            const c = base - (j.approved ? 0.5 : 0)
+            const c =
+              base +
+              voidCost * pairVoid(st.glyph, glyph, band, j) -
+              (j.approved ? 0.5 : 0)
             const k = `${x}|${glyph.id}`
             const cur = next.get(k)
             if (!cur || c < cur.cost) {
-              next.set(k, { cost: c, x, glyph, from: prevKey, join: j.approved ? j : null })
+              // Kurala dayalı kenetlenmenin de dikey kaydırması saklanmalı;
+              // yalnız onaylıları saklamak yuvalanmayı seçip uygulamamak
+              // demekti.
+              next.set(k, { cost: c, x, glyph, from: prevKey, join: j.leftTop == null ? null : j })
             }
           }
         }

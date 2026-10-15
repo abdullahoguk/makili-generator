@@ -1,6 +1,6 @@
 // Glif kütüphanesine erişim.
 
-import { heighten } from './derive.js'
+import { heighten, widen } from './derive.js'
 import library from '../data/glyphs.json' with { type: 'json' }
 
 export const CHARSET = library.charset.split('')
@@ -33,11 +33,20 @@ export function variantById(id) {
  * Aradaki basamak satır çoğaltmayla üretiliyor ve kimliği `^1` alıyor.
  */
 export function resolveId(id) {
-  const [base, lift] = String(id).split('^')
-  const g = variantById(base)
+  // Kimlik üç parçalı olabilir: taban, genişletme (+N), yükseltme (^N).
+  // Yalnız '^' çözülüyordu; '+N' sessizce null dönüyor, o yüzden kenetli
+  // yerleşimlerin istediği geniş biçimler havuza hiç giremiyordu.
+  const s = String(id)
+  const [head, lift] = s.split('^')
+  const [base, wide] = head.split('+')
+  let g = variantById(base)
   if (!g) return null
-  if (!lift) return g
-  return heighten(g, Number(lift))
+  if (wide) {
+    g = widen(g, Number(wide))
+    if (!g) return null
+  }
+  if (lift) g = heighten(g, Number(lift))
+  return g
 }
 
 /** Kütüphanede olmayan karakterler. */
