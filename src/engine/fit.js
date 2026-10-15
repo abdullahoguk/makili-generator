@@ -174,8 +174,25 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
       for (let x = p.x; x < p.x + p.w; x++) if (empty.has(key(x, y))) enclosedCells.add(key(x, y))
     }
   }
+
+  // Kenara SATIRI BOYUNCA erişilebilen hücreler de sayılmaz: orayı komşu
+  // harf ya da uzantısı doldurur. Ustanın 'r' 4w, 't' 7w, 'z' 9w biçimleri
+  // tam böyle — yanı boydan boya açık.
+  //
+  // Bu ayrım olmadan ölçü, elle çizilmiş geçerli blokları "geniş delik"
+  // diye eliyordu: 77 çizimin 11'i yalnız bu yüzden kusurlu görünüyordu.
+  const sideOpen = new Set()
+  for (let y = 0; y < b.h; y++) {
+    let L = 0
+    while (L < b.w && !filled.has(key(L, y))) L++
+    let R = b.w - 1
+    while (R >= 0 && !filled.has(key(R, y))) R--
+    for (let x = 0; x < L; x++) sideOpen.add(key(x, y))
+    for (let x = R + 1; x < b.w; x++) sideOpen.add(key(x, y))
+  }
+
   let wide = 0
-  for (const k of thick) if (!enclosedCells.has(k)) wide++
+  for (const k of thick) if (!enclosedCells.has(k) && !sideOpen.has(k)) wide++
 
   return {
     ok: errors.length === 0,

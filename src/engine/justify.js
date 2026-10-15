@@ -74,6 +74,39 @@ export function ownVoid(glyph, bandHeight = BAND_HEIGHT) {
 }
 
 
+/**
+ * Biçimin bir YANINDAKİ açık boşluk — satırın ucunda kapanmayan kısım.
+ *
+ * Satır ortasında yana açık boşluğu komşu doldurur, bu yüzden wideVoid onu
+ * saymaz. Ama satırın SON harfinde sağda, İLK harfinde solda komşu yok:
+ * orası dokuda gerçek delik olarak kalır.
+ *
+ * Bu terim olmadan çözücü bütün genişlemeyi son harfe yığıyordu — orada
+ * boşluk bedava görünüyordu ('llll' 19 birime 3,3,3,7 diye bölünüyordu).
+ */
+const flankCache = new Map()
+
+export function flankVoid(glyph, side, bandHeight = BAND_HEIGHT) {
+  const k = `${glyph.id}|${side}|${bandHeight}`
+  const hit = flankCache.get(k)
+  if (hit !== undefined) return hit
+
+  const b = bbox(glyph.cells)
+  const filled = new Set(glyph.cells.map(([x, y]) => `${x - b.x},${y - b.y}`))
+  let n = 0
+  for (let y = 0; y < b.h; y++) {
+    if (side === 'right') {
+      let x = b.w - 1
+      while (x >= 0 && !filled.has(`${x},${y}`)) { n++; x-- }
+    } else {
+      let x = 0
+      while (x < b.w && !filled.has(`${x},${y}`)) { n++; x++ }
+    }
+  }
+  flankCache.set(k, n)
+  return n
+}
+
 export function pairVoid(left, right, bandHeight = BAND_HEIGHT) {
   if (!left || !right) return 0
   const k = `${left.id}|${right.id}|${bandHeight}`
@@ -319,7 +352,11 @@ export function solveLine(tokens, target, options = {}) {
   let dp = new Map()
   for (const [w, list] of maps[0]) {
     for (const glyph of list) {
-      const c = stretchCost(w - bases[0], glyph) + densityCost * ownVoid(glyph, band)
+      const c =
+        stretchCost(w - bases[0], glyph) +
+        densityCost * ownVoid(glyph, band) +
+        // satır başı: solda komşu yok, yan boşluk kapanmıyor
+        voidCost * flankVoid(glyph, 'left', band)
       const k = `0|${glyph.id}`
       const cur = dp.get(k)
       if (!cur || c < cur.cost) dp.set(k, { cost: c, x: 0, glyph, from: null, join: null })
@@ -376,9 +413,12 @@ export function solveLine(tokens, target, options = {}) {
   // Hedefi tam tutturanlar arasından en ucuzu.
   let best = null
   let bestKey = null
+  let bestCost = Infinity
   for (const [k, st] of dp) {
     if (st.x + st.glyph.w !== target) continue
-    if (!best || st.cost < best.cost) { best = st; bestKey = k }
+    // satır sonu: sağda komşu yok
+    const c = st.cost + voidCost * flankVoid(st.glyph, 'right', band)
+    if (c < bestCost) { best = st; bestKey = k; bestCost = c }
   }
   if (!best) return null
 
