@@ -12,7 +12,10 @@
     "glyphs:extract": "node tools/extract-glyphs.mjs",
     "glyphs:build": "node tools/build-glyphs.mjs",
     "glyphs": "npm run glyphs:extract && npm run glyphs:build",
-    "smoke": "node tools/smoke.mjs"
+    "smoke": "node tools/smoke.mjs",
+    "triage": "node tools/triage.mjs",
+    "needs": "node tools/short-needs.mjs",
+    "needs:build": "node tools/short-needs.mjs --json"
   },
   "dependencies": {
     "vue": "^3.5.13"

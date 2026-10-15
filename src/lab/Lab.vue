@@ -18,6 +18,7 @@ import { fromAscii, toAscii, bbox } from '../engine/grid.js'
 import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
 import reference from '../data/reference.json'
 import triage from '../data/pair-triage.json'
+import shortNeeds from '../data/short-needs.json'
 
 const STORE = 'makili.pair-decisions.v1'
 const STORE_LABELS = 'makili.block-labels.v1'
@@ -257,6 +258,18 @@ function shapeSig(cells) {
 
 /** Kütüphanedeki varyantlar — türetilmiş değil, asıl biçimler. */
 const libVariants = computed(() => variantsOf(s.vletter) ?? [])
+
+/**
+ * Bu harfe hangi ÖLÇÜDE biçim bekleniyor — tools/short-needs.mjs ölçtü.
+ *
+ * "Biçim eksik" demek yetmiyor; hangi ölçüde eksik olduğu söylenmeli.
+ * Boşluk zaten geometride duruyor: sol harfin sağa açık kutusu, sağ
+ * harften belli bir ölçü istiyor. Kısa biçim TÜRETİLEMEZ (derive.js
+ * çoğaltır, eksiltemez) — bu ölçüler elle çizilmek zorunda.
+ */
+const needsFor = computed(() =>
+  (shortNeeds.needs ?? []).filter((n) => n.char === s.vletter)
+)
 
 /** Bu harf için çizilmiş yeni varyantlar. */
 const myVariants = computed(() => variants.value.filter((v) => v.char === s.vletter))
@@ -1072,6 +1085,28 @@ function clearAll() {
           bulunan onaylı kararlar varsa build onları da sayar.
         </p>
 
+        <div v-if="needsFor.length" class="needs">
+          <h3 class="sub-head">'{{ s.vletter }}' için beklenen ölçü</h3>
+          <p class="note">
+            Ölçüler <b>üst sınır</b>: 1 birim açıklık düşülmüş. Soldaki harfin
+            göbeği bu kadar yer bırakıyor, eldeki biçim sığmıyor. Kısa biçim
+            türetilemez — motor satır/sütun çoğaltabilir, eksiltemez; bu
+            yüzden elle çizilmesi gerekiyor.
+          </p>
+          <ul class="needlist mono">
+            <li v-for="(n, i) in needsFor" :key="i">
+              <b>en çok {{ n.w }}×{{ n.h }}</b>
+              <span class="dim">üstten {{ n.top }}</span>
+              <em v-if="n.have">
+                eldeki en küçük {{ n.have.w }}×{{ n.have.h }}
+                <template v-if="n.have.h > n.h">· {{ n.have.h - n.h }} satır kısa</template>
+                <template v-if="n.have.w > n.w">· {{ n.have.w - n.w }} sütun dar</template>
+              </em>
+              <span class="unlocks">çözer: {{ n.unlocks.join(' ') }}</span>
+            </li>
+          </ul>
+        </div>
+
         <h3 class="sub-head">Yeni varyant çiz</h3>
         <label class="field">
           <span class="label">not (ne için gerekti · ya da neden hatalı)</span>
@@ -1691,6 +1726,43 @@ figcaption em {
 }
 
 /* --- çizim listesi ------------------------------------------------------ */
+
+/* Beklenen ölçü listesi: talep, çizim tahtasının hemen üstünde dursun. */
+.needs {
+  margin: calc(var(--u) * 2) 0 0;
+  padding: var(--u) calc(var(--u) * 1.5);
+  border-left: 2px solid var(--signal);
+  background: var(--paper-pure);
+}
+
+.needlist {
+  margin: var(--u) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.needlist li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--u);
+  align-items: baseline;
+  padding: calc(var(--u) * 0.5) 0;
+  border-top: 1px solid var(--rule-hair);
+}
+
+.needlist li:first-child {
+  border-top: 0;
+}
+
+.needlist em {
+  font-style: normal;
+  color: var(--ink-mute);
+}
+
+.needlist .unlocks {
+  margin-left: auto;
+  color: var(--ink-mute);
+}
 
 /* Varyant şeridi: biçimler yan yana, altında ölçüsü. Tıklanabilir olanı
    çerçeve değil imleç belli eder — çerçeve ızgarayı bulandırıyor. */
