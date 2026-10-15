@@ -9,6 +9,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import GridArt from './GridArt.vue'
 import PixelCanvas from './PixelCanvas.vue'
+import ExportPop from './ExportPop.vue'
 import { pairPlacements, BAND_HEIGHT } from '../engine/fit.js'
 
 import { layoutWord } from '../engine/sequence.js'
@@ -27,7 +28,19 @@ const STORE_VARIANTS = 'makili.glyph-variants.v1'
 const STORE_REJECTS = 'makili.glyph-rejects.v1'
 const STORE_FILLS = 'makili.glyph-fills.v1'
 
+// Sekmeler: lab tek bir uzun şeritti, sekiz bölüm üst üste. Çift kararı
+// verirken çizim tahtası, çizerken kuyruk göz önünde duruyordu. Her iş
+// kendi sekmesinde.
+const TABS = [
+  { id: 'cift', name: 'Çift' },
+  { id: 'eksik', name: 'Eksikler' },
+  { id: 'harf', name: 'Harf' },
+  { id: 'cizim', name: 'Çizim' },
+  { id: 'deneme', name: 'Deneme' }
+]
+
 const s = reactive({
+  tab: 'cift',
   left: 'l',
   right: 'i',
   bandHeight: BAND_HEIGHT,
@@ -439,8 +452,8 @@ function fillCheck(p) {
   return { filled, total: marks.length }
 }
 
-function exportFills() {
-  exported.value = JSON.stringify(
+function buildFills() {
+  return JSON.stringify(
     {
       _note: 'Komşunun doldurması beklenen hücreler. tools/glyph-fills.json olarak kaydet.',
       fills: fills.value
@@ -448,11 +461,10 @@ function exportFills() {
     null,
     2
   )
-  navigator.clipboard?.writeText(exported.value).catch(() => {})
 }
 
-function exportRejects() {
-  exported.value = JSON.stringify(
+function buildRejects() {
+  return JSON.stringify(
     {
       _note: 'Kütüphaneden çıkarılacak biçimler. tools/glyph-rejects.json olarak kaydet, sonra npm run glyphs:build.',
       rejected: rejects.value
@@ -460,11 +472,10 @@ function exportRejects() {
     null,
     2
   )
-  navigator.clipboard?.writeText(exported.value).catch(() => {})
 }
 
-function exportVariants() {
-  exported.value = JSON.stringify(
+function buildVariants() {
+  return JSON.stringify(
     {
       _note: 'Lab\'de çizilen harf varyantları. tools/glyphs.extra.json içindeki "ascii" dizisine eklenir, sonra npm run glyphs:build.',
       ascii: variants.value.map((v) => ({
@@ -479,7 +490,6 @@ function exportVariants() {
     null,
     2
   )
-  navigator.clipboard?.writeText(exported.value).catch(() => {})
 }
 
 function drawnIndex(d) {
@@ -487,13 +497,12 @@ function drawnIndex(d) {
   return same.length > 1 ? same.indexOf(d) + 1 : null
 }
 
-function exportDrawn() {
-  exported.value = JSON.stringify(
+function buildDrawn() {
+  return JSON.stringify(
     { note: 'Elle çizilmiş bloklar — tools/drawn-blocks.json olarak kaydet', blocks: drawn.value },
     null,
     2
   )
-  navigator.clipboard?.writeText(exported.value).catch(() => {})
 }
 
 function goto(q) {
@@ -680,8 +689,8 @@ const labelStats = computed(() => ({
   known: masterBlocks.value.filter((b) => b.known).length
 }))
 
-function exportLabels() {
-  exported.value = JSON.stringify(
+function buildLabels() {
+  return JSON.stringify(
     {
       note: 'Ustanın blok etiketleri — tools/block-labels.json olarak kaydet',
       source: reference.source,
@@ -692,7 +701,6 @@ function exportLabels() {
     null,
     2
   )
-  navigator.clipboard?.writeText(exported.value).catch(() => {})
 }
 
 // ---- kelime denemesi ----------------------------------------------------
@@ -718,7 +726,6 @@ const variantCount = (c) => (variantsOf(c) ?? []).length
 
 // ---- dışa aktarma -------------------------------------------------------
 
-const exported = ref('')
 /**
  * Eski kararları onarır: konuma dayalı glif kimliklerini bugünkü biçim
  * kimlikleriyle değiştirir.
@@ -768,14 +775,27 @@ function repairDecisions() {
     (lostPairs.length ? ` (${lostPairs.join(' ')})` : '')
 }
 
-function exportJson() {
-  exported.value = JSON.stringify(
+function buildDecisions() {
+  return JSON.stringify(
     { note: 'Çift kararları — tools/pair-decisions.json olarak kaydet', decisions },
     null,
     2
   )
-  navigator.clipboard?.writeText(exported.value).catch(() => {})
 }
+/**
+ * Sekme üzerindeki sayı — o sekmede bekleyen iş.
+ *
+ * Boş dönerse hiç basılmıyor: sıfır göstermek, bakılacak bir şey varmış
+ * izlenimi veriyor.
+ */
+function tabBadge(id) {
+  if (id === 'cift') return totalDecided.value || ''
+  if (id === 'eksik') return gapPairs.value.length + gapTriples.value.length || ''
+  if (id === 'harf') return variants.value.length + rejects.value.length || ''
+  if (id === 'cizim') return drawn.value.length || ''
+  return ''
+}
+
 function clearAll() {
   for (const k of Object.keys(decisions)) delete decisions[k]
 }
@@ -784,12 +804,14 @@ function clearAll() {
 <template>
   <div class="lab">
     <header>
-      <h1>Çift<br />laboratuvarı</h1>
-      <p class="sub">
-        İki harf yan yana geldiğinde ne olacağına birlikte karar vermek için.
-        Motor kurallara uyan bütün yerleşimleri üretir ve puanlar; hangisinin
-        doğru olduğu senin kararın. Kararlar kaydedilir ve çözücüyü besler.
-      </p>
+      <div class="brand">
+        <h1>Çift laboratuvarı</h1>
+        <p class="sub">
+          İki harf yan yana geldiğinde ne olacağına birlikte karar vermek için.
+          Motor kurallara uyan bütün yerleşimleri üretir ve puanlar; hangisinin
+          doğru olduğu senin kararın.
+        </p>
+      </div>
       <dl class="facts">
         <div><dt>ölçüm</dt><dd>{{ reference.lines.length }} satır · {{ reference.fusionsTotal }} kaynaşma</dd></div>
         <div><dt>harf arası</dt><dd>{{ reference.metrics.letterGapCells.join(', ') }} hücre</dd></div>
@@ -798,8 +820,21 @@ function clearAll() {
     </header>
 
     <main>
-      <div class="work">
-      <aside class="rail">
+      <nav class="tabs">
+        <button
+          v-for="t in TABS"
+          :key="t.id"
+          class="navtab"
+          :class="{ on: s.tab === t.id }"
+          :aria-current="s.tab === t.id || undefined"
+          @click="s.tab = t.id"
+        >
+          {{ t.name }}<em v-if="tabBadge(t.id)" class="mono">{{ tabBadge(t.id) }}</em>
+        </button>
+      </nav>
+
+      <div class="work" :class="{ solo: s.tab !== 'cift' }">
+      <aside v-show="s.tab === 'cift'" class="rail">
       <section class="panel">
         <h2 class="section-head">Çift</h2>
         <div class="pair">
@@ -923,12 +958,30 @@ function clearAll() {
           </button>
         </div>
       </section>
+
+      <section class="panel">
+        <h2 class="section-head">Bakım</h2>
+        <div class="maint">
+          <button
+            class="ghost"
+            title="eski (konuma dayalı) kimlikleri bugünkü biçim kimlikleriyle değiştir"
+            @click="repairDecisions"
+          >kararları onar</button>
+          <button class="ghost danger" @click="clearAll">çift kararlarını sil</button>
+        </div>
+        <p v-if="repairReport" class="note warn-note mono">{{ repairReport }}</p>
+      </section>
       </aside>
 
-      <section class="results">
+      <section v-show="s.tab === 'cift'" class="results">
         <h2 class="section-head">
           <span>{{ s.left }} + {{ s.right }}</span>
           <span class="dim mono">{{ shown.length }} gösteriliyor</span>
+          <ExportPop
+            label="çift kararları"
+            file="tools/pair-decisions.json"
+            :build="buildDecisions"
+          />
         </h2>
 
         <p v-if="!placements.length" class="empty">
@@ -976,7 +1029,7 @@ function clearAll() {
       </div>
 
       <div class="full">
-      <section class="panel">
+      <section v-show="s.tab === 'eksik'" class="panel">
         <h2 class="section-head">
           <span>Eksikler</span>
           <span class="dim mono">{{ gapPairs.length }} çift · {{ gapTriples.length }} üçlü</span>
@@ -1009,11 +1062,28 @@ function clearAll() {
         </div>
       </section>
 
-      <section id="varyant" class="panel">
+      <section v-show="s.tab === 'harf'" id="varyant" class="panel">
         <h2 class="section-head">
           <span>Harf varyantları</span>
           <span class="dim mono">
             {{ libVariants.length }} kütüphanede · {{ myVariants.length }} yeni
+          </span>
+          <span class="headtools">
+            <ExportPop
+              label="varyantlar"
+              file="tools/glyphs.extra.json"
+              :build="buildVariants"
+            />
+            <ExportPop
+              label="çıkarılacaklar"
+              file="tools/glyph-rejects.json"
+              :build="buildRejects"
+            />
+            <ExportPop
+              label="dolgular"
+              file="tools/glyph-fills.json"
+              :build="buildFills"
+            />
           </span>
         </h2>
         <p class="note">
@@ -1148,12 +1218,13 @@ function clearAll() {
         </div>
       </section>
 
-      <section id="tahta" class="panel">
+      <section v-show="s.tab === 'cizim'" id="tahta" class="panel">
         <h2 class="section-head">
           <span>Çizim tahtası</span>
           <span class="dim mono">
             {{ drawn.length }} çizim · {{ new Set(drawn.map((d) => d.chars)).size }} kombinasyon
           </span>
+          <ExportPop label="çizimler" file="tools/drawn-blocks.json" :build="buildDrawn" />
         </h2>
         <p class="note">
           Motorun bulamadığı biçimi kendin ver. Sürükleyerek boya, tekrar
@@ -1180,7 +1251,7 @@ function clearAll() {
         </div>
       </section>
 
-      <section class="panel">
+      <section v-show="s.tab === 'deneme'" class="panel">
         <h2 class="section-head">Kelime denemesi</h2>
         <input v-model="s.word" class="word" spellcheck="false" placeholder="hakbir" />
         <div v-if="wordRun.ok" class="wordout">
@@ -1207,7 +1278,7 @@ function clearAll() {
         </p>
       </section>
 
-      <section class="panel">
+      <section v-show="s.tab === 'cizim'" class="panel">
         <h2 class="section-head">
           <span>Ustanın blokları — etiketle</span>
           <span class="dim mono">
@@ -1215,6 +1286,11 @@ function clearAll() {
             {{ labelStats.known }} kütüphanede var ·
             <b v-if="labelStats.conflicts" class="bad">{{ labelStats.conflicts }} çatışma</b>
           </span>
+          <ExportPop
+            label="blok etiketleri"
+            file="tools/block-labels.json"
+            :build="buildLabels"
+          />
         </h2>
         <p class="note">
           Kütüphane, ustanın gerçekte kullandığı biçimlerden ayrışıyor — tek
@@ -1245,25 +1321,6 @@ function clearAll() {
         </div>
       </section>
 
-      <section class="panel">
-        <h2 class="section-head">Kararları dışa aktar</h2>
-        <div class="export">
-          <button class="solid" @click="exportJson">çift kararları</button>
-          <button class="ghost" title="eski (konuma dayalı) kimlikleri bugünkü biçim kimlikleriyle değiştir" @click="repairDecisions">kararları onar</button>
-          <button class="solid" @click="exportLabels">blok etiketleri</button>
-          <button class="solid" @click="exportDrawn">çizimler</button>
-          <button class="solid" @click="exportVariants">harf varyantları</button>
-          <button class="solid" @click="exportRejects">çıkarılacak biçimler</button>
-          <button class="solid" @click="exportFills">beklenen dolgular</button>
-          <button class="ghost" @click="clearAll">çift kararlarını sil</button>
-        </div>
-        <p v-if="repairReport" class="note warn-note mono">{{ repairReport }}</p>
-        <textarea v-if="exported" :value="exported" readonly rows="8" class="out mono" />
-        <p class="note">
-          Çıkan JSON'u <code>tools/pair-decisions.json</code> olarak kaydet;
-          çözücü oradan okuyacak.
-        </p>
-      </section>
       </div>
     </main>
   </div>
@@ -1280,28 +1337,43 @@ function clearAll() {
 
 /* --- başlık: tek hiyerarşi sıçraması, altında yapısal çizgi ------------- */
 
+/* Başlık bandı: önce dikey bir blok tu, ekranın üçte birini yiyordu ve
+   altındaki işe ancak kaydırarak ulaşılıyordu. Sekmeler geldikten sonra
+   başlığın o kadar yer tutması gerekmiyor — hiyerarşi duruyor, ölçü
+   küçüldü. */
 header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: calc(var(--u) * 4);
   border-bottom: 2px solid var(--rule);
-  padding: calc(var(--u) * 5) calc(var(--u) * 4) calc(var(--u) * 3);
+  padding: calc(var(--u) * 2.5) calc(var(--u) * 4);
 }
 h1 {
   margin: 0;
-  font-size: var(--t-display);
+  font-size: clamp(22px, 2.6vw, 32px);
   font-weight: 700;
-  line-height: 0.88;
-  letter-spacing: -0.035em;
+  line-height: 1;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
 }
 .sub {
-  margin: calc(var(--u) * 2) 0 0;
-  max-width: 64ch;
+  margin: var(--u) 0 0;
+  max-width: 68ch;
   color: var(--ink-mute);
 }
 .facts {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--u) * 5);
-  margin: calc(var(--u) * 3) 0 0;
+  gap: calc(var(--u) * 4);
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  header {
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(var(--u) * 2);
+  }
 }
 .facts div {
   display: flex;
@@ -1323,10 +1395,89 @@ h1 {
 
 /* --- ızgara ------------------------------------------------------------ */
 
+/* Sekme çubuğu: yapısal çizgi üstünde etiket düzeyi tipografi. Seçili
+   olan dolu zeminle değil, altındaki kalın çizgiyle belli oluyor — renk
+   hiyerarşi kurmuyor, yapı kuruyor. */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 2px solid var(--rule);
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navtab {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--u) * 0.75);
+  padding: calc(var(--u) * 1.5) calc(var(--u) * 2.5);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+
+.navtab:hover {
+  color: var(--ink);
+}
+
+.navtab.on {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.navtab em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--t-data);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-mute);
+}
+
 .work {
   display: grid;
   grid-template-columns: var(--rail) minmax(0, 1fr);
   align-items: start;
+}
+
+/* Ray yalnız Çift sekmesinde var; ötekilerde tek kolon. */
+.work.solo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Başlıktaki araç kümesi: birden çok dışa aktarma varsa yan yana. */
+.headtools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 0.5);
+}
+
+/* Başlık iki parçalıyken space-between doğru durur; dışa aktarma üçüncü
+   parça olarak eklendiğinde sağa yaslanması gerekiyor. */
+.section-head > :last-child:not(:nth-child(2)),
+.section-head > .headtools {
+  margin-left: auto;
+}
+
+.maint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--u);
+}
+
+.maint .danger:hover {
+  border-color: var(--signal);
+  color: var(--signal);
 }
 .rail {
   border-right: 2px solid var(--rule);
@@ -1879,11 +2030,6 @@ figcaption em {
   line-height: 1.6;
   color: var(--ink-mute);
 }
-.export {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--u);
-}
 .solid,
 .ghost {
   padding: 9px 16px;
@@ -1911,15 +2057,6 @@ figcaption em {
 .ghost:hover {
   border-color: var(--signal);
 }
-.out {
-  width: 100%;
-  margin-top: var(--u);
-  padding: var(--u);
-  border: 1px solid var(--rule);
-  background: var(--paper-pure);
-  font-size: 11px;
-}
-
 @media (max-width: 900px) {
   .work {
     grid-template-columns: 1fr;
