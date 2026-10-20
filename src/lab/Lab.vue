@@ -312,14 +312,33 @@ const glyphArt = ref('')
 const onGlyphDraw = (art) => { glyphArt.value = art }
 
 /** Kaydetmeyi engelleyen durum: aynı biçim kütüphanede ya da listede var mı. */
+/**
+ * Düzenlenen kendi biçmimizin kimliği.
+ *
+ * Bir biçim kaydedildikten sonra kararı değişebiliyor: 'kısa biçim' diye
+ * işaretlenmemiş olabilir, ya da komşusunun doldurması beklenen hücreler
+ * hiç konmamış olabilir. Eskiden tek çare silip yeniden çizmekti; artık
+ * tahtaya geri alınıp üzerine yazılıyor. Kimlik ve kaynak korunuyor,
+ * yoksa biçme atıfta bulunan kayıtlar kopuyor.
+ */
+const editingId = ref(null)
+
 const variantBlocked = computed(() => {
   const art = glyphArt.value
   if (!art) return ''
   const sig = shapeSig(fromAscii(art))
+  // Düzenleme kipinde yinelenme denetimi KENDİ kaydımızı saymaz. Yalnız
+  // 'kısa biçim' tikini açmak ya da dolgu işaretlemek çizimi değiştirmez;
+  // kendi kaydını yinelenme sayan denetim kaydet düğmesini kilitliyor,
+  // düzenleme hiç kaydedilemiyordu.
   if (libVariants.value.some((v) => shapeSig(v.cells) === sig)) {
     return 'Bu biçim kütüphanede zaten var.'
   }
-  if (myVariants.value.some((v) => shapeSig(fromAscii(v.art.join('\n'))) === sig)) {
+  if (
+    myVariants.value.some(
+      (v) => v.id !== editingId.value && shapeSig(fromAscii(v.art.join('\n'))) === sig
+    )
+  ) {
     return 'Bu biçimi zaten çizdin.'
   }
   return ''
@@ -327,28 +346,73 @@ const variantBlocked = computed(() => {
 
 function saveVariant({ art, expect = [] }) {
   const char = s.vletter
-  const n = variants.value.filter((v) => v.char === char).length + 1
-  variants.value = [
-    ...variants.value,
-    {
-      id: `${char}.v${n}-${Date.now().toString(36)}`,
-      char,
-      source: `extra:${char}.el${n}`,
-      note: s.vnote.trim() || 'lab çizim tahtasında elle çizildi',
-      short: s.vshort || undefined,
-      expect: expect.length ? expect : undefined,
-      art
-    }
-  ]
+  const note = s.vnote.trim() || 'lab çizim tahtasında elle çizildi'
+
+  if (editingId.value) {
+    variants.value = variants.value.map((v) =>
+      v.id === editingId.value
+        ? {
+            ...v,
+            note,
+            short: s.vshort || undefined,
+            expect: expect.length ? expect : undefined,
+            art
+          }
+        : v
+    )
+  } else {
+    const n = variants.value.filter((v) => v.char === char).length + 1
+    variants.value = [
+      ...variants.value,
+      {
+        id: `${char}.v${n}-${Date.now().toString(36)}`,
+        char,
+        source: `extra:${char}.el${n}`,
+        note,
+        short: s.vshort || undefined,
+        expect: expect.length ? expect : undefined,
+        art
+      }
+    ]
+  }
+
+  cancelEdit()
+}
+
+/** Kendi biçmimi düzenlemeye al: çizim, işaretler, not ve kısa tiki geri gelir. */
+function editVariant(v) {
+  editingId.value = v.id
+  loadedId.value = null
+  s.vnote = v.note ?? ''
+  s.vshort = Boolean(v.short)
+  glyphBoard.value?.load(v.art, v.expect ?? [])
+  glyphArt.value = v.art.join('\n')
+}
+
+function cancelEdit() {
+  editingId.value = null
   s.vnote = ''
   glyphBoard.value?.clear()
   glyphArt.value = ''
 }
 
-const removeVariant = (id) => { variants.value = variants.value.filter((v) => v.id !== id) }
+/** Yalnız 'kısa biçim' tikini değiştir — tahtaya almaya gerek yok. */
+function toggleVariantShort(v) {
+  variants.value = variants.value.map((x) =>
+    x.id === v.id ? { ...x, short: x.short ? undefined : true } : x
+  )
+}
+
+const removeVariant = (id) => {
+  if (editingId.value === id) cancelEdit()
+  variants.value = variants.value.filter((v) => v.id !== id)
+}
 
 /** Kütüphanedeki ya da çizilmiş bir biçimi tahtaya al — üzerinde oynamak için. */
 function variantToBoard(v) {
+  // Düzenleme kipinden çık: açık kalsaydı kaydet, kütüphane biçmini
+  // kendi kaydımın üstüne yazardı.
+  editingId.value = null
   const cells = v.cells ?? v
   glyphBoard.value?.load(toAscii(cells).split('\n'), v.id ? fillOf(v.id) : [])
   glyphArt.value = toAscii(cells)
@@ -1188,6 +1252,8 @@ function clearAll() {
           >{{ l.ch }}<em>{{ l.lib + l.mine }}</em></button>
         </div>
 
+        <div class="harf-grid">
+        <div class="harf-main">
         <h3 class="sub-head">Kütüphanedeki biçimler — '{{ s.vletter }}'</h3>
         <p class="note">
           Biçme tıklayınca tahtaya gelir. Hatalı olanı <b>çıkar</b> ile
@@ -1306,7 +1372,19 @@ function clearAll() {
           </div>
         </div>
 
-        <h3 class="sub-head">Yeni varyant çiz</h3>
+        </div>
+
+        <aside class="harf-board">
+        <h3 class="sub-head">
+          {{ editingId ? 'Varyantı düzenle' : 'Yeni varyant çiz' }}
+          <button v-if="editingId" class="ghost tiny" @click="cancelEdit">vazgeç</button>
+        </h3>
+        <p v-if="editingId" class="note warn-note">
+          Kayıtlı bir biçmi düzenliyorsun. <b>Kaydet</b> üzerine yazar — kimlik
+          ve kaynak korunur, o biçme atıfta bulunan kararlar kopmaz.
+          <b>komşu doldursun</b> katmanına geçip beklenen hücreleri şimdi
+          işaretleyebilirsin.
+        </p>
         <label class="field">
           <span class="label">not (ne için gerekti · ya da neden hatalı)</span>
           <input v-model="s.vnote" class="mono vnote" placeholder="dem, rde, had için dar göbekli d" />
@@ -1339,11 +1417,33 @@ function clearAll() {
         </p>
 
         <div v-if="myVariants.length" class="varlist mine">
-          <figure v-for="v in myVariants" :key="v.id">
-            <GridArt :cells="fromAscii(v.art.join('\n'))" :band-height="s.bandHeight" :cell="12" />
-            <figcaption class="mono">{{ v.source.split('.').pop() }}</figcaption>
-            <button class="ghost tiny" @click="removeVariant(v.id)">sil</button>
+          <figure v-for="v in myVariants" :key="v.id" :class="{ editing: v.id === editingId }">
+            <GridArt
+              :cells="fromAscii(v.art.join('\n'))"
+              :marks="v.expect ?? []"
+              :band-height="s.bandHeight"
+              :cell="12"
+            />
+            <figcaption class="mono">
+              {{ v.art[0].length }}×{{ v.art.length }}
+              <em v-if="v.short" class="fill">kısa</em>
+              <em v-if="v.expect?.length" class="fill">{{ v.expect.length }}✕</em>
+            </figcaption>
+            <div class="vbtns">
+              <button class="ghost tiny" @click="editVariant(v)">
+                {{ v.id === editingId ? 'düzenleniyor' : 'düzenle' }}
+              </button>
+              <button
+                class="ghost tiny"
+                :class="{ on: v.short }"
+                title="bandı doldurmuyor — üstüne komşunun uzantısı gelecek"
+                @click="toggleVariantShort(v)"
+              >kısa</button>
+              <button class="ghost tiny" @click="removeVariant(v.id)">sil</button>
+            </div>
           </figure>
+        </div>
+        </aside>
         </div>
       </section>
 
@@ -2045,6 +2145,57 @@ figcaption em {
 .needlist .unlocks {
   margin-left: auto;
   color: var(--ink-mute);
+}
+
+/* Düzenlenen biçim: dolgu değil kontur farkıyla belli olsun. */
+.varlist figure.editing {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.vbtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* Harf paneli iki kolon: solda gezinilen listeler, sağda tahta. Tahta
+   altta kalınca seçilen harfi görmek için her seferinde kaydırmak
+   gerekiyordu; yapışkan olduğu için artık hangi listeye bakarsan bak
+   yanında duruyor. */
+.harf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: calc(var(--u) * 4);
+  align-items: start;
+}
+
+.harf-board {
+  position: sticky;
+  top: calc(var(--u) * 8);
+  padding-left: calc(var(--u) * 3);
+  border-left: 1px solid var(--rule-hair);
+  max-height: calc(100dvh - var(--u) * 10);
+  overflow-y: auto;
+}
+
+.harf-board .sub-head:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 1100px) {
+  .harf-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .harf-board {
+    position: static;
+    max-height: none;
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-top: calc(var(--u) * 2);
+  }
 }
 
 /* Varyant şeridi: biçimler yan yana, altında ölçüsü. Tıklanabilir olanı
