@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { tokenize, lineWidth, naturalWidth, WORD_GAP, LETTER_GAP } from './layout.js'
+import { tokenize, lineWidth, naturalWidth, spaceFlags, WORD_GAP, LETTER_GAP } from './layout.js'
 import { reachableWidths, commonWidths, solveLine, justify, compose, pairVoid } from './justify.js'
 import { widthOptions } from './derive.js'
 import { variantsOf, defaultVariant } from './glyphs.js'
@@ -133,12 +133,20 @@ describe('justify', () => {
   })
 
   it('boşlukları asla esnetmez', () => {
-    // Satırın genişliği, harf genişlikleri + SABİT boşluklardan ibaret.
-    // Hedefe ulaşıp ulaşmaması ayrı mesele; boşluk hiçbir durumda esnemez.
+    // Kelime arası HER ZAMAN sabit. Eskiden bu, satır genişliğinin
+    // "harf genişlikleri + sabit boşluklar" toplamına eşitliğiyle
+    // sınanıyordu; kenetlenme ve kaynaşma ilerlemeyi kısaltabildiği için
+    // o eşitlik artık harf aralarında geçerli değil. Sınanan şey asıl
+    // kuralın kendisi: boşluktan sonraki harf tam WORD_GAP ötede başlar.
     const r = justify('al cd\nlale bana')
     expect(r.ok).toBe(true)
     for (const line of r.lines) {
-      expect(lineWidth(line.tokens, line.items.map((i) => i.variant.w))).toBe(line.width)
+      const after = spaceFlags(line.tokens)
+      for (let i = 1; i < line.items.length; i++) {
+        if (!after[i]) continue
+        const left = line.items[i - 1]
+        expect(line.items[i].x - left.x).toBe(left.variant.w + WORD_GAP)
+      }
     }
   })
 })
@@ -152,9 +160,14 @@ describe('pins — elle sabitlenen harf genişlikleri', () => {
   })
 
   it('sabitleme ulaşılabilir genişlikleri daraltır', () => {
+    // Sabitleme seçenek EKLEYEMEZ, yalnız eleyebilir. Eskiden kesin
+    // daralma bekleniyordu; kütüphaneye biçim eklendikçe aynı genişliklere
+    // başka yollardan da ulaşılabildiği için daralma her girdide olmuyor.
+    // Değişmez olan kapsama ilişkisi.
     const wide = justify('lale\nbana')
     const pinned = justify('lale\nbana', { pinsByLine: { 0: { 0: 6 } } })
-    expect(pinned.candidates.length).toBeLessThan(wide.candidates.length)
+    expect(pinned.candidates.length).toBeLessThanOrEqual(wide.candidates.length)
+    for (const w of pinned.candidates) expect(wide.candidates).toContain(w)
   })
 
   it('sabitleme sonrası kalan harfler hedefi tutturur', () => {

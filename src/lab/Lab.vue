@@ -20,6 +20,7 @@ import { alignLine, conflicts, isKnownForm } from '../engine/align.js'
 import reference from '../data/reference.json'
 import triage from '../data/pair-triage.json'
 import shortNeeds from '../data/short-needs.json'
+import shortCandidates from '../data/short-candidates.json'
 
 const STORE = 'makili.pair-decisions.v1'
 const STORE_LABELS = 'makili.block-labels.v1'
@@ -27,6 +28,7 @@ const STORE_DRAWN = 'makili.drawn-blocks.v1'
 const STORE_VARIANTS = 'makili.glyph-variants.v1'
 const STORE_REJECTS = 'makili.glyph-rejects.v1'
 const STORE_FILLS = 'makili.glyph-fills.v1'
+const STORE_SHORTOUT = 'makili.short-dropped.v1'
 
 // Sekmeler: lab tek bir uzun şeritti, sekiz bölüm üst üste. Çift kararı
 // verirken çizim tahtası, çizerken kuyruk göz önünde duruyordu. Her iş
@@ -385,6 +387,62 @@ watch(rejects, (v) => {
 }, { deep: true })
 
 const isRejected = (id) => rejects.value.some((r) => r.id === id)
+
+// ---- önerilen kısa biçimler ---------------------------------------------
+//
+// make-short.mjs üretir: tam boy biçimden yinelenen komşu satırlar silinerek
+// (heighten'ın tersi). Öneriler DOĞRUDAN kütüphaneye girmiyor — 261 biçmi
+// birden eklemek dizgiyi bozuyor. Burada elenir, kalanlar eklenir.
+//
+// Eleme mantığı 'çıkar' ile aynı: hepsi baştan kabul, atılacak olan
+// işaretlenir. Kimlik yok (kütüphanede değiller), imza anahtar.
+
+const shortSig = (a) => `${a.char}|${a.art.join('/')}`
+
+function loadDropped() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_SHORTOUT) ?? '[]')
+  } catch {
+    return []
+  }
+}
+
+const dropped = ref(loadDropped())
+watch(dropped, (v) => {
+  try { localStorage.setItem(STORE_SHORTOUT, JSON.stringify(v)) } catch { /* yok say */ }
+}, { deep: true })
+
+const isDropped = (a) => dropped.value.includes(shortSig(a))
+
+function toggleDrop(a) {
+  const k = shortSig(a)
+  dropped.value = isDropped(a) ? dropped.value.filter((x) => x !== k) : [...dropped.value, k]
+}
+
+/** Bu harfin önerileri — boyu uzundan kısaya. */
+const shortFor = computed(() =>
+  (shortCandidates.ascii ?? []).filter((a) => a.char === s.vletter)
+)
+
+const shortStats = computed(() => {
+  const all = shortCandidates.ascii ?? []
+  return { total: all.length, out: dropped.value.length, keep: all.length - dropped.value.length }
+})
+
+/** Elenenler çıkarılmış hâliyle, glyphs.extra.json'a eklenecek biçimde. */
+function buildShort() {
+  const keep = (shortCandidates.ascii ?? []).filter((a) => !isDropped(a))
+  return JSON.stringify(
+    {
+      _note:
+        'Lab\'de elenmiş kısa biçimler. tools/glyphs.extra.json içindeki ' +
+        '"ascii" dizisine eklenir, sonra npm run glyphs:build.',
+      ascii: keep
+    },
+    null,
+    2
+  )
+}
 
 function toggleReject(v) {
   if (isRejected(v.id)) {
@@ -1085,7 +1143,8 @@ function clearAll() {
         <h2 class="section-head">
           <span>Harf varyantları</span>
           <span class="dim mono">
-            {{ libVariants.length }} kütüphanede · {{ myVariants.length }} yeni
+            {{ libVariants.length }} kütüphanede · {{ myVariants.length }} yeni ·
+            {{ shortStats.keep }}/{{ shortStats.total }} kısa öneri
           </span>
           <span class="headtools">
             <ExportPop
@@ -1102,6 +1161,11 @@ function clearAll() {
               label="dolgular"
               file="tools/glyph-fills.json"
               :build="buildFills"
+            />
+            <ExportPop
+              label="kısa biçimler"
+              file="tools/glyphs.extra.json"
+              :build="buildShort"
             />
           </span>
         </h2>
@@ -1213,6 +1277,33 @@ function clearAll() {
               <span class="unlocks">çözer: {{ n.unlocks.join(' ') }}</span>
             </li>
           </ul>
+        </div>
+
+        <div v-if="shortFor.length" class="shortsug">
+          <h3 class="sub-head">
+            Önerilen kısa biçimler — '{{ s.vletter }}'
+            <span class="dim mono">{{ shortFor.length }} öneri</span>
+          </h3>
+          <p class="note">
+            Tam boy biçimden <b>yinelenen komşu satırlar silinerek</b> üretildi —
+            satır çoğaltmanın tersi. Tersi olduğu için harfin kimliği bozulmuyor:
+            geri uzatılınca kütüphanedeki bilinen biçme dönüyor. Senin elle
+            çizdiğin 14 kısa biçimin 13'ü bu kuraldan çıkıyor.
+            <br />
+            Hepsi baştan kabul; <b>atılacakları</b> işaretle. Kalanları
+            <b>kısa biçimler</b> düğmesiyle dışa aktar.
+          </p>
+          <div class="varlist">
+            <figure v-for="(a, i) in shortFor" :key="i" :class="{ out: isDropped(a) }">
+              <GridArt :cells="fromAscii(a.art.join('\n'))" :band-height="s.bandHeight" :cell="12" />
+              <figcaption class="mono">
+                {{ a.art[0].length }}×{{ a.art.length }}
+              </figcaption>
+              <button class="ghost tiny" :class="{ on: isDropped(a) }" @click="toggleDrop(a)">
+                {{ isDropped(a) ? 'geri al' : 'at' }}
+              </button>
+            </figure>
+          </div>
         </div>
 
         <h3 class="sub-head">Yeni varyant çiz</h3>

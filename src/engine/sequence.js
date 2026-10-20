@@ -254,14 +254,25 @@ export function layoutWord(word, options = {}) {
  * Yalnız bir daha kapanamayacak olanlar (üste/alta açık, sola açık) ve
  * genişlik sayılır.
  */
+// Bandın üstünde kalan boşluk da delik: blok bandı baştan sona doldurmalı.
+// Ölçüye giriyordu ama maliyete hiç girmiyordu — kısa biçim bandın altına
+// yaslanınca bedava görünüyor, tek harflik kelime 9 yerine 7 satır
+// yüksekliğinde çıkıyordu.
 function partialCost(state, o) {
   const s = scoreBlock(state.cells, o.bandHeight)
-  return s.openVertical * 4 + s.openLeft * 3 + s.worstOpen + state.right
+  return s.topGap * 4 + s.openVertical * 4 + s.openLeft * 3 + s.worstOpen + state.right
 }
 
 /** Dizi bittiğinde: artık sağa açık boşluk da doldurulamaz, tam ceza. */
 function finalCost(state, s) {
-  return s.openVertical * 4 + s.openLeft * 3 + s.openRight * 3 + s.worstOpen * 2 + state.right
+  return (
+    s.topGap * 4 +
+    s.openVertical * 4 +
+    s.openLeft * 3 +
+    s.openRight * 3 +
+    s.worstOpen * 2 +
+    state.right
+  )
 }
 
 function prune(states, o) {
