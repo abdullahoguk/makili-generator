@@ -31,6 +31,15 @@ const cornerOptions = [
   { value: 'fillet', label: 'yuvarlak' },
   { value: 'chamfer', label: 'pah' }
 ]
+// Bant boyları. 9 tasarımın aslı; alçak bantlar harfin kısa biçimlerini
+// ister, kütüphanede olmayan harf olursa motor adıyla bildiriyor.
+const bandOptions = [
+  { value: 9, label: '9' },
+  { value: 8, label: '8' },
+  { value: 7, label: '7' },
+  { value: 6, label: '6' },
+  { value: 5, label: '5' }
+]
 const alignOptions = [
   { value: 'left', label: 'sol' },
   { value: 'center', label: 'orta' },
@@ -123,6 +132,21 @@ const onPng = (scale) => exportPng(props.svg, `${stem.value}@${scale}x.png`, sca
 
     <FieldRow v-if="state.paint !== 'skeleton'" label="ağırlık" :value="state.weight.toFixed(2)">
       <input v-model.number="state.weight" class="slider" type="range" min="1" max="2" step="0.05" />
+    </FieldRow>
+
+    <FieldRow label="satır yüksekliği" :value="state.bandHeight + ' birim'">
+      <SegmentedControl v-model.number="state.bandHeight" :options="bandOptions" />
+      <p class="hint">
+        Harfler bu yüksekliği baştan sona doldurur. Alçak bant daha az biçim
+        tanıyor.
+      </p>
+      <!-- Çözülemeyen bant sessiz kalmamalı: tuval boşalıyor ve sebebi
+           görünmüyordu. Eksik harfler burada, denetimin yanında yazıyor. -->
+      <p v-if="composed.missingAtBand?.length" class="warn">
+        <b>{{ state.bandHeight }} birimlik bantta biçimi olmayan harf:</b>
+        <span class="mono">{{ composed.missingAtBand.join(' ') }}</span>
+        — bu harflerin kısa biçimleri çizilmeden bu yükseklik kullanılamaz.
+      </p>
     </FieldRow>
 
     <FieldRow label="hizalama" :value="composed.ok ? composed.target : '—'">
@@ -307,6 +331,11 @@ const onPng = (scale) => exportPng(props.svg, `${stem.value}@${scale}x.png`, sca
   color: var(--paper);
 }
 
+.hint {
+  margin: calc(var(--u) * 0.5) 0 0;
+  font-size: var(--t-label);
+  color: var(--ink-mute);
+}
 .warn {
   width: 100%;
   margin: var(--u) 0 0;

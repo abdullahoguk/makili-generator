@@ -25,7 +25,7 @@ import {
 } from './layout.js'
 import { joinsFor, rowsFor } from './decisions.js'
 import { thickenStack, weightToAmount } from './render/weight.js'
-import { scoreBlock, intrinsicVoid, nestPlacements, BAND_HEIGHT } from './fit.js'
+import { scoreBlock, intrinsicVoid, nestPlacements, bandVariants, BAND_HEIGHT } from './fit.js'
 import { bbox } from './grid.js'
 
 export const DEFAULTS = {
@@ -179,13 +179,18 @@ const cache = new Map()
 
 /** Harfin genişlik -> glif eşlemesi. Türetme pahalı, önbelleklenir. */
 function widthsFor(char, opts) {
-  const k = `${char}|${opts.maxGlyphWidth}|${opts.maxWiden}|${opts.tallOnly}`
+  const band = opts.bandHeight ?? BAND_HEIGHT
+  const k = `${char}|${opts.maxGlyphWidth}|${opts.maxWiden}|${opts.tallOnly}|${band}`
   const hit = cache.get(k)
   if (hit) return hit
 
-  const all = variantsOf(char) ?? []
-  const def = defaultVariant(char)
-  const pool = opts.tallOnly ? all.filter((v) => v.h === def.h) : all
+  // Havuz BANDA göre kurulur: bandı dolduran biçimler. Eskiden yazılı
+  // biçimler varsayılanın boyuna göre süzülüyordu, yani havuz 9'a
+  // çakılıydı; 8'lik bantta hiçbir biçim bandı doldurmuyordu. Yükseklik
+  // türetmesi de böylece havuza giriyor — kısa iskeletten o banda çıkan
+  // biçimler kullanılabiliyor.
+  const all = bandVariants(char, band)
+  const pool = opts.tallOnly ? all.filter((v) => bbox(v.cells).h === band) : all
   let map = widthOptions(pool.length ? pool : all, opts.maxGlyphWidth)
 
   // Harfin en dar biçimi bile sınırdan genişse eleme her şeyi siler ve
@@ -251,17 +256,20 @@ const joinCache = new Map()
 
 function advanceOptions(leftChar, rightChar, left, right, afterSpace, band = BAND_HEIGHT) {
   const fallback = left.w + (afterSpace ? WORD_GAP : LETTER_GAP)
-  const k = `${leftChar}${rightChar}|${left.id}|${right.id}|${afterSpace ? 'w' : 'l'}`
+  const k = `${leftChar}${rightChar}|${left.id}|${right.id}|${afterSpace ? 'w' : 'l'}|${band}`
   const hit = joinCache.get(k)
   if (hit) return hit
 
   // Varsayılan yerleşimden farkı olmayan onaylı satırlar eklenmez: aynı şeyi
   // iki kez denemek hem boşuna hem de 'kenetli birleşim' sayımını şişirir.
-  const natLeft = BAND_HEIGHT - left.h
-  const natRight = BAND_HEIGHT - right.h
+  // Bant boyu artık değişken: buradaki ölçüler de o banda göre. Eskiden
+  // BAND_HEIGHT sabiti kullanılıyordu, yani 9 dışındaki bantta doğal
+  // hizalar ve boşluk yasağı yanlış hesaplanıyordu.
+  const natLeft = band - left.h
+  const natRight = band - right.h
   // Bir glifin üstünde/altında tam bir satır boşluk kalamaz — oraya kimse
   // giremez. Dizgi place() çağırmadığı için kural burada da sınanıyor.
-  const badGap = (top, h) => top === 1 || BAND_HEIGHT - (top + h) === 1
+  const badGap = (top, h) => top === 1 || band - (top + h) === 1
 
   const out = badGap(natLeft, left.h) || badGap(natRight, right.h)
     ? []
@@ -302,10 +310,14 @@ function advanceOptions(leftChar, rightChar, left, right, afterSpace, band = BAN
  *
  * @returns {Array<Map<number, object[]>>} konum -> genişlik -> biçimler
  */
-function injectionsFor(chars) {
+function injectionsFor(chars, band = BAND_HEIGHT) {
   const out = chars.map(() => new Map())
   const add = (i, g) => {
     if (!g) return
+    // Enjeksiyon bant süzgecini atlıyordu: 7'lik bantta kararlardan gelen
+    // 9 satırlık biçimler havuza giriyor ve çıktı sessizce 9 satır
+    // oluyordu. Banda sığmayan biçim hiçbir koşulda kullanılamaz.
+    if (bbox(g.cells).h > band) return
     const list = out[i].get(g.w) ?? []
     if (!list.some((x) => x.id === g.id)) list.push(g)
     out[i].set(g.w, list)
@@ -322,7 +334,7 @@ function injectionsFor(chars) {
     // dokuyu bozuyor (deliği 255'ten 468'e çıkarıyor): tek başına duran kısa
     // harf altında kapanmayan boşluk bırakıyor. O yüzden yalnız TEMİZ bir
     // kenetlenmeye katılan biçim, yalnız o konumda açılıyor.
-    for (const [ids] of nestJoins(chars[i - 1].char, chars[i].char, BAND_HEIGHT)) {
+    for (const [ids] of nestJoins(chars[i - 1].char, chars[i].char, band)) {
       const [leftId, rightId] = ids.split('|')
       add(i - 1, resolveId(leftId))
       add(i, resolveId(rightId))
@@ -389,7 +401,8 @@ export function reachableWidths(tokens, options = {}) {
   const chars = glyphsOf(tokens)
   if (!chars.length) return new Set([0])
   const space = spaceFlags(tokens)
-  opts.injected = opts.injected ?? injectionsFor(chars)
+  const band = opts.bandHeight ?? BAND_HEIGHT
+  opts.injected = opts.injected ?? injectionsFor(chars, band)
 
   // Durum: (glifin sol kenarı, seçilen biçim). Kenetlenme ilerlemeyi
   // değiştirdiği için genişlik artık yalnız genişliklerin toplamı değil.
@@ -404,7 +417,7 @@ export function reachableWidths(tokens, options = {}) {
     for (const st of states.values()) {
       for (const [, list] of map) {
         for (const g of list) {
-          for (const j of advanceOptions(chars[i - 1].char, chars[i].char, st.g, g, space[i], 9)) {
+          for (const j of advanceOptions(chars[i - 1].char, chars[i].char, st.g, g, space[i], band)) {
             const x = st.x + j.advance
             const k = `${x}|${g.id}`
             if (!next.has(k)) next.set(k, { x, g })
@@ -447,7 +460,7 @@ export function bestWidthUpTo(tokens, target, options = {}) {
 export function solveLine(tokens, target, options = {}) {
   const opts = { ...DEFAULTS, ...options }
   const chars = glyphsOf(tokens)
-  opts.injected = opts.injected ?? injectionsFor(chars)
+  opts.injected = opts.injected ?? injectionsFor(chars, opts.bandHeight ?? BAND_HEIGHT)
   if (!chars.length) return target === 0 ? Object.assign([], { joins: [] }) : null
 
   const maps = chars.map((t, i) => optionsFor(t.char, i, opts))
@@ -587,13 +600,39 @@ export function justify(text, options = {}) {
     return { ok: false, target: 0, lines: [], candidates: [], warnings: ['metin boş'] }
   }
 
+  // Bant boyu değişken olduğundan, o banda biçimi olmayan harfler olabilir.
+  // Bunu SESSİZCE geçmek en kötüsü: çözücü bir şey bulamayınca varsayılan
+  // biçime düşüyor, o da 9 satırlık; 7'lik bant isteyip 9 satırlık çıktı
+  // alıyordun. Eksikler baştan, adlarıyla bildiriliyor.
+  {
+    const band = opts.bandHeight ?? BAND_HEIGHT
+    const need = new Set()
+    for (const t of content.flatMap(glyphsOf)) {
+      if (!bandVariants(t.char, band).some((v) => bbox(v.cells).h === band)) need.add(t.char)
+    }
+    if (need.size) {
+      return {
+        ok: false,
+        target: 0,
+        lines: [],
+        candidates: [],
+        warnings: [
+          `${band} birimlik bandı dolduran biçimi olmayan harf: ${[...need].join(' ')}`
+        ],
+        missingAtBand: [...need]
+      }
+    }
+  }
+
   // Hizalama kapalı: her satır doğal genişliğinde, sabitlenenler hariç.
   if (opts.justify === false) {
     const lines = content.map((tokens, li) => {
       const pins = opts.pinsByLine?.[li]
       const line = naturalLine(tokens, { ...opts, pins })
       if (line) return { ...line, tokens }
-      // Çözücü bir şey bulamazsa eski davranış: varsayılan biçimler.
+      // Çözücü bir şey bulamazsa son çare varsayılan biçimler. Bant
+      // denetimi yukarıda yapıldığı için buraya ancak başka bir sebeple
+      // düşülür; yine de bant dışı bir şey üretmesin.
       const chosen = glyphsOf(tokens).map((t) => defaultVariant(t.char))
       return { ...layoutLine(tokens, chosen, []), tokens }
     })

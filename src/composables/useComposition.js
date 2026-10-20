@@ -30,6 +30,9 @@ export function useComposition() {
     align: 'left',
     lineGap: 1,
 
+    // bant (satır) yüksekliği — harfin boyu buna göre
+    bandHeight: 9,
+
     // hizalama
     justifyOn: true,
     target: null, // null = motor seçsin
@@ -42,6 +45,7 @@ export function useComposition() {
 
   const composed = computed(() =>
     compose(state.text, {
+      bandHeight: state.bandHeight,
       justify: state.justifyOn,
       target: state.target ?? undefined,
       pinsByLine: state.pinsByLine,

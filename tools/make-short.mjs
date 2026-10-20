@@ -36,20 +36,23 @@ const argv = process.argv.slice(2)
 const emit = argv.includes('--emit')
 const write = argv.includes('--write')
 const minI = argv.indexOf('--min')
-const MIN_H = minI >= 0 ? Number(argv[minI + 1]) : 6
+const MIN_H = minI >= 0 ? Number(argv[minI + 1]) : 5
 const want = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--min')
 
-const BAND = 9
+// Desteklenen bant boyları. Bir biçim İKİ ayrı işe yarayabilir:
+//   bant === boy  ->  o bandın TAM BOY biçimi
+//   bant >  boy   ->  daha yüksek bantta DOLGU (l'nin göbeği gibi)
+const BANDS = [5, 6, 7, 8, 9]
 
 /**
- * Bu boy bantta YASAL olarak durabiliyor mu?
+ * Bu boy, bu bantta yasal olarak nerelere oturabilir?
  *
- * Bir glifin üstünde ya da altında tam 1 satır boşluk kalamaz — oraya
- * kimse giremez (fit.js'teki aynı kural). 9'luk bantta 8 birimlik biçimin
- * iki olası duruşu da bu yüzden yasak: üste yaslanırsa altta, 1 aşağı
- * inerse üstte tek satır kalıyor. Yani band-1 boyundaki her biçim
- * kullanılamaz — 'l'nin göbeğine konunca harfler birbirine yapışır.
- * Üretmek de boşuna.
+ * Glifin üstünde ya da altında tam 1 satır boşluk kalamaz — oraya kimse
+ * giremez (fit.js'teki aynı kural). Bu yüzden 8 birimlik biçim 9'luk
+ * bantta hiçbir yere oturamaz: üste yaslanırsa altta, bir aşağı inerse
+ * üstte tek satır kalıyor. Ama bant 8 seçilirse aynı biçim o bandın tam
+ * boy biçimidir. Yani boy tek başına iyi ya da kötü değil — hangi bantta
+ * kullanıldığına bağlı.
  */
 function placeableTops(h, band) {
   const out = []
@@ -58,6 +61,14 @@ function placeableTops(h, band) {
     out.push(top)
   }
   return out
+}
+
+/** Bu boyun hangi bantta tam boy, hangilerinde dolgu olduğu. */
+function usage(h) {
+  return {
+    fullBandAt: BANDS.includes(h) ? h : null,
+    fillsIn: BANDS.filter((b) => b > h && placeableTops(h, b).length)
+  }
 }
 
 const art = (cells) => toAscii(cells).split('\n')
@@ -123,7 +134,9 @@ for (const ch of letters) {
       if (!cells.length) continue
       const b = bbox(cells)
       if (b.h < MIN_H) continue
-      if (!placeableTops(b.h, BAND).length) continue
+      // Hiçbir bantta ne tam boy ne dolgu olabiliyorsa gerçekten çöp.
+      const use = usage(b.h)
+      if (!use.fullBandAt && !use.fillsIn.length) continue
       // Tek harfin kendi kuralları: köşeden birleşme olmasın, parçalanmasın.
       if (cornerTouches(cells).length) continue
       if (scoreBlock(cells, b.h).parts !== 1) continue
@@ -163,7 +176,8 @@ const records = Object.entries(made).flatMap(([ch, list]) =>
     source: `short:${g.from}`,
     note: `kısa biçim — ${g.from} biçiminden ${g.h} satıra inildi (make-short.mjs)`,
     short: true,
-    tops: placeableTops(g.h, BAND),
+    fullBandAt: usage(g.h).fullBandAt,
+    fillsIn: usage(g.h).fillsIn,
     art: g.art
   }))
 )

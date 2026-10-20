@@ -1356,11 +1356,13 @@ function clearAll() {
             geri uzatılınca kütüphanedeki bilinen biçme dönüyor. Senin elle
             çizdiğin 14 kısa biçimin 13'ü bu kuraldan çıkıyor.
             <br />
-            <b>8 birimlik biçim üretilmiyor:</b> 9'luk bantta iki olası duruşu da
-            üstte ya da altta tam 1 satır boşluk bırakıyor, oraya kimse giremez —
-            <span class="mono">l</span>'nin göbeğine konunca harfler yapışır.
-            <span class="mono">↕</span> işareti biçmin hangi yükseklikte
-            durabildiğini söylüyor.
+            Her biçim <b>iki ayrı işe</b> yarar: <b>bant N</b> etiketi o bant
+            seçilince tam boy biçim olduğunu, <b>dolgu</b> etiketi hangi daha
+            yüksek bantlarda <span class="mono">l</span> ya da
+            <span class="mono">t</span>'nin göbeğine sığdığını söyler.
+            8 birimlik biçimin 9'luk bantta dolgu etiketi yoktur — iki olası
+            duruşu da üstte ya da altta tam 1 satır boşluk bırakır, harfler
+            yapışır; ama bant 8 seçilince o bandın tam boy biçimidir.
             <br />
             Hepsi baştan kabul; <b>atılacakları</b> işaretle. Kalanları
             <b>kısa biçimler</b> düğmesiyle dışa aktar.
@@ -1370,8 +1372,11 @@ function clearAll() {
               <GridArt :cells="fromAscii(a.art.join('\n'))" :band-height="s.bandHeight" :cell="12" />
               <figcaption class="mono">
                 {{ a.art[0].length }}×{{ a.art.length }}
-                <em v-if="a.tops" :title="`yasal duruş: üstten ${a.tops.join(', ')}`">
-                  ↕{{ a.tops.join(',') }}
+                <em v-if="a.fullBandAt" :title="`bant ${a.fullBandAt} seçilince tam boy biçim`">
+                  bant {{ a.fullBandAt }}
+                </em>
+                <em v-if="a.fillsIn?.length" class="fill" :title="`şu bantlarda dolgu: ${a.fillsIn.join(', ')}`">
+                  dolgu {{ a.fillsIn.join(',') }}
                 </em>
               </figcaption>
               <button class="ghost tiny" :class="{ on: isDropped(a) }" @click="toggleDrop(a)">
