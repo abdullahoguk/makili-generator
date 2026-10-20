@@ -1356,6 +1356,12 @@ function clearAll() {
             geri uzatılınca kütüphanedeki bilinen biçme dönüyor. Senin elle
             çizdiğin 14 kısa biçimin 13'ü bu kuraldan çıkıyor.
             <br />
+            <b>8 birimlik biçim üretilmiyor:</b> 9'luk bantta iki olası duruşu da
+            üstte ya da altta tam 1 satır boşluk bırakıyor, oraya kimse giremez —
+            <span class="mono">l</span>'nin göbeğine konunca harfler yapışır.
+            <span class="mono">↕</span> işareti biçmin hangi yükseklikte
+            durabildiğini söylüyor.
+            <br />
             Hepsi baştan kabul; <b>atılacakları</b> işaretle. Kalanları
             <b>kısa biçimler</b> düğmesiyle dışa aktar.
           </p>
@@ -1364,6 +1370,9 @@ function clearAll() {
               <GridArt :cells="fromAscii(a.art.join('\n'))" :band-height="s.bandHeight" :cell="12" />
               <figcaption class="mono">
                 {{ a.art[0].length }}×{{ a.art.length }}
+                <em v-if="a.tops" :title="`yasal duruş: üstten ${a.tops.join(', ')}`">
+                  ↕{{ a.tops.join(',') }}
+                </em>
               </figcaption>
               <button class="ghost tiny" :class="{ on: isDropped(a) }" @click="toggleDrop(a)">
                 {{ isDropped(a) ? 'geri al' : 'at' }}

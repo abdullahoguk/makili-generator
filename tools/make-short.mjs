@@ -39,6 +39,27 @@ const minI = argv.indexOf('--min')
 const MIN_H = minI >= 0 ? Number(argv[minI + 1]) : 6
 const want = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--min')
 
+const BAND = 9
+
+/**
+ * Bu boy bantta YASAL olarak durabiliyor mu?
+ *
+ * Bir glifin üstünde ya da altında tam 1 satır boşluk kalamaz — oraya
+ * kimse giremez (fit.js'teki aynı kural). 9'luk bantta 8 birimlik biçimin
+ * iki olası duruşu da bu yüzden yasak: üste yaslanırsa altta, 1 aşağı
+ * inerse üstte tek satır kalıyor. Yani band-1 boyundaki her biçim
+ * kullanılamaz — 'l'nin göbeğine konunca harfler birbirine yapışır.
+ * Üretmek de boşuna.
+ */
+function placeableTops(h, band) {
+  const out = []
+  for (let top = 0; top + h <= band; top++) {
+    if (top === 1 || band - (top + h) === 1) continue
+    out.push(top)
+  }
+  return out
+}
+
 const art = (cells) => toAscii(cells).split('\n')
 
 /** Komşusuyla aynı olan her satırı tek tek silerek bir basamak iner. */
@@ -102,6 +123,7 @@ for (const ch of letters) {
       if (!cells.length) continue
       const b = bbox(cells)
       if (b.h < MIN_H) continue
+      if (!placeableTops(b.h, BAND).length) continue
       // Tek harfin kendi kuralları: köşeden birleşme olmasın, parçalanmasın.
       if (cornerTouches(cells).length) continue
       if (scoreBlock(cells, b.h).parts !== 1) continue
@@ -141,6 +163,7 @@ const records = Object.entries(made).flatMap(([ch, list]) =>
     source: `short:${g.from}`,
     note: `kısa biçim — ${g.from} biçiminden ${g.h} satıra inildi (make-short.mjs)`,
     short: true,
+    tops: placeableTops(g.h, BAND),
     art: g.art
   }))
 )

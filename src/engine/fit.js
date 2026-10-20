@@ -475,6 +475,15 @@ export function place(leftCells, rightCells, advance, opts = {}) {
  */
 const bandCache = new Map()
 
+/** Bu boy bantta yasal olarak durabiliyor mu? (1 satırlık boşluk yasağı) */
+export function placeableHeight(h, bandHeight = BAND_HEIGHT) {
+  for (let top = 0; top + h <= bandHeight; top++) {
+    if (top === 1 || bandHeight - (top + h) === 1) continue
+    return true
+  }
+  return false
+}
+
 export function bandVariants(char, bandHeight = BAND_HEIGHT) {
   const k = `${char}|${bandHeight}`
   const hit = bandCache.get(k)
@@ -486,6 +495,13 @@ export function bandVariants(char, bandHeight = BAND_HEIGHT) {
     const base = bbox(v.cells).h
     if (base > bandHeight) continue
     for (const [, g] of heightLadder(v, bandHeight)) {
+      // Bantta hiç yasal duruşu olmayan boylar havuza girmesin. Glifin
+      // üstünde ya da altında tam 1 satır boşluk kalamaz; 9'luk bantta
+      // 8 birimlik biçimin iki duruşu da bu yüzden yasak (üste yaslanırsa
+      // altta, bir aşağı inerse üstte tek satır kalıyor). Böyle biçimler
+      // yalnız place()'in reddettiği dallar üretiyordu — 230 bant
+      // varyantının 34'ü.
+      if (!placeableHeight(bbox(g.cells).h, bandHeight)) continue
       const sig = g.cells.map(([x, y]) => `${x},${y}`).sort().join('|')
       if (seen.has(sig)) continue
       seen.add(sig)
