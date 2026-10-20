@@ -118,14 +118,19 @@ export function flankVoid(glyph, side, bandHeight = BAND_HEIGHT) {
 /** Tek glifin, iki yanı duvarla kapatılmış hâlde bıraktığı delik. */
 const sealedCache = new Map()
 
-function sealedVoid(g, bandHeight, top) {
-  const k = `${g.id}|${bandHeight}|${top}`
+function sealedVoid(g) {
+  const k = g.id
   const hit = sealedCache.get(k)
   if (hit !== undefined) return hit
+  // Ölçü glifin KENDİ kutusuyla sınırlı. Bant yüksekliğine göre ölçülünce
+  // harfin altında/üstünde kalan boş satırlar da "kendi deliği" sayılıyor
+  // ve pairVoid'den düşülüyordu: 'ra'nın altındaki 2x4 boşluk böyle sıfıra
+  // iniyordu. Oysa o boşluk harfin özelliği değil, yerleşimin sonucu —
+  // komşusu doldurmazsa dokuda delik kalır.
   const b = bbox(g.cells)
-  const cells = g.cells.map(([x, y]) => [x - b.x + 1, y - b.y + top])
-  for (let y = 0; y < bandHeight; y++) cells.push([0, y], [b.w + 1, y])
-  const n = scoreBlock(cells, bandHeight).wideVoid
+  const cells = g.cells.map(([x, y]) => [x - b.x + 1, y - b.y])
+  for (let y = 0; y < b.h; y++) cells.push([0, y], [b.w + 1, y])
+  const n = scoreBlock(cells, b.h).wideVoid
   sealedCache.set(k, n)
   return n
 }
@@ -154,9 +159,18 @@ export function pairVoid(left, right, bandHeight = BAND_HEIGHT, join = null) {
   const walls = []
   for (let y = 0; y < bandHeight; y++) walls.push([0, y], [wallR, y])
   const s = scoreBlock([...walls, ...L, ...R], bandHeight)
-  const li = sealedVoid(left, bandHeight, lTop)
-  const ri = sealedVoid(right, bandHeight, rTop)
-  const out = Math.max(0, s.wideVoid - li - ri)
+
+  // Delik SÜTUN ŞERİDİNE göre bölüştürülür: bu çift yalnız sol glifin
+  // başladığı yerden sağ glifin başladığı yere kadarki sütunlardan
+  // sorumlu. Bütün çerçeveyi saymak, her glifi iki kez (solundaki ve
+  // sağındaki çiftte) cezalandırıyor ve satır toplamıyla bağı kopuyordu.
+  // Sağ glifin kendi şeridini bir sonraki çift sayar; satırın sonunu
+  // flankVoid kapatır.
+  let out = 0
+  for (const k of s.voidCells) {
+    const x = Number(k.slice(0, k.indexOf(',')))
+    if (x >= 1 && x < 1 + advance) out++
+  }
   voidCache.set(k, out)
   return out
 }
@@ -692,10 +706,17 @@ function stuckChars(tokens, opts) {
 /** Satırın gerçek deliği — yerleşmiş hücreler üzerinden. */
 function lineVoid(line, band) {
   const cells = []
+  let right = 0
   for (const it of line.items) {
     const b = bbox(it.variant.cells)
-    for (const [x, y] of it.variant.cells) cells.push([x - b.x + it.x, y - b.y + it.y])
+    for (const [x, y] of it.variant.cells) cells.push([x - b.x + it.x + 1, y - b.y + it.y])
+    right = Math.max(right, it.x + b.w)
   }
+  // Satırın İKİ UCU duvarla kapatılır. scoreBlock yana ulaşan boşluğu
+  // "komşu doldurur" diye bedava geçiyor; satırın ucunda komşu yok, orası
+  // bitmiş blokun dış hattında bir çentik olarak kalıyor. Kapatmadan
+  // ölçülünce 'ra' gibi altı boş biçimler satır başında bedava görünüyordu.
+  for (let y = 0; y < band; y++) cells.push([0, y], [right + 1, y])
   return scoreBlock(cells, band).wideVoid
 }
 

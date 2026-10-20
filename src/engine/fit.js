@@ -202,9 +202,18 @@ export function scoreBlock(cells, bandHeight = BAND_HEIGHT) {
   }
 
   let wide = 0
-  for (const k of thick) if (!enclosedCells.has(k) && !sideOpen.has(k)) wide++
+  // Sayılan delik hücrelerinin kendisi de veriliyor: dizgi, bir çiftin
+  // deliğini SÜTUN ŞERİDİNE göre bölüştürmek için hangi hücrenin nerede
+  // olduğunu bilmek zorunda. Toplam sayı aynı kalıyor.
+  const voidCells = new Set()
+  for (const k of thick) {
+    if (enclosedCells.has(k) || sideOpen.has(k)) continue
+    wide++
+    voidCells.add(k)
+  }
 
   return {
+    voidCells,
     ok: errors.length === 0,
     errors,
     topGap: fill.topGap,
