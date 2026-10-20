@@ -242,5 +242,17 @@
         "lz"
       ]
     }
+  ],
+  "textNeeds": [
+    {
+      "char": "y",
+      "id": "y.vrx4c",
+      "line": 2,
+      "reach": 8,
+      "rows": 2,
+      "atRow": 7,
+      "cells": 10,
+      "canWiden": false
+    }
   ]
 }

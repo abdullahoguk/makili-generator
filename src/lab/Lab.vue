@@ -290,6 +290,18 @@ const needsFor = computed(() =>
   (shortNeeds.needs ?? []).filter((n) => n.char === s.vletter)
 )
 
+/**
+ * Dizilmiş metinde bu harfin yüzünden kalan delik.
+ *
+ * Çift "çözülüyor" ama satırda yine delik kalabiliyor: solundaki harfin
+ * kolu uzayıp altını doldurmalı da o harfin uzayan biçimi yok. 'l'nin alt
+ * çubuğu 3'ten 9'a uzayabiliyor, 'y'nin hiçbir biçimi uzayamıyor — bu
+ * yüzden 'hayran'da r ve a'nın altı boş kalıyor.
+ */
+const armNeedsFor = computed(() =>
+  (shortNeeds.textNeeds ?? []).filter((n) => n.char === s.vletter)
+)
+
 /** Bu harf için çizilmiş yeni varyantlar. */
 const myVariants = computed(() => variants.value.filter((v) => v.char === s.vletter))
 
@@ -1161,6 +1173,25 @@ function clearAll() {
           <span class="mono">npm run glyphs:build</span>. Çıkarılan biçme atıfta
           bulunan onaylı kararlar varsa build onları da sayar.
         </p>
+
+        <div v-if="armNeedsFor.length" class="needs arm">
+          <h3 class="sub-head">'{{ s.vletter }}' — uzayan kol gerekiyor</h3>
+          <p class="note">
+            Bu harf dizgide delik bırakıyor. Çift çözülüyor ama satırda boşluk
+            kalıyor: <b>bu harfin kolu uzayıp</b> sonraki harflerin altını
+            doldurmalı — <span class="mono">l</span>'nin alt çubuğunun 3'ten
+            9'a uzaması gibi. Bu harfin uzayabilen biçimi yok, o yüzden
+            çizilmesi gerekiyor.
+          </p>
+          <ul class="needlist mono">
+            <li v-for="(n, i) in armNeedsFor" :key="'arm' + i">
+              <b>kol {{ n.reach }} birime uzasın</b>
+              <span class="dim">{{ n.atRow }}. satırdan {{ n.rows }} sıra</span>
+              <em>{{ n.id }} · {{ n.cells }} hücre delik</em>
+              <span class="unlocks">{{ n.line }}. satır</span>
+            </li>
+          </ul>
+        </div>
 
         <div v-if="needsFor.length" class="needs">
           <h3 class="sub-head">'{{ s.vletter }}' için beklenen ölçü</h3>

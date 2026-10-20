@@ -34,6 +34,14 @@ const only = new Set(argv.filter((a) => !a.startsWith('--')))
 
 const triage = JSON.parse(readFileSync('src/data/pair-triage.json', 'utf8'))
 
+// Ölçüm metni — lab korpusuyla aynı.
+const CORPUS = [
+  'hak bir gönül verdi bana',
+  'ha demeden hayran olur',
+  'bir dem gelir şadan olur',
+  'bir dem gelir giryan olur'
+].join('\n')
+
 /** Çiftin deliksiz bir yerleşimi var mı? */
 const solved = (pair) => {
   const [a, b] = [...pair]
@@ -113,6 +121,56 @@ const rows = [...demand].map(([ch, list]) => {
 })
 rows.sort((a, b) => b.total - a.total)
 
+// ---- ikinci kaynak: DİZİLMİŞ METİNDE kalan delikler -----------------------
+//
+// Çözümsüz çift tek kaynak değil. Bir çift "çözülüyor" ama satırda yine
+// delik bırakabiliyor: komşusunun kolu uzayıp altını doldurması gerekiyor
+// da o harfin uzayan biçimi yok. 'hayran'da olan bu — l'nin alt çubuğu
+// uzayabiliyor (3->9), y'nin hiçbir biçimi uzayamıyor.
+const textNeeds = []
+{
+  const { justify } = await import('../src/engine/justify.js')
+  const { scoreBlock } = await import('../src/engine/fit.js')
+  const { bbox } = await import('../src/engine/grid.js')
+  const { widthLadder } = await import('../src/engine/derive.js')
+
+  const r = justify(CORPUS)
+  if (r.ok) {
+    for (const [li, line] of r.lines.entries()) {
+      const cells = []
+      for (const it of line.items) {
+        const b = bbox(it.variant.cells)
+        for (const [x, y] of it.variant.cells) cells.push([x - b.x + it.x, y - b.y + it.y])
+      }
+      const s = scoreBlock(cells, BAND)
+      if (!s.wideVoid) continue
+
+      // Deliği sütun aralığına indir, solundaki harfi bul: kolu uzayacak
+      // olan o. Uzayabiliyorsa sorun biçim değil seçimdir; uzayamıyorsa
+      // çizilecek biçim var demektir.
+      const pts = [...s.voidCells].map((k) => k.split(',').map(Number))
+      const x0 = Math.min(...pts.map((p) => p[0]))
+      const x1 = Math.max(...pts.map((p) => p[0]))
+      const y0 = Math.min(...pts.map((p) => p[1]))
+      const y1 = Math.max(...pts.map((p) => p[1]))
+      let host = null
+      for (const it of line.items) if (it.x < x0) host = it
+      if (!host) continue
+      const canWiden = [...widthLadder(host.variant, 9).keys()].length > 1
+      textNeeds.push({
+        char: host.char,
+        id: host.variant.id,
+        line: li + 1,
+        reach: x1 - host.x + 1, // kolun ulaşması gereken genişlik
+        rows: y1 - y0 + 1,
+        atRow: y0,
+        cells: s.wideVoid,
+        canWiden
+      })
+    }
+  }
+}
+
 const asked = new Set(rows.flatMap((r) => r.list.flatMap((d) => d.pairs)))
 
 if (asJson) {
@@ -130,7 +188,8 @@ if (asJson) {
       cavityOf: d.via,
       have: r.min ? { w: r.min.w, h: r.min.h } : null,
       unlocks: d.pairs
-    })))
+    }))),
+    textNeeds
   }
   writeFileSync('src/data/short-needs.json', JSON.stringify(out, null, 2) + '\n')
   console.log(`src/data/short-needs.json yazıldı — ${out.needs.length} ölçü`)
@@ -160,6 +219,19 @@ for (const r of rows) {
     )
   }
   if (r.list.length > 6) console.log(`    +${r.list.length - 6} ölçü daha`)
+}
+
+if (textNeeds.length) {
+  console.log('\n=== DİZİLMİŞ METİNDE KALAN DELİK')
+  console.log('Çift çözülüyor ama satırda delik kalıyor: solundaki harfin kolu uzayıp')
+  console.log('altını doldurmalı. Uzayamıyorsa çizilecek biçim var demektir.\n')
+  for (const t of textNeeds) {
+    console.log(
+      `  ${t.line}. satır · '${t.char}' (${t.id}) · ${t.cells} hücre delik` +
+        `  ->  kolu ${t.reach} birime uzamalı, ${t.atRow}. satırdan ${t.rows} sıra` +
+        `  ·  ${t.canWiden ? 'UZAYABİLİYOR (seçim sorunu)' : 'UZAYAMIYOR — biçim çizilmeli'}`
+    )
+  }
 }
 
 // Boşlukları AÇAN harf kim? Tek bir sol harf onlarca çifti kilitliyorsa
