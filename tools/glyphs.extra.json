@@ -1167,6 +1167,22 @@
         "#.#",
         "###"
       ]
+    },
+    {
+      "char": "l",
+      "source": "extra:l.lve",
+      "note": "lve bloğundan çıkarıldı — üstte bayrak, altta uzayan çubuk (cizimler-2)",
+      "art": [
+        "###..",
+        "..#..",
+        "#.#..",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#####"
+      ]
     }
   ]
 }

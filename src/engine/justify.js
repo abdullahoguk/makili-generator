@@ -172,7 +172,14 @@ function widthsFor(char, opts) {
   const all = variantsOf(char) ?? []
   const def = defaultVariant(char)
   const pool = opts.tallOnly ? all.filter((v) => v.h === def.h) : all
-  const map = widthOptions(pool.length ? pool : all, opts.maxGlyphWidth)
+  let map = widthOptions(pool.length ? pool : all, opts.maxGlyphWidth)
+
+  // Harfin en dar biçimi bile sınırdan genişse eleme her şeyi siler ve
+  // satır hiç kurulamaz. Böyle bir harfte sınır değil harf belirleyicidir.
+  if (!map.size) {
+    const narrowest = Math.min(...(pool.length ? pool : all).map((v) => v.w))
+    map = widthOptions(pool.length ? pool : all, narrowest)
+  }
 
   // Tek harfin aşırı şişmesini engelle.
   const base = Math.min(...map.keys())

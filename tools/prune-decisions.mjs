@@ -49,8 +49,12 @@ for (const [pair, rows] of Object.entries(src.ok ?? {})) {
     // o yerleşimi hiç üretmez.
     const l = resolveId(r[0])
     const rg = resolveId(r[1])
+    // Kaynaşma kuralsızlık değil, açıkça izinli bir durum: ustanın
+    // afişinde 4 satırda 11 kez iki harf birbirine değiyor. allowContact
+    // olmadan sınamak, elle çizilmiş kaynaşmaları "kurala aykırı" sayıp
+    // siliyordu.
     const p = place(l.cells, rg.cells, r[2], {
-      bandHeight: BAND_HEIGHT, leftTop: r[3], rightTop: r[4]
+      bandHeight: BAND_HEIGHT, leftTop: r[3], rightTop: r[4], allowContact: true
     })
     if (!p.ok) {
       dropped.push({ pair, row: r, missing: [], reason: p.reason })

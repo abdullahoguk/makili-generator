@@ -160,6 +160,11 @@ export function widen(glyph, n, opts) {
  * @returns {Map<number, object>} genişlik -> glif
  */
 export function widthLadder(glyph, maxWidth) {
+  // Basamağın tohumu glifin KENDİ genişliği. Glif zaten sınırdan genişse
+  // tohumlanmamalı: eskiden tohum koşulsuz konduğu için maxWidth yalnız
+  // türetilmiş genişlikleri sınırlıyor, asıl biçimler sınırı deliyordu.
+  // ('l'e 5 birimlik bir biçim eklenince maxGlyphWidth: 3 onu elemedi.)
+  if (glyph.w > maxWidth) return new Map()
   const out = new Map([[glyph.w, glyph]])
   for (let w = glyph.w + 1; w <= maxWidth; w++) {
     const g = widen(glyph, w - glyph.w)
