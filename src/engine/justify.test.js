@@ -126,10 +126,14 @@ describe('justify', () => {
     expect(r.warnings.join(' ')).toMatch(/ulaş/i)
   })
 
-  it('tek satırı doğal genişliğinde bırakır', () => {
+  it('tek satırı GERMEZ — doğal genişliği aşmaz', () => {
+    // Tek satır hizalanacak bir şey değil: hedefe gerilmez. Eskiden
+    // genişliğin doğal genişliğe EŞİT olması bekleniyordu; çözücü artık
+    // tek satırda da biçim seçip kenetlenme kuruyor, yani daha DAR
+    // olabiliyor. Değişmez olan gerilmemesi.
     const r = justify('bana')
     expect(r.ok).toBe(true)
-    expect(r.lines[0].width).toBe(naturalWidth(tokenize('bana')))
+    expect(r.lines[0].width).toBeLessThanOrEqual(naturalWidth(tokenize('bana')))
   })
 
   it('boşlukları asla esnetmez', () => {

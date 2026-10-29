@@ -1,0 +1,101 @@
+{
+  "_note": "Kütüphaneden çıkarılacak biçimler. tools/glyph-rejects.json olarak kaydet, sonra npm run glyphs:build.",
+  "rejected": [
+    {
+      "id": "a.e6ufz",
+      "char": "a",
+      "source": "letters.0.3",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "f.n6yoo",
+      "char": "f",
+      "source": "letters.5.0",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "g.ayag8",
+      "char": "g",
+      "source": "letters.6.2",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "k.4e87u",
+      "char": "k",
+      "source": "letters.10.2",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "s.z5x1t",
+      "char": "s",
+      "source": "letters.17.1",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "s.i1d9r",
+      "char": "s",
+      "source": "letters.17.2",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "s.n67rq",
+      "char": "s",
+      "source": "letters.17.0",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "s.2gsuv",
+      "char": "s",
+      "source": "letters.17.3",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "ş.txthl",
+      "char": "ş",
+      "source": "extra:ş.short",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "ş.p0lu9",
+      "char": "ş",
+      "source": "extra:ş.tall",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "z.s1yql",
+      "char": "z",
+      "source": "letters.22.2",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "z.km8wr",
+      "char": "z",
+      "source": "letters.22.1",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "z.6m2ig",
+      "char": "z",
+      "source": "letters.22.0",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "d.coso1",
+      "char": "d",
+      "source": "letters.3.1",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "f.l5vku",
+      "char": "f",
+      "source": "letters.5.1",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "l.pacqs",
+      "char": "l",
+      "source": "extra:l.lve",
+      "reason": "lab'de hatalı işaretlendi"
+    }
+  ]
+}

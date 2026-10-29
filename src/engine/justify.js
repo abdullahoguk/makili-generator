@@ -270,6 +270,10 @@ function advanceOptions(leftChar, rightChar, left, right, afterSpace, band = BAN
   // Bir glifin üstünde/altında tam bir satır boşluk kalamaz — oraya kimse
   // giremez. Dizgi place() çağırmadığı için kural burada da sınanıyor.
   const badGap = (top, h) => top === 1 || band - (top + h) === 1
+  // Kararlar BANT 9'da verildi; başka bantta saklı hizalar taşabiliyor.
+  // 'g.71s24^1' (7 satır) top=2 ile bant 8'e konunca blok 9 satır
+  // oluyordu. Banda sığmayan birleşim o bantta kullanılamaz.
+  const fits = (top, h) => top >= 0 && top + h <= band
 
   const out = badGap(natLeft, left.h) || badGap(natRight, right.h)
     ? []
@@ -278,12 +282,14 @@ function advanceOptions(leftChar, rightChar, left, right, afterSpace, band = BAN
   for (const j of joinsFor(`${leftChar}${rightChar}`, left.id, right.id)) {
     const same = j.advance === fallback && j.leftTop === natLeft && j.rightTop === natRight
     if (same) continue
+    if (!fits(j.leftTop, left.h) || !fits(j.rightTop, right.h)) continue
     if (badGap(j.leftTop, left.h) || badGap(j.rightTop, right.h)) continue
     out.push({ ...j, approved: true })
   }
   // Kuralla türetilen yuvalanmalar: onay beklemeden kullanılabilir.
   for (const j of nestJoins(leftChar, rightChar, band).get(`${left.id}|${right.id}`) ?? []) {
     if (j.advance === fallback && j.leftTop === natLeft && j.rightTop === natRight) continue
+    if (!fits(j.leftTop, left.h) || !fits(j.rightTop, right.h)) continue
     if (badGap(j.leftTop, left.h) || badGap(j.rightTop, right.h)) continue
     if (out.some((o) => o.advance === j.advance && o.leftTop === j.leftTop && o.rightTop === j.rightTop)) continue
     out.push({ ...j, approved: false, nested: true })

@@ -153,11 +153,18 @@ export function layoutWord(word, options = {}) {
         : null
 
     const variants = bandVariants(char, o.bandHeight)
-    const next = []
+    let next = []
 
+    // Kararlar aramayı DARALTIR, çözümsüz kılmaz. Onaylı adımlar yalnız
+    // ışındaki sol biçim onaylı kimlikle birebir eşleşirse işliyor;
+    // kütüphane büyüyünce ışın o biçmi tutmaz oldu ve 'hakbir' gibi
+    // kelimeler hiç çözülemez hâle geldi. Onaylı dal boş dönerse aynı
+    // harf serbest aramayla yeniden deneniyor.
+    for (const pass of approved ? [approved, null] : [null]) {
+      next = []
     for (const state of beam) {
-      if (approved) {
-        for (const step of approved) {
+      if (pass) {
+        for (const step of pass) {
           const last = state.placed[state.placed.length - 1]
           if (last.char !== prev || last.id !== step.left.id || last.top !== step.left.top) continue
           const cells = step.right.cells.map(([x, y]) => [x + last.x, y])
@@ -210,6 +217,9 @@ export function layoutWord(word, options = {}) {
           }
         }
       }
+    }
+
+      if (next.length) break
     }
 
     if (!next.length) {

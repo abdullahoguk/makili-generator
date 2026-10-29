@@ -252,6 +252,43 @@ export function duplicableRows(glyph) {
  * Glifi `n` birim uzatır. Satır kopyaları uygun satırlara dağıtılır.
  * @returns yeni glif, ya da uzatılamıyorsa null
  */
+/**
+ * Harfin içinde KAPANMAYAN 2x2 boşluk var mı?
+ *
+ * Kare kufide kalem 1 birim, göbek de 1 birim. Yanı boydan boya açık
+ * boşluk serbest (komşu doldurur) ama kapalı bir göbeğin 2 birim
+ * genişlemesi harfi bozar. check-glyphs bunu zaten kusur sayıyordu;
+ * türetme sınamıyordu.
+ */
+function hasWideCounter(cells) {
+  const b = bbox(cells)
+  const filled = new Set(cells.map(([x, y]) => `${x - b.x},${y - b.y}`))
+
+  // "Açık" ölçüsü SATIR BOYUNCA kenara ulaşmak — scoreBlock ve
+  // check-glyphs ile aynı kural. Taşma (flood fill) kullanmak yanlış
+  // olurdu: harfin ağzından 1 birimlik kanalla içeri sızan boşluğu
+  // "açık" sayar, oysa komşunun uzantısı o kanaldan geçemez.
+  const open = new Set()
+  for (let y = 0; y < b.h; y++) {
+    let L = 0
+    while (L < b.w && !filled.has(`${L},${y}`)) L++
+    let R = b.w - 1
+    while (R >= 0 && !filled.has(`${R},${y}`)) R--
+    for (let x = 0; x < L; x++) open.add(`${x},${y}`)
+    for (let x = R + 1; x < b.w; x++) open.add(`${x},${y}`)
+  }
+
+  for (let y = 0; y + 1 < b.h; y++) {
+    for (let x = 0; x + 1 < b.w; x++) {
+      const quad = [`${x},${y}`, `${x + 1},${y}`, `${x},${y + 1}`, `${x + 1},${y + 1}`]
+      if (quad.some((k) => filled.has(k))) continue
+      if (quad.every((k) => open.has(k))) continue
+      return true
+    }
+  }
+  return false
+}
+
 export function heighten(glyph, n) {
   if (n <= 0) return glyph
   // Devrik üzerinde genişletme, ama doldurulabilirlik kısıtı olmadan —
@@ -259,6 +296,11 @@ export function heighten(glyph, n) {
   const t = widen(transpose(glyph), n, { requireFillable: false })
   if (!t) return null
   const back = transpose(t)
+  // Satır çoğaltmak kapalı göbeği büyütebiliyor: 5x7 'b'nin göbeği
+  // 1x2 iken bir satır eklenince 1x3 değil 2 BİRİM genişliğe çıkan bir
+  // boşluk oluşuyordu ve harf bozuluyordu. Kaynakta yokken sonuçta
+  // çıkıyorsa bu türetme yapılmaz.
+  if (!hasWideCounter(glyph.cells) && hasWideCounter(back.cells)) return null
   return {
     ...glyph,
     derivedFrom: glyph.id ?? glyph.source,

@@ -83,6 +83,24 @@
       "char": "z",
       "source": "letters.22.0",
       "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "d.coso1",
+      "char": "d",
+      "source": "letters.3.1",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "f.l5vku",
+      "char": "f",
+      "source": "letters.5.1",
+      "reason": "lab'de hatalı işaretlendi"
+    },
+    {
+      "id": "l.pacqs",
+      "char": "l",
+      "source": "extra:l.lve",
+      "reason": "lab'de hatalı işaretlendi"
     }
   ]
 }

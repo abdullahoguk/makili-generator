@@ -90,10 +90,9 @@ describe('layoutWord', () => {
 
   it('banda sığmayan harfi en baştan bildirir', () => {
     // Bant, harfin EN KISA biçiminden de alçaksa hiçbir şey sığmaz.
-    // Eskiden 7 birimlik bantla sınanıyordu; kütüphaneye 7 ve 6 satırlık
-    // kısa biçimler girdikten sonra 7 artık sığıyor, o yüzden sınama
-    // gerçekten sığmayan bir banda taşındı.
-    const r = layoutWord('ban', { bandHeight: 5 })
+    // Sınama bandı kütüphane her büyüdüğünde aşağı iniyor: önce 7, sonra
+    // 5 sığar oldu. Şimdilik en kısa biçimler 5 satır, o yüzden 3.
+    const r = layoutWord('ban', { bandHeight: 3 })
     expect(r.ok).toBe(false)
     expect(r.tooTall).toContain('b')
     expect(r.reason).toMatch(/sığmayan/)
@@ -110,7 +109,7 @@ describe('layoutWord', () => {
   it('bandı dolduramadığında bunu bildirir', () => {
     // Yükseklik merdiveni yalnız BÜYÜTÜR: bandın altına inemez. En kısa
     // biçimden de alçak bant çözümsüzdür.
-    const short = layoutWord('ban', { bandHeight: 5 })
+    const short = layoutWord('ban', { bandHeight: 3 })
     expect(short.ok).toBe(false)
     expect(short.reason).toMatch(/sığmayan/)
   })

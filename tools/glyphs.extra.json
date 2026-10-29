@@ -1691,6 +1691,5263 @@
         "...",
         "###"
       ]
+    },
+    {
+      "char": "c",
+      "source": "extra:c.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "short": true,
+      "art": [
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "extra:ç.el5",
+      "note": "lab çizim tahtasında elle çizildi",
+      "short": true,
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "ğ",
+      "source": "extra:ğ.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "art": [
+        "#####",
+        ".....",
+        "#####",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "i",
+      "source": "extra:i.el1",
+      "note": "lab çizim tahtasında elle çizildi",
+      "short": true,
+      "expect": [
+        [
+          0,
+          8
+        ]
+      ],
+      "art": [
+        "#",
+        ".",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "i",
+      "source": "extra:i.el2",
+      "note": "lab çizim tahtasında elle çizildi",
+      "expect": [
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "art": [
+        "#",
+        ".",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "ş",
+      "source": "extra:ş.el3",
+      "note": "lab çizim tahtasında elle çizildi",
+      "short": true,
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "ş",
+      "source": "extra:ş.el4",
+      "note": "lab çizim tahtasında elle çizildi",
+      "short": true,
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "###",
+        "...",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "extra:z.el6",
+      "note": "lab çizim tahtasında elle çizildi",
+      "short": true,
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.unv33",
+      "note": "kısa biçim — a.unv33 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.unv33",
+      "note": "kısa biçim — a.unv33 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.e9mkh",
+      "note": "kısa biçim — a.e9mkh biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.l9n3m",
+      "note": "kısa biçim — a.l9n3m biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.l9n3m",
+      "note": "kısa biçim — a.l9n3m biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.wdbp7",
+      "note": "kısa biçim — a.wdbp7 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "..#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.9ykc3",
+      "note": "kısa biçim — a.9ykc3 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.4plvx",
+      "note": "kısa biçim — a.4plvx biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.950r4",
+      "note": "kısa biçim — a.950r4 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.66cuf",
+      "note": "kısa biçim — a.66cuf biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.wdbp7",
+      "note": "kısa biçim — a.wdbp7 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.wdbp7",
+      "note": "kısa biçim — a.wdbp7 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "..#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.unv33",
+      "note": "kısa biçim — a.unv33 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.f4bat",
+      "note": "kısa biçim — a.f4bat biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.dlag2",
+      "note": "kısa biçim — a.dlag2 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.zd0ml",
+      "note": "kısa biçim — a.zd0ml biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.y9gsg",
+      "note": "kısa biçim — a.y9gsg biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.f4bat",
+      "note": "kısa biçim — a.f4bat biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.dlag2",
+      "note": "kısa biçim — a.dlag2 biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "a",
+      "source": "short:a.zd0ml",
+      "note": "kısa biçim — a.zd0ml biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.xir4p",
+      "note": "kısa biçim — b.xir4p biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.xir4p",
+      "note": "kısa biçim — b.xir4p biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.h8568",
+      "note": "kısa biçim — b.h8568 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.h8568",
+      "note": "kısa biçim — b.h8568 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.oi72p",
+      "note": "kısa biçim — b.oi72p biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.ea40m",
+      "note": "kısa biçim — b.ea40m biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#####",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.ea40m",
+      "note": "kısa biçim — b.ea40m biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#####",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.iyx7p",
+      "note": "kısa biçim — b.iyx7p biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.iyx7p",
+      "note": "kısa biçim — b.iyx7p biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.ea40m",
+      "note": "kısa biçim — b.ea40m biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#....",
+        "#....",
+        "#....",
+        "#####",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.iyx7p",
+      "note": "kısa biçim — b.iyx7p biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "b",
+      "source": "short:b.ea40m",
+      "note": "kısa biçim — b.ea40m biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#....",
+        "#....",
+        "#####",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.tjfhb",
+      "note": "kısa biçim — c.tjfhb biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.tjfhb",
+      "note": "kısa biçim — c.tjfhb biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.tqntw",
+      "note": "kısa biçim — c.tqntw biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.lm56e",
+      "note": "kısa biçim — c.lm56e biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.tjfhb",
+      "note": "kısa biçim — c.tjfhb biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.tjfhb",
+      "note": "kısa biçim — c.tjfhb biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.w1vws",
+      "note": "kısa biçim — c.w1vws biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "c",
+      "source": "short:c.w1vws",
+      "note": "kısa biçim — c.w1vws biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "short:ç.3f0zn",
+      "note": "kısa biçim — ç.3f0zn biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#.#",
+        "#.#",
+        "###",
+        ".#.",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "short:ç.3f0zn",
+      "note": "kısa biçim — ç.3f0zn biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.#",
+        "###",
+        ".#.",
+        "###"
+      ]
+    },
+    {
+      "char": "ç",
+      "source": "short:ç.3f0zn",
+      "note": "kısa biçim — ç.3f0zn biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#.#",
+        "###",
+        ".#.",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.axvmb",
+      "note": "kısa biçim — d.axvmb biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.rfg9q",
+      "note": "kısa biçim — d.rfg9q biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.rfg9q",
+      "note": "kısa biçim — d.rfg9q biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.ys576",
+      "note": "kısa biçim — d.ys576 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#####",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.rfg9q",
+      "note": "kısa biçim — d.rfg9q biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.ys576",
+      "note": "kısa biçim — d.ys576 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.48kdq",
+      "note": "kısa biçim — d.48kdq biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "###",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.rfg9q",
+      "note": "kısa biçim — d.rfg9q biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "d",
+      "source": "short:d.ys576",
+      "note": "kısa biçim — d.ys576 biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8rndf",
+      "note": "kısa biçim — e.8rndf biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8rndf",
+      "note": "kısa biçim — e.8rndf biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.ldn37",
+      "note": "kısa biçim — e.ldn37 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.f9iq8",
+      "note": "kısa biçim — e.f9iq8 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.f9iq8",
+      "note": "kısa biçim — e.f9iq8 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8dc1f",
+      "note": "kısa biçim — e.8dc1f biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.ti9n2",
+      "note": "kısa biçim — e.ti9n2 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.w3vzu",
+      "note": "kısa biçim — e.w3vzu biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8rndf",
+      "note": "kısa biçim — e.8rndf biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8rndf",
+      "note": "kısa biçim — e.8rndf biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.f9iq8",
+      "note": "kısa biçim — e.f9iq8 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8dc1f",
+      "note": "kısa biçim — e.8dc1f biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.ti9n2",
+      "note": "kısa biçim — e.ti9n2 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.w3vzu",
+      "note": "kısa biçim — e.w3vzu biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8rndf",
+      "note": "kısa biçim — e.8rndf biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8dc1f",
+      "note": "kısa biçim — e.8dc1f biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.ti9n2",
+      "note": "kısa biçim — e.ti9n2 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.w3vzu",
+      "note": "kısa biçim — e.w3vzu biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "e",
+      "source": "short:e.8dc1f",
+      "note": "kısa biçim — e.8dc1f biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "f",
+      "source": "short:f.l5vku",
+      "note": "kısa biçim — f.l5vku biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "f",
+      "source": "short:f.i7vva",
+      "note": "kısa biçim — f.i7vva biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "f",
+      "source": "short:f.l5vku",
+      "note": "kısa biçim — f.l5vku biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "f",
+      "source": "short:f.i7vva",
+      "note": "kısa biçim — f.i7vva biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "f",
+      "source": "short:f.l5vku",
+      "note": "kısa biçim — f.l5vku biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.ip8yn",
+      "note": "kısa biçim — g.ip8yn biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.ip8yn",
+      "note": "kısa biçim — g.ip8yn biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.94cqp",
+      "note": "kısa biçim — g.94cqp biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.uwin5",
+      "note": "kısa biçim — g.uwin5 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.jar6v",
+      "note": "kısa biçim — g.jar6v biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#####",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.dgoe5",
+      "note": "kısa biçim — g.dgoe5 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###..",
+        "#.#..",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.dgoe5",
+      "note": "kısa biçim — g.dgoe5 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###..",
+        "#.#..",
+        "#.#..",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.ip8yn",
+      "note": "kısa biçim — g.ip8yn biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.ip8yn",
+      "note": "kısa biçim — g.ip8yn biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.uwin5",
+      "note": "kısa biçim — g.uwin5 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.jar6v",
+      "note": "kısa biçim — g.jar6v biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#####",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.dgoe5",
+      "note": "kısa biçim — g.dgoe5 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###..",
+        "#.#..",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.uwin5",
+      "note": "kısa biçim — g.uwin5 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.jar6v",
+      "note": "kısa biçim — g.jar6v biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "#....",
+        "#.###",
+        "#.#.#",
+        "#...#",
+        "#####"
+      ]
+    },
+    {
+      "char": "g",
+      "source": "short:g.uwin5",
+      "note": "kısa biçim — g.uwin5 biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.n4b91",
+      "note": "kısa biçim — h.n4b91 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.n4b91",
+      "note": "kısa biçim — h.n4b91 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.gvxzu",
+      "note": "kısa biçim — h.gvxzu biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.d8n7n",
+      "note": "kısa biçim — h.d8n7n biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "h",
+      "source": "short:h.mep2w",
+      "note": "kısa biçim — h.mep2w biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "ı",
+      "source": "short:ı.33ayb",
+      "note": "kısa biçim — ı.33ayb biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "ı",
+      "source": "short:ı.33ayb",
+      "note": "kısa biçim — ı.33ayb biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "ı",
+      "source": "short:ı.33ayb",
+      "note": "kısa biçim — ı.33ayb biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "ı",
+      "source": "short:ı.33ayb",
+      "note": "kısa biçim — ı.33ayb biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "j",
+      "source": "short:j.fkzg1",
+      "note": "kısa biçim — j.fkzg1 biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.7z7b0",
+      "note": "kısa biçim — k.7z7b0 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.7z7b0",
+      "note": "kısa biçim — k.7z7b0 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.9nhzt",
+      "note": "kısa biçim — k.9nhzt biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.8cpde",
+      "note": "kısa biçim — k.8cpde biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.7z7b0",
+      "note": "kısa biçim — k.7z7b0 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.7z7b0",
+      "note": "kısa biçim — k.7z7b0 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.9nhzt",
+      "note": "kısa biçim — k.9nhzt biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.7z7b0",
+      "note": "kısa biçim — k.7z7b0 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "k",
+      "source": "short:k.7z7b0",
+      "note": "kısa biçim — k.7z7b0 biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.c8nxi",
+      "note": "kısa biçim — l.c8nxi biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.zbb5d",
+      "note": "kısa biçim — l.zbb5d biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.c8nxi",
+      "note": "kısa biçim — l.c8nxi biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.c8nxi",
+      "note": "kısa biçim — l.c8nxi biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.c8nxi",
+      "note": "kısa biçim — l.c8nxi biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "l",
+      "source": "short:l.42vdw",
+      "note": "kısa biçim — l.42vdw biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#..",
+        "#..",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.6qxdr",
+      "note": "kısa biçim — m.6qxdr biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#####",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.iyigy",
+      "note": "kısa biçim — m.iyigy biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###.###",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.###.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.6qxdr",
+      "note": "kısa biçim — m.6qxdr biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#####",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.iyigy",
+      "note": "kısa biçim — m.iyigy biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###.###",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.###.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.6qxdr",
+      "note": "kısa biçim — m.6qxdr biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.iyigy",
+      "note": "kısa biçim — m.iyigy biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###.###",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.###.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.6qxdr",
+      "note": "kısa biçim — m.6qxdr biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#"
+      ]
+    },
+    {
+      "char": "m",
+      "source": "short:m.iyigy",
+      "note": "kısa biçim — m.iyigy biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###.###",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.#.#.#",
+        "#.###.#"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.94oha",
+      "note": "kısa biçim — n.94oha biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.6gduf",
+      "note": "kısa biçim — n.6gduf biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.###"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.94oha",
+      "note": "kısa biçim — n.94oha biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.6gduf",
+      "note": "kısa biçim — n.6gduf biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.###"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.94oha",
+      "note": "kısa biçim — n.94oha biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.6gduf",
+      "note": "kısa biçim — n.6gduf biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.###"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.94oha",
+      "note": "kısa biçim — n.94oha biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "n",
+      "source": "short:n.6gduf",
+      "note": "kısa biçim — n.6gduf biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###.#",
+        "#.#.#",
+        "#.#.#",
+        "#.#.#",
+        "#.###"
+      ]
+    },
+    {
+      "char": "o",
+      "source": "short:o.qckbt",
+      "note": "kısa biçim — o.qckbt biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "o",
+      "source": "short:o.qckbt",
+      "note": "kısa biçim — o.qckbt biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "o",
+      "source": "short:o.qckbt",
+      "note": "kısa biçim — o.qckbt biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "o",
+      "source": "short:o.qckbt",
+      "note": "kısa biçim — o.qckbt biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e52py",
+      "note": "kısa biçim — p.e52py biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e52py",
+      "note": "kısa biçim — p.e52py biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e52py",
+      "note": "kısa biçim — p.e52py biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e52py",
+      "note": "kısa biçim — p.e52py biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e52py",
+      "note": "kısa biçim — p.e52py biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e1gpd",
+      "note": "kısa biçim — p.e1gpd biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "p",
+      "source": "short:p.e52py",
+      "note": "kısa biçim — p.e52py biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.zqgv2",
+      "note": "kısa biçim — r.zqgv2 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.zqgv2",
+      "note": "kısa biçim — r.zqgv2 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.6nvod",
+      "note": "kısa biçim — r.6nvod biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.t9lpn",
+      "note": "kısa biçim — r.t9lpn biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.qonzv",
+      "note": "kısa biçim — r.qonzv biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.aet94",
+      "note": "kısa biçim — r.aet94 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.gwvkm",
+      "note": "kısa biçim — r.gwvkm biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.v85z7",
+      "note": "kısa biçim — r.v85z7 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "####",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#..."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.boxkv",
+      "note": "kısa biçim — r.boxkv biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#####",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#...."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.zqgv2",
+      "note": "kısa biçim — r.zqgv2 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.zqgv2",
+      "note": "kısa biçim — r.zqgv2 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.t9lpn",
+      "note": "kısa biçim — r.t9lpn biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.qonzv",
+      "note": "kısa biçim — r.qonzv biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.gwvkm",
+      "note": "kısa biçim — r.gwvkm biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.v85z7",
+      "note": "kısa biçim — r.v85z7 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "####",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#..."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.boxkv",
+      "note": "kısa biçim — r.boxkv biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#####",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#...."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.zqgv2",
+      "note": "kısa biçim — r.zqgv2 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "###",
+        "#..",
+        "###",
+        "#.#"
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.qonzv",
+      "note": "kısa biçim — r.qonzv biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.aet94",
+      "note": "kısa biçim — r.aet94 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.v85z7",
+      "note": "kısa biçim — r.v85z7 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "####",
+        "#...",
+        "#...",
+        "#...",
+        "#...",
+        "#..."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.boxkv",
+      "note": "kısa biçim — r.boxkv biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "#....",
+        "#....",
+        "#....",
+        "#....",
+        "#...."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.ufgkw",
+      "note": "kısa biçim — r.ufgkw biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "r",
+      "source": "short:r.59yyh",
+      "note": "kısa biçim — r.59yyh biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#..",
+        "#..",
+        "#..",
+        "#.."
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.e4o68",
+      "note": "kısa biçim — s.e4o68 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.ehk7b",
+      "note": "kısa biçim — s.ehk7b biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.la0lq",
+      "note": "kısa biçim — s.la0lq biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.9ajuk",
+      "note": "kısa biçim — s.9ajuk biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.e4o68",
+      "note": "kısa biçim — s.e4o68 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.9ajuk",
+      "note": "kısa biçim — s.9ajuk biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.e4o68",
+      "note": "kısa biçim — s.e4o68 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#..",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "s",
+      "source": "short:s.9ajuk",
+      "note": "kısa biçim — s.9ajuk biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#..",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.w0uke",
+      "note": "kısa biçim — t.w0uke biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        ".#..",
+        ".#..",
+        "####",
+        ".#..",
+        ".#..",
+        ".#..",
+        ".#..",
+        ".###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.y4m8v",
+      "note": "kısa biçim — t.y4m8v biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#####",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#.."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.mir9u",
+      "note": "kısa biçim — t.mir9u biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#######",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#..."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.w0uke",
+      "note": "kısa biçim — t.w0uke biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        ".#..",
+        ".#..",
+        "####",
+        ".#..",
+        ".#..",
+        ".#..",
+        ".###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.y4m8v",
+      "note": "kısa biçim — t.y4m8v biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#####",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#.."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.mir9u",
+      "note": "kısa biçim — t.mir9u biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#######",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#..."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.y4m8v",
+      "note": "kısa biçim — t.y4m8v biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#.."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.mir9u",
+      "note": "kısa biçim — t.mir9u biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#######",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#..."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.w0uke",
+      "note": "kısa biçim — t.w0uke biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        ".#..",
+        ".#..",
+        "####",
+        ".#..",
+        ".###"
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.y4m8v",
+      "note": "kısa biçim — t.y4m8v biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#####",
+        "..#..",
+        "..#..",
+        "..#..",
+        "..#.."
+      ]
+    },
+    {
+      "char": "t",
+      "source": "short:t.mir9u",
+      "note": "kısa biçim — t.mir9u biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#######",
+        "...#...",
+        "...#...",
+        "...#...",
+        "...#..."
+      ]
+    },
+    {
+      "char": "u",
+      "source": "short:u.lqzom",
+      "note": "kısa biçim — u.lqzom biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "u",
+      "source": "short:u.lqzom",
+      "note": "kısa biçim — u.lqzom biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "u",
+      "source": "short:u.lqzom",
+      "note": "kısa biçim — u.lqzom biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "u",
+      "source": "short:u.lqzom",
+      "note": "kısa biçim — u.lqzom biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.uccz7",
+      "note": "kısa biçim — v.uccz7 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.uccz7",
+      "note": "kısa biçim — v.uccz7 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.mb1gf",
+      "note": "kısa biçim — v.mb1gf biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.5uljj",
+      "note": "kısa biçim — v.5uljj biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.###",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "###.."
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.uccz7",
+      "note": "kısa biçim — v.uccz7 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.uccz7",
+      "note": "kısa biçim — v.uccz7 biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.mb1gf",
+      "note": "kısa biçim — v.mb1gf biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.5uljj",
+      "note": "kısa biçim — v.5uljj biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.###",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "###.."
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.uccz7",
+      "note": "kısa biçim — v.uccz7 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.uccz7",
+      "note": "kısa biçim — v.uccz7 biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "..#",
+        "..#",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.mb1gf",
+      "note": "kısa biçim — v.mb1gf biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.5uljj",
+      "note": "kısa biçim — v.5uljj biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.###",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "###.."
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.mb1gf",
+      "note": "kısa biçim — v.mb1gf biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "###.#",
+        "..#.#",
+        "..#.#",
+        "..#.#",
+        "..###"
+      ]
+    },
+    {
+      "char": "v",
+      "source": "short:v.5uljj",
+      "note": "kısa biçim — v.5uljj biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.###",
+        "#.#..",
+        "#.#..",
+        "#.#..",
+        "###.."
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.vrx4c",
+      "note": "kısa biçim — y.vrx4c biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.vrx4c",
+      "note": "kısa biçim — y.vrx4c biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.920e6",
+      "note": "kısa biçim — y.920e6 biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.hxyja",
+      "note": "kısa biçim — y.hxyja biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.8fe1i",
+      "note": "kısa biçim — y.8fe1i biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.vrx4c",
+      "note": "kısa biçim — y.vrx4c biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.vrx4c",
+      "note": "kısa biçim — y.vrx4c biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.hxyja",
+      "note": "kısa biçim — y.hxyja biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.vrx4c",
+      "note": "kısa biçim — y.vrx4c biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.hxyja",
+      "note": "kısa biçim — y.hxyja biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.vrx4c",
+      "note": "kısa biçim — y.vrx4c biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "###",
+        "..#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "y",
+      "source": "short:y.hxyja",
+      "note": "kısa biçim — y.hxyja biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#.#",
+        "#.#",
+        "###",
+        "..#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.p1ebk",
+      "note": "kısa biçim — z.p1ebk biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.7p2uv",
+      "note": "kısa biçim — z.7p2uv biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.xghfi",
+      "note": "kısa biçim — z.xghfi biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.5c3ek",
+      "note": "kısa biçim — z.5c3ek biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.sm86z",
+      "note": "kısa biçim — z.sm86z biçiminden 8 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 8,
+      "fillsIn": [],
+      "art": [
+        "#####....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#####"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.p1ebk",
+      "note": "kısa biçim — z.p1ebk biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.7p2uv",
+      "note": "kısa biçim — z.7p2uv biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.5c3ek",
+      "note": "kısa biçim — z.5c3ek biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.sm86z",
+      "note": "kısa biçim — z.sm86z biçiminden 7 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 7,
+      "fillsIn": [
+        9
+      ],
+      "art": [
+        "#####....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#####"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.p1ebk",
+      "note": "kısa biçim — z.p1ebk biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "..#",
+        "###",
+        "#..",
+        "#.#",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.5c3ek",
+      "note": "kısa biçim — z.5c3ek biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "###",
+        "#.#",
+        "..#",
+        "###",
+        "#..",
+        "###"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.sm86z",
+      "note": "kısa biçim — z.sm86z biçiminden 6 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 6,
+      "fillsIn": [
+        8,
+        9
+      ],
+      "art": [
+        "#####....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#####"
+      ]
+    },
+    {
+      "char": "z",
+      "source": "short:z.sm86z",
+      "note": "kısa biçim — z.sm86z biçiminden 5 satıra inildi (make-short.mjs)",
+      "short": true,
+      "fullBandAt": 5,
+      "fillsIn": [
+        7,
+        8,
+        9
+      ],
+      "art": [
+        "#####....",
+        "....#....",
+        "....#....",
+        "....#....",
+        "....#####"
+      ]
     }
   ]
 }
